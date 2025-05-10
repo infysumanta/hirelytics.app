@@ -17,6 +17,13 @@ export const localsLanguages: LocalsLanguage[] = [
     active: true,
   },
   {
+    code: "hi",
+    name: "Hindi",
+    flag: "🇮🇳",
+    language: "हिंदी",
+    active: true,
+  },
+  {
     code: "es",
     name: "Spanish",
     flag: "🇪🇸",

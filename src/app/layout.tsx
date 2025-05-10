@@ -5,6 +5,7 @@ import RootProvider from "@/provider/root-provider";
 import { Toaster } from "sonner";
 import NextTopLoader from "nextjs-toploader";
 import { getLocale } from "next-intl/server";
+import { FloatingControls } from "@/components/floating-controls";
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -34,7 +35,12 @@ export default async function RootLayout({
       >
         <NextTopLoader color="hsl(var(--primary))" />
         <Toaster richColors closeButton />
-        <RootProvider>{children}</RootProvider>
+        <RootProvider>
+          <div className="relative flex min-h-screen flex-col">
+            <FloatingControls position="top-right" />
+            <div className="flex-1">{children}</div>
+          </div>
+        </RootProvider>
       </body>
     </html>
   );

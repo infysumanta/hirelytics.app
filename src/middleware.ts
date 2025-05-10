@@ -1,12 +1,16 @@
-import { NextResponse } from "next/server";
-import type { NextRequest } from "next/server";
+import createMiddleware from "next-intl/middleware";
+import { locales, defaultLocale } from "@/i18n/config";
 
-// This middleware is now simplified since the auth.ts file handles most of the authentication logic
-export function middleware(_request: NextRequest) {
-  // The middleware is now just a pass-through
-  // All authentication logic is handled in the auth.ts file
-  return NextResponse.next();
-}
+export default createMiddleware({
+  // A list of all locales that are supported
+  locales,
+
+  // If this locale is matched, pathnames work without a prefix (e.g. `/about`)
+  defaultLocale,
+
+  // The default locale will be used if no locale matches
+  localePrefix: "as-needed",
+});
 
 // Configure which paths the middleware should run on
 export const config = {

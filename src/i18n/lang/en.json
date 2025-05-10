@@ -1,5 +1,53 @@
 {
+	"Common": {
+		"theme": {
+			"dark": "Dark Mode",
+			"light": "Light Mode",
+			"system": "System"
+		},
+		"language": {
+			"en": "English",
+			"hi": "Hindi"
+		}
+	},
 	"HomePage": {
-		"title": "Hirelytics"
+		"title": "Hirelytics",
+		"subtitle": "Role-Based Recruitment Platform",
+		"description": "A role-based recruitment platform for recruiters, candidates, and administrators",
+		"features": "AI-Powered Features",
+		"intelligentRecruitment": "Intelligent Recruitment Platform",
+		"platformDescription": "Our platform leverages cutting-edge AI to transform every step of the recruitment process, from job posting to final selection."
+	},
+	"Auth": {
+		"login": "Login",
+		"register": "Register",
+		"email": "Email",
+		"password": "Password",
+		"name": "Name",
+		"forgotPassword": "Forgot password?",
+		"noAccount": "Don't have an account?",
+		"hasAccount": "Already have an account?",
+		"signIn": "Sign In",
+		"signUp": "Sign Up",
+		"signOut": "Sign Out"
+	},
+	"Dashboard": {
+		"welcome": "Welcome, {name}",
+		"admin": "Admin Dashboard",
+		"recruiter": "Recruiter Dashboard",
+		"candidate": "Candidate Dashboard",
+		"loggedInAs": "You are logged in as a {role}.",
+		"userManagement": "User Management",
+		"manageUsers": "Manage system users",
+		"systemSettings": "System Settings",
+		"configureSettings": "Configure application settings and preferences.",
+		"jobPostings": "Job Postings",
+		"manageJobs": "Manage your job listings",
+		"candidateApplications": "Candidate Applications",
+		"reviewApplications": "Review and manage applications from candidates.",
+		"jobListings": "Job Listings",
+		"browseJobs": "Browse available jobs",
+		"myApplications": "My Applications",
+		"trackApplications": "View and manage your submitted applications."
 	}
 }
