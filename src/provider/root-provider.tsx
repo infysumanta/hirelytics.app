@@ -12,7 +12,15 @@ interface RootProviderProps {
 
 export default async function RootProvider({ children }: RootProviderProps) {
   const messages = await getMessages();
-  const session = await auth();
+
+  // Try to get the session, but don't fail if it's not available
+  let session;
+  try {
+    session = await auth();
+  } catch (error) {
+    console.error("Error getting session:", error);
+    session = null;
+  }
 
   return (
     <>

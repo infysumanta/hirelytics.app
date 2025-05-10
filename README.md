@@ -5,7 +5,12 @@ A role-based authentication system built with Next.js, NextAuth v5, and MongoDB.
 ## Features
 
 - **Role-Based Authentication**: Separate login and registration flows for admin, recruiter, and candidate roles
-- **Protected Routes**: Role-specific dashboards and protected routes
+- **Protected Routes**: Unified dashboard with role-specific content and protected routes
+- **Enhanced Security**:
+  - Automatic redirects for authenticated/unauthenticated users
+  - JWT-based session management
+  - Password hashing with bcrypt
+  - Form validation with Zod
 - **MongoDB Integration**: User data stored in MongoDB
 - **Modern UI**: Built with Tailwind CSS and shadcn/ui components
 
@@ -64,11 +69,9 @@ pnpm tsx scripts/create-admin.ts "Admin Name" "admin@example.com" "password"
 - **Recruiter Registration**: `/register/recruiter`
 - **Candidate Registration**: `/register/candidate`
 
-## Dashboard Routes
+## Dashboard Route
 
-- **Admin Dashboard**: `/admin/dashboard`
-- **Recruiter Dashboard**: `/recruiter/dashboard`
-- **Candidate Dashboard**: `/candidate/dashboard`
+- **Unified Dashboard**: `/dashboard` (content changes based on user role)
 
 ## Technologies Used
 

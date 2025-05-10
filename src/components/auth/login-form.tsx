@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useState, useEffect } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { signIn } from "next-auth/react";
@@ -26,12 +26,14 @@ interface LoginFormProps {
 
 export function LoginForm({ role, callbackUrl }: LoginFormProps) {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [isLoading, setIsLoading] = useState(false);
+  const emailFromQuery = searchParams.get("email") || "";
 
   const form = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
-      email: "",
+      email: emailFromQuery,
       password: "",
       role: role,
     },
@@ -53,14 +55,8 @@ export function LoginForm({ role, callbackUrl }: LoginFormProps) {
         return;
       }
 
-      // Redirect based on role
-      if (role === "admin") {
-        router.push(callbackUrl || "/admin/dashboard");
-      } else if (role === "recruiter") {
-        router.push(callbackUrl || "/recruiter/dashboard");
-      } else if (role === "candidate") {
-        router.push(callbackUrl || "/candidate/dashboard");
-      }
+      // Redirect to unified dashboard
+      router.push(callbackUrl || "/dashboard");
 
       toast.success("Logged in successfully!");
     } catch (error) {

@@ -1,28 +1,28 @@
-import NextAuth from 'next-auth';
-import { MongoDBAdapter } from '@auth/mongodb-adapter';
-import CredentialsProvider from 'next-auth/providers/credentials';
-import { connectToDatabase } from '@/lib/mongodb';
-import User from '@/models/user';
-import bcrypt from 'bcryptjs';
-import { z } from 'zod';
-import { UserRole } from '@/models/user';
+import NextAuth from "next-auth";
+import CredentialsProvider from "next-auth/providers/credentials";
+import { UserRole } from "@/models/user";
+import { z } from "zod";
 
 // Define login schema for validation
 const loginSchema = z.object({
-  email: z.string().email('Invalid email address'),
-  password: z.string().min(6, 'Password must be at least 6 characters'),
-  role: z.enum(['admin', 'recruiter', 'candidate']),
+  email: z.string().email("Invalid email address"),
+  password: z.string().min(6, "Password must be at least 6 characters"),
+  role: z.enum(["admin", "recruiter", "candidate"]),
 });
 
-export const { 
+export const {
   handlers: { GET, POST },
   auth,
   signIn,
-  signOut
+  signOut,
 } = NextAuth({
   pages: {
-    signIn: '/login',
-    error: '/error',
+    signIn: "/login",
+    error: "/error",
+  },
+  session: {
+    strategy: "jwt",
+    maxAge: 30 * 24 * 60 * 60, // 30 days
   },
   callbacks: {
     async jwt({ token, user }) {
@@ -42,74 +42,80 @@ export const {
     async authorized({ auth, request }) {
       const user = auth?.user;
       const isLoggedIn = !!user;
-      
+
       const { pathname } = request.nextUrl;
-      
-      // Public routes - allow access
+
+      // Public routes that don't require authentication
+      const publicRoutes = ["/", "/login", "/register"];
+      const isPublicRoute = publicRoutes.some(
+        (route) => pathname === route || pathname.startsWith(`${route}/`),
+      );
+
+      // If it's a public route and user is logged in, redirect to dashboard
       if (
-        pathname === '/' || 
-        pathname.startsWith('/login') || 
-        pathname.startsWith('/register')
+        isPublicRoute &&
+        isLoggedIn &&
+        (pathname.startsWith("/login") || pathname.startsWith("/register"))
       ) {
+        return Response.redirect(new URL("/dashboard", request.nextUrl));
+      }
+
+      // If it's a public route, allow access
+      if (isPublicRoute) {
         return true;
       }
-      
-      // Protected routes - check role-based access
-      if (pathname.startsWith('/admin') && user?.role !== 'admin') {
-        return false;
+
+      // If user is not logged in, redirect to login
+      if (!isLoggedIn) {
+        return Response.redirect(new URL("/login", request.nextUrl));
       }
-      
-      if (pathname.startsWith('/recruiter') && user?.role !== 'recruiter') {
-        return false;
+
+      // Dashboard is accessible to all authenticated users
+      if (pathname === "/dashboard") {
+        return true;
       }
-      
-      if (pathname.startsWith('/candidate') && user?.role !== 'candidate') {
-        return false;
-      }
-      
+
       // For any other protected route, require authentication
       return isLoggedIn;
     },
   },
   providers: [
     CredentialsProvider({
-      id: 'credentials',
-      name: 'Credentials',
+      id: "credentials",
+      name: "Credentials",
       credentials: {
-        email: { label: 'Email', type: 'email' },
-        password: { label: 'Password', type: 'password' },
-        role: { label: 'Role', type: 'text' },
+        email: { label: "Email", type: "email" },
+        password: { label: "Password", type: "password" },
+        role: { label: "Role", type: "text" },
       },
       async authorize(credentials) {
+        if (!credentials) return null;
+
         try {
           // Validate credentials
           const { email, password, role } = loginSchema.parse(credentials);
-          
-          // Connect to database
-          await connectToDatabase();
-          
-          // Find user by email and role
-          const user = await User.findOne({ email, role }).select('+password');
-          
-          if (!user) {
-            throw new Error('Invalid email or password');
+
+          // Make a request to our API route for authentication
+          const response = await fetch(
+            `${process.env.AUTH_URL}/api/auth/login`,
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({ email, password, role }),
+            },
+          );
+
+          const data = await response.json();
+
+          if (!response.ok) {
+            throw new Error(data.error || "Authentication failed");
           }
-          
-          // Check password
-          const isPasswordValid = await bcrypt.compare(password, user.password);
-          
-          if (!isPasswordValid) {
-            throw new Error('Invalid email or password');
-          }
-          
-          return {
-            id: user._id.toString(),
-            name: user.name,
-            email: user.email,
-            role: user.role,
-          };
+
+          return data.user;
         } catch (error) {
-          console.error('Auth error:', error);
+          console.error("Auth error:", error);
           return null;
         }
       },

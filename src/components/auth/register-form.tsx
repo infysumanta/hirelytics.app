@@ -56,9 +56,9 @@ export function RegisterForm({ role }: RegisterFormProps) {
       }
 
       toast.success("Registration successful! You can now log in.");
-      
+
       // Redirect to login page for the specific role
-      router.push(`/login/${role}`);
+      router.push(`/login/${role}?email=${encodeURIComponent(data.email)}`);
     } catch (error) {
       console.error("Registration error:", error);
       toast.error("Something went wrong. Please try again.");
