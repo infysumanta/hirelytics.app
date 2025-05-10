@@ -4,6 +4,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
 import { AnimatedBackground } from "@/components/ui/animated-background";
+import { useTranslations } from "next-intl";
 import {
   LineChart,
   Zap,
@@ -56,6 +57,9 @@ const featureCardVariants = {
 };
 
 export default function Home() {
+  const t = useTranslations("HomePage");
+  const common = useTranslations("Common");
+
   return (
     <div className="flex min-h-screen flex-col items-center">
       {/* Hero Section */}
@@ -115,16 +119,16 @@ export default function Home() {
             variants={fadeIn}
           >
             <Sparkles size={16} className="text-primary" />
-            AI-Powered Recruitment
+            {t("hero.aiPoweredRecruitment")}
           </motion.div>
 
           <motion.h1
             className="mb-6 text-center text-4xl font-bold tracking-tight sm:text-5xl md:text-6xl"
             variants={fadeIn}
           >
-            <span>Revolutionize Your Hiring with </span>
+            <span>{t("hero.revolutionizeHiring")} </span>
             <span className="bg-gradient-to-r from-primary via-blue-500 to-purple-500 bg-clip-text text-transparent animate-gradient">
-              Hirelytics
+              {t("title")}
             </span>
           </motion.h1>
 
@@ -132,9 +136,7 @@ export default function Home() {
             className="mb-8 max-w-2xl text-center text-lg text-muted-foreground"
             variants={fadeIn}
           >
-            Our AI-driven platform transforms the recruitment process from job
-            posting to candidate selection. Automate interviews, analyze
-            resumes, and make data-driven hiring decisions.
+            {t("hero.description")}
           </motion.p>
 
           <motion.div
@@ -148,13 +150,15 @@ export default function Home() {
               >
                 <span className="absolute inset-0 bg-gradient-to-r from-blue-500/20 to-purple-500/20 opacity-0 group-hover:opacity-100 transition-opacity"></span>
                 <Zap size={18} className="relative z-10" />
-                <span className="relative z-10">Get Started</span>
+                <span className="relative z-10">
+                  {common("buttons.getStarted")}
+                </span>
               </Button>
             </Link>
             <Link href="#how-it-works">
               <Button size="lg" variant="outline" className="gap-2 group">
                 <Search size={18} />
-                <span>How It Works</span>
+                <span>{common("buttons.howItWorks")}</span>
                 <ChevronRight
                   size={16}
                   className="transition-transform group-hover:translate-x-1"
@@ -188,15 +192,14 @@ export default function Home() {
             <div className="mb-4 flex justify-center">
               <div className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/5 px-4 py-1.5 text-sm font-medium text-primary">
                 <Sparkles size={16} />
-                AI-Powered Features
+                {t("featuresSection.title")}
               </div>
             </div>
             <h2 className="mb-4 text-3xl font-bold sm:text-4xl">
-              Intelligent Recruitment Platform
+              {t("featuresSection.subtitle")}
             </h2>
             <p className="mx-auto max-w-2xl text-muted-foreground">
-              Our platform leverages cutting-edge AI to transform every step of
-              the recruitment process, from job posting to final selection.
+              {t("featuresSection.description")}
             </p>
           </motion.div>
 
@@ -210,44 +213,46 @@ export default function Home() {
             {[
               {
                 icon: <FileText className="text-blue-500" />,
-                title: "Smart Job Posting",
-                description:
-                  "Create optimized job listings that automatically generate unique application URLs.",
+                title: t("featuresSection.smartJobPosting.title"),
+                description: t("featuresSection.smartJobPosting.description"),
                 color: "blue",
               },
               {
                 icon: <LinkIcon className="text-indigo-500" />,
-                title: "Unique Application Links",
-                description:
-                  "Share custom application URLs for each position to streamline the candidate experience.",
+                title: t("featuresSection.uniqueApplicationLinks.title"),
+                description: t(
+                  "featuresSection.uniqueApplicationLinks.description",
+                ),
                 color: "indigo",
               },
               {
                 icon: <Upload className="text-purple-500" />,
-                title: "Resume Analysis",
-                description:
-                  "Our AI analyzes resumes to identify the most qualified candidates based on skills and experience.",
+                title: t("featuresSection.resumeAnalysis.title"),
+                description: t("featuresSection.resumeAnalysis.description"),
                 color: "purple",
               },
               {
                 icon: <MessageSquareText className="text-pink-500" />,
-                title: "AI-Powered Interviews",
-                description:
-                  "Automated interview process that adapts questions based on candidate responses and resume.",
+                title: t("featuresSection.aiPoweredInterviews.title"),
+                description: t(
+                  "featuresSection.aiPoweredInterviews.description",
+                ),
                 color: "pink",
               },
               {
                 icon: <ClipboardCheck className="text-green-500" />,
-                title: "Comprehensive Feedback",
-                description:
-                  "Provide detailed feedback to both recruiters and candidates after the interview process.",
+                title: t("featuresSection.comprehensiveFeedback.title"),
+                description: t(
+                  "featuresSection.comprehensiveFeedback.description",
+                ),
                 color: "green",
               },
               {
                 icon: <LineChart className="text-orange-500" />,
-                title: "Data-Driven Insights",
-                description:
-                  "Get actionable insights and analytics to improve your hiring process over time.",
+                title: t("featuresSection.dataDrivenInsights.title"),
+                description: t(
+                  "featuresSection.dataDrivenInsights.description",
+                ),
                 color: "orange",
               },
             ].map((feature, index) => (

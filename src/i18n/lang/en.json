@@ -8,6 +8,34 @@
 		"language": {
 			"en": "English",
 			"hi": "Hindi"
+		},
+		"buttons": {
+			"getStarted": "Get Started",
+			"learnMore": "Learn More",
+			"howItWorks": "How It Works",
+			"signOut": "Sign Out"
+		},
+		"footer": {
+			"allRightsReserved": "All rights reserved",
+			"platform": "Platform",
+			"features": "Features",
+			"pricing": "Pricing",
+			"faq": "FAQ",
+			"forRecruiters": "For Recruiters",
+			"postJob": "Post a Job",
+			"findCandidates": "Find Candidates",
+			"recruitmentTools": "Recruitment Tools",
+			"successStories": "Success Stories",
+			"forCandidates": "For Candidates",
+			"findJobs": "Find Jobs",
+			"careerResources": "Career Resources",
+			"interviewTips": "Interview Tips",
+			"resumeBuilder": "Resume Builder",
+			"company": "Company",
+			"aboutUs": "About Us",
+			"contact": "Contact",
+			"privacyPolicy": "Privacy Policy",
+			"termsOfService": "Terms of Service"
 		}
 	},
 	"HomePage": {
@@ -16,7 +44,105 @@
 		"description": "A role-based recruitment platform for recruiters, candidates, and administrators",
 		"features": "AI-Powered Features",
 		"intelligentRecruitment": "Intelligent Recruitment Platform",
-		"platformDescription": "Our platform leverages cutting-edge AI to transform every step of the recruitment process, from job posting to final selection."
+		"platformDescription": "Our platform leverages cutting-edge AI to transform every step of the recruitment process, from job posting to final selection.",
+		"hero": {
+			"aiPoweredRecruitment": "AI-Powered Recruitment",
+			"revolutionizeHiring": "Revolutionize Your Hiring with",
+			"description": "Our AI-driven platform transforms the recruitment process from job posting to candidate selection. Automate interviews, analyze resumes, and make data-driven hiring decisions.",
+			"getStarted": "Get Started",
+			"howItWorks": "How It Works"
+		},
+		"featuresSection": {
+			"title": "AI-Powered Features",
+			"subtitle": "Intelligent Recruitment Platform",
+			"description": "Our platform leverages cutting-edge AI to transform every step of the recruitment process, from job posting to final selection.",
+			"smartJobPosting": {
+				"title": "Smart Job Posting",
+				"description": "Create optimized job listings that automatically generate unique application URLs."
+			},
+			"uniqueApplicationLinks": {
+				"title": "Unique Application Links",
+				"description": "Share custom application URLs for each position to streamline the candidate experience."
+			},
+			"resumeAnalysis": {
+				"title": "Resume Analysis",
+				"description": "Our AI analyzes resumes to identify the most qualified candidates based on skills and experience."
+			},
+			"aiPoweredInterviews": {
+				"title": "AI-Powered Interviews",
+				"description": "Automated interview process that adapts questions based on candidate responses and resume."
+			},
+			"comprehensiveFeedback": {
+				"title": "Comprehensive Feedback",
+				"description": "Provide detailed feedback to both recruiters and candidates after the interview process."
+			},
+			"dataDrivenInsights": {
+				"title": "Data-Driven Insights",
+				"description": "Get actionable insights and analytics to improve your hiring process over time."
+			}
+		},
+		"howItWorks": {
+			"title": "Streamlined Process",
+			"subtitle": "How Hirelytics Works",
+			"description": "Our AI-powered platform streamlines the entire recruitment journey from job posting to final selection.",
+			"step1": {
+				"title": "Create Job Posting",
+				"description": "Recruiters create detailed job postings with requirements, responsibilities, and qualifications.",
+				"role": "Recruiter",
+				"subtitle": "Job Description Creation",
+				"detail": "The platform helps optimize job descriptions to attract the right candidates."
+			},
+			"step2": {
+				"title": "Generate Application URL",
+				"description": "The system automatically generates a unique application URL for each job posting.",
+				"role": "System",
+				"subtitle": "Unique Application Link",
+				"detail": "Each job gets a custom URL that can be shared across platforms and social media."
+			},
+			"step3": {
+				"title": "Candidate Application",
+				"description": "Candidates apply through the unique URL, creating a streamlined application experience.",
+				"role": "Candidate",
+				"subtitle": "Easy Application Process",
+				"detail": "Candidates can apply with a simple, user-friendly interface designed for the best experience."
+			},
+			"step4": {
+				"title": "Resume Analysis",
+				"description": "Our AI analyzes the candidate's resume to extract skills, experience, and qualifications.",
+				"role": "AI System",
+				"subtitle": "Intelligent Resume Parsing",
+				"detail": "Advanced AI extracts and analyzes key information from resumes to match with job requirements."
+			},
+			"step5": {
+				"title": "AI-Powered Interview",
+				"description": "The AI conducts an adaptive interview, asking questions based on the candidate's resume and responses.",
+				"role": "Interview",
+				"subtitle": "Dynamic Conversation",
+				"detail": "The AI adapts questions based on previous answers to thoroughly assess candidate skills."
+			},
+			"step6": {
+				"title": "Comprehensive Feedback",
+				"description": "Both recruiters and candidates receive detailed feedback and insights from the interview process.",
+				"role": "Results",
+				"subtitle": "Actionable Insights",
+				"detail": "Detailed reports help recruiters make informed decisions and candidates understand their performance."
+			}
+		},
+		"testimonials": {
+			"title": "Success Stories",
+			"subtitle": "What Our Users Say",
+			"description": "Hear from recruiters and candidates who have transformed their hiring experience with our AI-powered platform."
+		},
+		"cta": {
+			"title": "Ready to Transform Your Hiring Process?",
+			"description": "Join thousands of companies using Hirelytics to find the perfect candidates faster and more efficiently.",
+			"getStarted": "Get Started",
+			"learnMore": "Learn More",
+			"noCreditCard": "No credit card required • Free trial available"
+		},
+		"footer": {
+			"description": "AI-powered recruitment platform that transforms hiring through intelligent matching, automated interviews, and data-driven insights."
+		}
 	},
 	"Auth": {
 		"login": "Login",
@@ -29,7 +155,39 @@
 		"hasAccount": "Already have an account?",
 		"signIn": "Sign In",
 		"signUp": "Sign Up",
-		"signOut": "Sign Out"
+		"signOut": "Sign Out",
+		"loggingIn": "Logging in...",
+		"loginSuccess": "Logged in successfully!",
+		"loginError": "Something went wrong. Please try again.",
+		"registrationSuccess": "Registration successful! You can now log in.",
+		"registrationError": "Something went wrong. Please try again.",
+		"registrationFailed": "Registration failed.",
+		"loginAs": {
+			"recruiter": "Login as Recruiter",
+			"candidate": "Login as Candidate",
+			"admin": "Login as Admin"
+		},
+		"registerAs": {
+			"recruiter": "Register as Recruiter",
+			"candidate": "Register as Candidate"
+		},
+		"recruiterRegistration": {
+			"title": "Recruiter Registration",
+			"description": "Create a recruiter account to post jobs and find candidates"
+		},
+		"candidateRegistration": {
+			"title": "Candidate Registration",
+			"description": "Create a candidate account to apply for jobs"
+		},
+		"creatingAccount": "Creating account...",
+		"registerButton": "Register",
+		"chooseRole": "Choose your role to login to the system",
+		"chooseRoleRegister": "Choose your role to register in the system",
+		"notRecruiter": "Not a recruiter? Login as a",
+		"notCandidate": "Not a candidate? Login as a",
+		"recruiterLoginDescription": "Enter your credentials to access the recruiter dashboard",
+		"candidateLoginDescription": "Enter your credentials to access the candidate dashboard",
+		"adminLoginDescription": "Enter your credentials to access the admin dashboard"
 	},
 	"Dashboard": {
 		"welcome": "Welcome, {name}",
@@ -48,6 +206,7 @@
 		"jobListings": "Job Listings",
 		"browseJobs": "Browse available jobs",
 		"myApplications": "My Applications",
-		"trackApplications": "View and manage your submitted applications."
+		"trackApplications": "View and manage your submitted applications.",
+		"loading": "Loading..."
 	}
 }

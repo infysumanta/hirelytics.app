@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
+import { useTranslations } from "next-intl";
 import { AnimatedBackground } from "@/components/ui/animated-background";
 import { AnimatedAuthCard } from "@/components/ui/auth-card";
 
@@ -27,12 +28,14 @@ const staggerContainer = {
 };
 
 export default function RegisterPage() {
+  const t = useTranslations("Auth");
+
   return (
     <AnimatedBackground patternColor="primary" colorScheme="indigo">
       <div className="w-full max-w-md px-4">
         <AnimatedAuthCard
-          title="Register"
-          description="Choose your role to register in the system"
+          title={t("register")}
+          description={t("chooseRoleRegister")}
           colorScheme="indigo"
           contentClassName="flex flex-col space-y-4"
         >
@@ -44,7 +47,7 @@ export default function RegisterPage() {
             <motion.div variants={fadeIn} className="mb-4">
               <Link href="/register/recruiter" className="w-full">
                 <Button variant="default" className="w-full">
-                  Register as Recruiter
+                  {t("registerAs.recruiter")}
                 </Button>
               </Link>
             </motion.div>
@@ -52,7 +55,7 @@ export default function RegisterPage() {
             <motion.div variants={fadeIn} className="mb-4">
               <Link href="/register/candidate" className="w-full">
                 <Button variant="outline" className="w-full">
-                  Register as Candidate
+                  {t("registerAs.candidate")}
                 </Button>
               </Link>
             </motion.div>
@@ -63,7 +66,7 @@ export default function RegisterPage() {
               </div>
               <div className="relative flex justify-center text-xs uppercase">
                 <span className="bg-card px-2 text-muted-foreground">
-                  Already have an account?
+                  {t("hasAccount")}
                 </span>
               </div>
             </motion.div>
@@ -71,7 +74,7 @@ export default function RegisterPage() {
             <motion.div variants={fadeIn}>
               <Link href="/login" className="w-full">
                 <Button variant="outline" className="w-full">
-                  Login
+                  {t("login")}
                 </Button>
               </Link>
             </motion.div>

@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
+import { useTranslations } from "next-intl";
 import { AnimatedBackground } from "@/components/ui/animated-background";
 import { AnimatedAuthCard } from "@/components/ui/auth-card";
 
@@ -27,12 +28,14 @@ const staggerContainer = {
 };
 
 export default function LoginPage() {
+  const t = useTranslations("Auth");
+
   return (
     <AnimatedBackground patternColor="primary" colorScheme="indigo">
       <div className="w-full max-w-md px-4">
         <AnimatedAuthCard
-          title="Login"
-          description="Choose your role to login to the system"
+          title={t("login")}
+          description={t("chooseRole")}
           colorScheme="indigo"
           contentClassName="flex flex-col space-y-4"
         >
@@ -44,7 +47,7 @@ export default function LoginPage() {
             <motion.div variants={fadeIn} className="mb-4">
               <Link href="/login/recruiter" className="w-full">
                 <Button variant="default" className="w-full">
-                  Login as Recruiter
+                  {t("loginAs.recruiter")}
                 </Button>
               </Link>
             </motion.div>
@@ -52,7 +55,7 @@ export default function LoginPage() {
             <motion.div variants={fadeIn} className="mb-4">
               <Link href="/login/candidate" className="w-full">
                 <Button variant="outline" className="w-full">
-                  Login as Candidate
+                  {t("loginAs.candidate")}
                 </Button>
               </Link>
             </motion.div>
@@ -63,7 +66,7 @@ export default function LoginPage() {
               </div>
               <div className="relative flex justify-center text-xs uppercase">
                 <span className="bg-card px-2 text-muted-foreground">
-                  Don't have an account?
+                  {t("noAccount")}
                 </span>
               </div>
             </motion.div>
@@ -71,7 +74,7 @@ export default function LoginPage() {
             <motion.div variants={fadeIn} className="mb-4">
               <Link href="/register/recruiter" className="w-full">
                 <Button variant="outline" className="w-full">
-                  Register as Recruiter
+                  {t("registerAs.recruiter")}
                 </Button>
               </Link>
             </motion.div>
@@ -79,7 +82,7 @@ export default function LoginPage() {
             <motion.div variants={fadeIn}>
               <Link href="/register/candidate" className="w-full">
                 <Button variant="outline" className="w-full">
-                  Register as Candidate
+                  {t("registerAs.candidate")}
                 </Button>
               </Link>
             </motion.div>

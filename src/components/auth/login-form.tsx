@@ -1,10 +1,11 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { signIn } from "next-auth/react";
+import { useTranslations } from "next-intl";
 import { LoginFormValues, loginSchema } from "@/lib/validations/auth";
 import { Button } from "@/components/ui/button";
 import {
@@ -29,6 +30,7 @@ export function LoginForm({ role, callbackUrl }: LoginFormProps) {
   const searchParams = useSearchParams();
   const [isLoading, setIsLoading] = useState(false);
   const emailFromQuery = searchParams.get("email") || "";
+  const t = useTranslations("Auth");
 
   const form = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
@@ -58,10 +60,10 @@ export function LoginForm({ role, callbackUrl }: LoginFormProps) {
       // Redirect to unified dashboard
       router.push(callbackUrl || "/dashboard");
 
-      toast.success("Logged in successfully!");
+      toast.success(t("loginSuccess"));
     } catch (error) {
       console.error("Login error:", error);
-      toast.error("Something went wrong. Please try again.");
+      toast.error(t("loginError"));
     } finally {
       setIsLoading(false);
     }
@@ -75,7 +77,7 @@ export function LoginForm({ role, callbackUrl }: LoginFormProps) {
           name="email"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Email</FormLabel>
+              <FormLabel>{t("email")}</FormLabel>
               <FormControl>
                 <Input
                   placeholder="email@example.com"
@@ -94,7 +96,7 @@ export function LoginForm({ role, callbackUrl }: LoginFormProps) {
           name="password"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Password</FormLabel>
+              <FormLabel>{t("password")}</FormLabel>
               <FormControl>
                 <Input
                   placeholder="••••••••"
@@ -109,7 +111,7 @@ export function LoginForm({ role, callbackUrl }: LoginFormProps) {
           )}
         />
         <Button type="submit" className="w-full" disabled={isLoading}>
-          {isLoading ? "Logging in..." : "Login"}
+          {isLoading ? t("loggingIn") : t("login")}
         </Button>
       </form>
     </Form>

@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
+import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -22,6 +23,8 @@ export default function DashboardPage() {
     },
   });
 
+  const t = useTranslations("Dashboard");
+  const auth = useTranslations("Auth");
   const [role, setRole] = useState<UserRole | null>(null);
 
   useEffect(() => {
@@ -33,7 +36,7 @@ export default function DashboardPage() {
   if (status === "loading") {
     return (
       <div className="flex min-h-screen items-center justify-center">
-        <p>Loading...</p>
+        <p>{t("loading")}</p>
       </div>
     );
   }
@@ -46,25 +49,29 @@ export default function DashboardPage() {
     <div className="container mx-auto py-10">
       <div className="flex justify-between items-center mb-8">
         <h1 className="text-3xl font-bold">
-          {role === "admin" && "Admin Dashboard"}
-          {role === "recruiter" && "Recruiter Dashboard"}
-          {role === "candidate" && "Candidate Dashboard"}
+          {role === "admin" && t("admin")}
+          {role === "recruiter" && t("recruiter")}
+          {role === "candidate" && t("candidate")}
         </h1>
-        <Button onClick={() => signOut({ callbackUrl: "/" })}>Sign Out</Button>
+        <Button onClick={() => signOut({ callbackUrl: "/" })}>
+          {auth("signOut")}
+        </Button>
       </div>
 
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
         <Card>
           <CardHeader>
-            <CardTitle>Welcome, {session?.user?.name}</CardTitle>
+            <CardTitle>
+              {t("welcome", { name: session?.user?.name || "" })}
+            </CardTitle>
             <CardDescription>
-              {role === "admin" && "Admin Dashboard"}
-              {role === "recruiter" && "Recruiter Dashboard"}
-              {role === "candidate" && "Candidate Dashboard"}
+              {role === "admin" && t("admin")}
+              {role === "recruiter" && t("recruiter")}
+              {role === "candidate" && t("candidate")}
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <p>You are logged in as a {role}.</p>
+            <p>{t("loggedInAs", { role })}</p>
           </CardContent>
         </Card>
 
@@ -72,21 +79,21 @@ export default function DashboardPage() {
           <>
             <Card>
               <CardHeader>
-                <CardTitle>User Management</CardTitle>
-                <CardDescription>Manage system users</CardDescription>
+                <CardTitle>{t("userManagement")}</CardTitle>
+                <CardDescription>{t("manageUsers")}</CardDescription>
               </CardHeader>
               <CardContent>
-                <p>Here you can manage recruiters and candidates.</p>
+                <p>{t("userManagementDescription")}</p>
               </CardContent>
             </Card>
 
             <Card>
               <CardHeader>
-                <CardTitle>System Settings</CardTitle>
-                <CardDescription>Configure system settings</CardDescription>
+                <CardTitle>{t("systemSettings")}</CardTitle>
+                <CardDescription>{t("configureSettings")}</CardDescription>
               </CardHeader>
               <CardContent>
-                <p>Configure application settings and preferences.</p>
+                <p>{t("systemSettingsDescription")}</p>
               </CardContent>
             </Card>
           </>
@@ -96,21 +103,21 @@ export default function DashboardPage() {
           <>
             <Card>
               <CardHeader>
-                <CardTitle>Job Postings</CardTitle>
-                <CardDescription>Manage your job listings</CardDescription>
+                <CardTitle>{t("jobPostings")}</CardTitle>
+                <CardDescription>{t("manageJobs")}</CardDescription>
               </CardHeader>
               <CardContent>
-                <p>Create and manage job postings to find candidates.</p>
+                <p>{t("jobPostingsDescription")}</p>
               </CardContent>
             </Card>
 
             <Card>
               <CardHeader>
-                <CardTitle>Candidate Applications</CardTitle>
-                <CardDescription>Review candidate applications</CardDescription>
+                <CardTitle>{t("candidateApplications")}</CardTitle>
+                <CardDescription>{t("reviewApplications")}</CardDescription>
               </CardHeader>
               <CardContent>
-                <p>Review and manage applications from candidates.</p>
+                <p>{t("candidateApplicationsDescription")}</p>
               </CardContent>
             </Card>
           </>

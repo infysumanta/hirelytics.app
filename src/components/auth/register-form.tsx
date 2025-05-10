@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useTranslations } from "next-intl";
 import { RegisterFormValues, registerSchema } from "@/lib/validations/auth";
 import { Button } from "@/components/ui/button";
 import {
@@ -25,6 +26,7 @@ interface RegisterFormProps {
 export function RegisterForm({ role }: RegisterFormProps) {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
+  const t = useTranslations("Auth");
 
   const form = useForm<RegisterFormValues>({
     resolver: zodResolver(registerSchema),
@@ -51,17 +53,17 @@ export function RegisterForm({ role }: RegisterFormProps) {
       const result = await response.json();
 
       if (!response.ok) {
-        toast.error(result.error || "Registration failed");
+        toast.error(result.error || t("registrationFailed"));
         return;
       }
 
-      toast.success("Registration successful! You can now log in.");
+      toast.success(t("registrationSuccess"));
 
       // Redirect to login page for the specific role
       router.push(`/login/${role}?email=${encodeURIComponent(data.email)}`);
     } catch (error) {
       console.error("Registration error:", error);
-      toast.error("Something went wrong. Please try again.");
+      toast.error(t("registrationError"));
     } finally {
       setIsLoading(false);
     }
@@ -75,7 +77,7 @@ export function RegisterForm({ role }: RegisterFormProps) {
           name="name"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Name</FormLabel>
+              <FormLabel>{t("name")}</FormLabel>
               <FormControl>
                 <Input
                   placeholder="John Doe"
@@ -93,7 +95,7 @@ export function RegisterForm({ role }: RegisterFormProps) {
           name="email"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Email</FormLabel>
+              <FormLabel>{t("email")}</FormLabel>
               <FormControl>
                 <Input
                   placeholder="email@example.com"
@@ -112,7 +114,7 @@ export function RegisterForm({ role }: RegisterFormProps) {
           name="password"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Password</FormLabel>
+              <FormLabel>{t("password")}</FormLabel>
               <FormControl>
                 <Input
                   placeholder="••••••••"
@@ -127,7 +129,7 @@ export function RegisterForm({ role }: RegisterFormProps) {
           )}
         />
         <Button type="submit" className="w-full" disabled={isLoading}>
-          {isLoading ? "Creating account..." : "Register"}
+          {isLoading ? t("creatingAccount") : t("registerButton")}
         </Button>
       </form>
     </Form>
