@@ -1,0 +1,15 @@
+"use server";
+
+import { cookies } from "next/headers";
+
+import { Locale, defaultLocale } from "./config";
+
+const COOKIE_NAME = "next_locale.ola_patent_portal_locale";
+
+export async function getUserLocale() {
+  return (await cookies()).get(COOKIE_NAME)?.value || defaultLocale;
+}
+
+export async function setUserLocale(locale: Locale) {
+  (await cookies()).set(COOKIE_NAME, locale);
+}
