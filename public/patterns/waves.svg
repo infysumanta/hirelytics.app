@@ -1,0 +1,6 @@
+<svg width="40" height="20" xmlns="http://www.w3.org/2000/svg">
+  <rect width="100%" height="100%" fill="none"/>
+  <path d="M0 10 Q5 5, 10 10 T20 10 T30 10 T40 10" stroke="currentColor" stroke-width="0.5" fill="none" opacity="0.3"/>
+  <path d="M0 15 Q5 10, 10 15 T20 15 T30 15 T40 15" stroke="currentColor" stroke-width="0.5" fill="none" opacity="0.2"/>
+  <path d="M0 5 Q5 0, 10 5 T20 5 T30 5 T40 5" stroke="currentColor" stroke-width="0.5" fill="none" opacity="0.2"/>
+</svg>

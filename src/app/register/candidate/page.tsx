@@ -1,35 +1,58 @@
+"use client";
+
 import Link from "next/link";
 import { RegisterForm } from "@/components/auth/register-form";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { motion } from "framer-motion";
+import { AnimatedBackground } from "@/components/ui/animated-background";
+import { AnimatedAuthCard } from "@/components/ui/auth-card";
 
 export default function CandidateRegisterPage() {
+  // Create footer content with animations
+  const footerContent = (
+    <>
+      <motion.div
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.3 }}
+        className="text-sm text-muted-foreground text-center"
+      >
+        Already have an account?{" "}
+        <Link
+          href="/login/candidate"
+          className="text-primary underline underline-offset-4 hover:text-primary/90"
+        >
+          Login as a candidate
+        </Link>
+      </motion.div>
+      <motion.div
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.4 }}
+        className="text-sm text-muted-foreground text-center"
+      >
+        Are you a recruiter?{" "}
+        <Link
+          href="/register/recruiter"
+          className="text-primary underline underline-offset-4 hover:text-primary/90"
+        >
+          Register as a recruiter
+        </Link>
+      </motion.div>
+    </>
+  );
+
   return (
-    <div className="flex min-h-screen items-center justify-center px-4 py-12">
-      <Card className="w-full max-w-md">
-        <CardHeader className="space-y-1">
-          <CardTitle className="text-2xl font-bold">Candidate Registration</CardTitle>
-          <CardDescription>
-            Create a candidate account to find job opportunities
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
+    <AnimatedBackground patternColor="primary" colorScheme="blue">
+      <div className="w-full max-w-md px-4">
+        <AnimatedAuthCard
+          title="Candidate Registration"
+          description="Create a candidate account to find job opportunities"
+          colorScheme="blue"
+          footer={footerContent}
+        >
           <RegisterForm role="candidate" />
-        </CardContent>
-        <CardFooter className="flex flex-col space-y-4">
-          <div className="text-sm text-muted-foreground text-center">
-            Already have an account?{" "}
-            <Link href="/login/candidate" className="text-primary underline underline-offset-4 hover:text-primary/90">
-              Login as a candidate
-            </Link>
-          </div>
-          <div className="text-sm text-muted-foreground text-center">
-            Are you a recruiter?{" "}
-            <Link href="/register/recruiter" className="text-primary underline underline-offset-4 hover:text-primary/90">
-              Register as a recruiter
-            </Link>
-          </div>
-        </CardFooter>
-      </Card>
-    </div>
+        </AnimatedAuthCard>
+      </div>
+    </AnimatedBackground>
   );
 }
