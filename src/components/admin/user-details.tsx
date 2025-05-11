@@ -40,7 +40,11 @@ interface UserDetailsProps {
   onClose: () => void;
 }
 
-export function UserDetails({ user, onToggleStatus, onClose }: UserDetailsProps) {
+export function UserDetails({
+  user,
+  onToggleStatus,
+  onClose,
+}: UserDetailsProps) {
   const [isLoading, setIsLoading] = useState(false);
 
   const handleToggleStatus = async () => {
@@ -74,8 +78,8 @@ export function UserDetails({ user, onToggleStatus, onClose }: UserDetailsProps)
                 user.role === "admin"
                   ? "destructive"
                   : user.role === "recruiter"
-                  ? "default"
-                  : "secondary"
+                    ? "default"
+                    : "secondary"
               }
               className="text-sm"
             >
@@ -85,7 +89,10 @@ export function UserDetails({ user, onToggleStatus, onClose }: UserDetailsProps)
 
           <div className="space-y-2">
             <p className="text-sm font-medium text-muted-foreground">Status</p>
-            <Badge variant={user.isActive ? "success" : "outline"} className="text-sm">
+            <Badge
+              variant={user.isActive ? "default" : "outline"}
+              className="text-sm"
+            >
               {user.isActive ? (
                 <CheckCircle className="h-4 w-4 mr-1" />
               ) : (
@@ -96,7 +103,9 @@ export function UserDetails({ user, onToggleStatus, onClose }: UserDetailsProps)
           </div>
 
           <div className="space-y-2">
-            <p className="text-sm font-medium text-muted-foreground">Created At</p>
+            <p className="text-sm font-medium text-muted-foreground">
+              Created At
+            </p>
             <p className="text-sm">{format(new Date(user.createdAt), "PPP")}</p>
           </div>
         </div>

@@ -1,14 +1,13 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { useQuery } from "@tanstack/react-query";
 import { ColumnDef } from "@tanstack/react-table";
 import { DataTable } from "@/components/ui/data-table";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Drawer, DrawerContent, DrawerTrigger } from "@/components/ui/drawer";
+import { Drawer, DrawerContent } from "@/components/ui/drawer";
 import { UserRole } from "@/models/user";
 import { format } from "date-fns";
 import { Eye, CheckCircle, XCircle } from "lucide-react";
@@ -27,27 +26,25 @@ interface User {
 
 export default function UsersPage() {
   const t = useTranslations("Dashboard");
-  const [activeTab, setActiveTab] = useState<UserRole | "all">("all");
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [page, setPage] = useState(0);
   const [pageSize, setPageSize] = useState(10);
-  const [searchQuery, setSearchQuery] = useState("");
+  const [searchQuery] = useState("");
 
   // Fetch users with role filter, pagination, and search
-  const { data, isLoading, refetch } = useQuery({
-    queryKey: ["users", activeTab, page, pageSize, searchQuery],
+  const { data, refetch } = useQuery({
+    queryKey: ["candidates", page, pageSize, searchQuery],
     queryFn: async () => {
-      const roleParam = activeTab !== "all" ? `&role=${activeTab}` : "";
       const searchParam = searchQuery ? `&search=${searchQuery}` : "";
       const response = await fetch(
-        `/api/admin/users?page=${page + 1}&limit=${pageSize}${roleParam}${searchParam}`
+        `/api/admin/users?page=${page + 1}&limit=${pageSize}&role=candidate${searchParam}`,
       );
-      
+
       if (!response.ok) {
         throw new Error("Failed to fetch users");
       }
-      
+
       return response.json();
     },
   });
@@ -73,8 +70,8 @@ export default function UsersPage() {
               role === "admin"
                 ? "destructive"
                 : role === "recruiter"
-                ? "default"
-                : "secondary"
+                  ? "default"
+                  : "secondary"
             }
           >
             {role}
@@ -88,7 +85,7 @@ export default function UsersPage() {
       cell: ({ row }) => {
         const isActive = row.getValue("isActive") as boolean;
         return (
-          <Badge variant={isActive ? "success" : "outline"}>
+          <Badge variant={isActive ? "default" : "outline"}>
             {isActive ? (
               <CheckCircle className="h-4 w-4 mr-1" />
             ) : (
@@ -147,8 +144,10 @@ export default function UsersPage() {
       // Refetch users to update the table
       refetch();
       toast.success(`User ${isActive ? "disabled" : "enabled"} successfully`);
-    } catch (error: any) {
-      toast.error(error.message);
+    } catch (error: Error | unknown) {
+      const errorMessage =
+        error instanceof Error ? error.message : "An unknown error occurred";
+      toast.error(errorMessage);
     }
   };
 
@@ -159,37 +158,19 @@ export default function UsersPage() {
         <p className="text-muted-foreground">{t("manageUsers")}</p>
       </div>
 
-      <Tabs
-        defaultValue="all"
-        value={activeTab}
-        onValueChange={(value) => {
-          setActiveTab(value as UserRole | "all");
-          setPage(0);
+      <DataTable
+        columns={columns}
+        data={data?.users || []}
+        searchKey="name"
+        searchPlaceholder="Search users..."
+        pagination={{
+          pageIndex: page,
+          pageSize: pageSize,
+          pageCount: data?.pagination?.totalPages || 1,
+          onPageChange: setPage,
+          onPageSizeChange: setPageSize,
         }}
-      >
-        <TabsList>
-          <TabsTrigger value="all">All Users</TabsTrigger>
-          <TabsTrigger value="admin">Admins</TabsTrigger>
-          <TabsTrigger value="recruiter">Recruiters</TabsTrigger>
-          <TabsTrigger value="candidate">Candidates</TabsTrigger>
-        </TabsList>
-
-        <TabsContent value={activeTab} className="mt-6">
-          <DataTable
-            columns={columns}
-            data={data?.users || []}
-            searchKey="name"
-            searchPlaceholder="Search users..."
-            pagination={{
-              pageIndex: page,
-              pageSize: pageSize,
-              pageCount: data?.pagination?.totalPages || 1,
-              onPageChange: setPage,
-              onPageSizeChange: setPageSize,
-            }}
-          />
-        </TabsContent>
-      </Tabs>
+      />
 
       <Drawer open={isDrawerOpen} onOpenChange={setIsDrawerOpen}>
         <DrawerContent className="max-h-[90vh] overflow-auto">
