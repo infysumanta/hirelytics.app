@@ -72,13 +72,15 @@ export async function POST(req: NextRequest) {
     // Convert file to base64 for database storage
     const base64 = Buffer.from(arrayBuffer).toString("base64");
 
-    // Return success response with file info
+    // Return success response with file info and S3 key for generating signed URLs later
     return NextResponse.json({
       success: true,
       file: {
         url: fileUrl,
         fileName: fileName,
         base64: `data:${file.type};base64,${base64}`,
+        key: key,
+        bucket: bucketName,
       },
     });
   } catch (error) {

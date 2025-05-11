@@ -8,6 +8,8 @@ export interface IJobApplication extends Document {
   resumeUrl: string;
   resumeBase64: string;
   fileName: string;
+  s3Key?: string; // S3 object key for generating signed URLs
+  s3Bucket?: string; // S3 bucket name for generating signed URLs
   preferredLanguage: string;
   status: "pending" | "reviewed" | "accepted" | "rejected";
   createdAt: Date;
@@ -36,6 +38,14 @@ const JobApplicationSchema = new Schema(
     fileName: {
       type: String,
       required: [true, "File name is required"],
+    },
+    s3Key: {
+      type: String,
+      // Optional but useful for generating signed URLs
+    },
+    s3Bucket: {
+      type: String,
+      // Optional but useful for generating signed URLs
     },
     preferredLanguage: {
       type: String,

@@ -36,6 +36,8 @@ const formSchema = z.object({
   resumeUrl: z.string().optional(),
   resumeBase64: z.string().optional(),
   fileName: z.string().optional(),
+  s3Key: z.string().optional(),
+  s3Bucket: z.string().optional(),
   preferredLanguage: z.string().min(1, {
     message: "Please select your preferred language.",
   }),
@@ -80,12 +82,15 @@ export function JobApplicationForm({
 
       try {
         // Process file for storage (upload to S3 and convert to base64)
-        const { url, base64, fileName } = await processFileForStorage(file);
+        const { url, base64, fileName, key, bucket } =
+          await processFileForStorage(file);
 
         // Set form values
         form.setValue("resumeUrl", url);
         form.setValue("resumeBase64", base64);
         form.setValue("fileName", fileName);
+        form.setValue("s3Key", key);
+        form.setValue("s3Bucket", bucket);
 
         toast.success("Resume uploaded successfully", {
           description: "Your resume has been attached to your application",
@@ -109,6 +114,8 @@ export function JobApplicationForm({
     form.setValue("resumeUrl", "");
     form.setValue("resumeBase64", "");
     form.setValue("fileName", "");
+    form.setValue("s3Key", "");
+    form.setValue("s3Bucket", "");
   }, [form]);
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
@@ -156,6 +163,9 @@ export function JobApplicationForm({
         resumeUrl: values.resumeUrl,
         resumeBase64: values.resumeBase64,
         fileName: values.fileName,
+        // Include S3 key and bucket for generating signed URLs later
+        s3Key: values.s3Key,
+        s3Bucket: values.s3Bucket,
         preferredLanguage: values.preferredLanguage,
       };
 

@@ -19,11 +19,17 @@ export const fileToBase64 = (file: File): Promise<string> => {
  * Upload a file to the server, which will then upload it to Tigris S3
  * This approach keeps AWS credentials secure on the server
  * @param file The file to upload
- * @returns Promise with file information including URL and base64
+ * @returns Promise with file information including URL, base64, key and bucket
  */
 export const uploadFileToServer = async (
   file: File,
-): Promise<{ url: string; fileName: string; base64: string }> => {
+): Promise<{
+  url: string;
+  fileName: string;
+  base64: string;
+  key: string;
+  bucket: string;
+}> => {
   try {
     // Create a FormData object to send the file
     const formData = new FormData();
@@ -56,7 +62,7 @@ export const uploadFileToServer = async (
 /**
  * Process file for storage: upload to server which handles Tigris S3 upload
  * @param file The file to process
- * @returns Object containing S3 URL and base64 string
+ * @returns Object containing S3 URL, base64 string, filename, key and bucket
  */
 export const processFileForStorage = async (
   file: File,
@@ -64,6 +70,8 @@ export const processFileForStorage = async (
   url: string;
   base64: string;
   fileName: string;
+  key: string;
+  bucket: string;
 }> => {
   try {
     // Upload file to server which handles S3 upload and base64 conversion

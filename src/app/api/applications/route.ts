@@ -16,6 +16,8 @@ export async function POST(req: NextRequest) {
       fileName: data.fileName,
       hasBase64: !!data.resumeBase64,
       hasResumeUrl: !!data.resumeUrl,
+      hasS3Key: !!data.s3Key,
+      hasS3Bucket: !!data.s3Bucket,
     });
 
     // Validate required fields
@@ -42,6 +44,9 @@ export async function POST(req: NextRequest) {
       resumeUrl: data.resumeUrl,
       resumeBase64: data.resumeBase64,
       fileName: data.fileName,
+      // Store S3 key and bucket if available for generating signed URLs later
+      ...(data.s3Key ? { s3Key: data.s3Key } : {}),
+      ...(data.s3Bucket ? { s3Bucket: data.s3Bucket } : {}),
       preferredLanguage: data.preferredLanguage || "en",
     };
 
