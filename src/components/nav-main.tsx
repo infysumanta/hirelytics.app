@@ -85,7 +85,10 @@ export function NavMain() {
               key={item.title}
               onClick={() => router.push(item.url)}
             >
-              <SidebarMenuButton tooltip={item.title}>
+              <SidebarMenuButton
+                tooltip={item.title}
+                className="cursor-pointer"
+              >
                 {item.icon && <item.icon />}
                 <span>{item.title}</span>
               </SidebarMenuButton>
