@@ -1,11 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 import { toast } from "sonner";
+import { useDropzone } from "react-dropzone";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -17,24 +18,23 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { IJob } from "@/models/job";
-import { Loader2, Upload } from "lucide-react";
+import { Loader2, Upload, FileIcon, X } from "lucide-react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { localsLanguages } from "@/i18n/config";
 
 const formSchema = z.object({
-  coverLetter: z.string().min(100, {
-    message: "Cover letter must be at least 100 characters.",
-  }),
   resumeUrl: z.string().optional(),
-  phoneNumber: z.string().min(5, {
-    message: "Please enter a valid phone number.",
+  preferredLanguage: z.string().min(1, {
+    message: "Please select your preferred language.",
   }),
-  availability: z.string().min(1, {
-    message: "Please provide your availability information.",
-  }),
-  additionalInfo: z.string().optional(),
 });
 
 interface JobApplicationFormProps {
@@ -58,40 +58,58 @@ export function JobApplicationForm({
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      coverLetter: "",
       resumeUrl: "",
-      phoneNumber: "",
-      availability: "",
-      additionalInfo: "",
+      preferredLanguage: "en",
     },
   });
 
-  const handleResumeUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
+  const [fileName, setFileName] = useState<string | null>(null);
 
-    setIsUploading(true);
+  const handleResumeUpload = useCallback(
+    async (acceptedFiles: File[]) => {
+      const file = acceptedFiles[0];
+      if (!file) return;
 
-    // Simulate file upload - in a real app, you would upload to your storage service
-    try {
-      // Mock upload delay
-      await new Promise((resolve) => setTimeout(resolve, 1500)); // Mock successful upload
-      const mockUrl = `https://storage.example.com/resumes/${file.name}`;
-      form.setValue("resumeUrl", mockUrl);
+      setIsUploading(true);
+      setFileName(file.name);
 
-      toast.success("Resume uploaded successfully", {
-        description: "Your resume has been attached to your application",
-      });
-    } catch (error) {
-      console.error("Error uploading file:", error);
-      toast.error("Upload failed", {
-        description:
-          "There was an error uploading your resume. Please try again.",
-      });
-    } finally {
-      setIsUploading(false);
-    }
-  };
+      // Simulate file upload - in a real app, you would upload to your storage service
+      try {
+        // Mock upload delay
+        await new Promise((resolve) => setTimeout(resolve, 1500)); // Mock successful upload
+        const mockUrl = `https://storage.example.com/resumes/${file.name}`;
+        form.setValue("resumeUrl", mockUrl);
+
+        toast.success("Resume uploaded successfully", {
+          description: "Your resume has been attached to your application",
+        });
+      } catch (error) {
+        console.error("Error uploading file:", error);
+        toast.error("Upload failed", {
+          description:
+            "There was an error uploading your resume. Please try again.",
+        });
+        setFileName(null);
+      } finally {
+        setIsUploading(false);
+      }
+    },
+    [form],
+  );
+
+  const removeFile = useCallback(() => {
+    setFileName(null);
+    form.setValue("resumeUrl", "");
+  }, [form]);
+
+  const { getRootProps, getInputProps, isDragActive } = useDropzone({
+    onDrop: handleResumeUpload,
+    accept: {
+      "application/pdf": [".pdf"],
+    },
+    maxFiles: 1,
+    disabled: isUploading,
+  });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsSubmitting(true);
@@ -133,107 +151,85 @@ export function JobApplicationForm({
             <p className="text-muted-foreground">{job.companyName}</p>
           </div>
 
-          <FormField
-            control={form.control}
-            name="coverLetter"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Cover Letter</FormLabel>
-                <FormControl>
-                  <Textarea
-                    placeholder="Write your cover letter here..."
-                    className="min-h-[200px]"
-                    {...field}
-                  />
-                </FormControl>
-                <FormDescription>
-                  Explain why you&apos;re a good fit for this position.
-                </FormDescription>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
           <div className="space-y-2">
-            <Label htmlFor="resume">Resume/CV</Label>
-            <div className="flex items-center space-x-2">
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => document.getElementById("resume")?.click()}
-                disabled={isUploading}
+            <Label htmlFor="resume">Resume/CV (PDF only)</Label>
+            {!fileName ? (
+              <div
+                {...getRootProps()}
+                className={`border-2 border-dashed rounded-md p-6 text-center cursor-pointer transition-colors ${
+                  isDragActive
+                    ? "border-primary bg-primary/5"
+                    : "border-gray-300 hover:border-primary/50"
+                }`}
               >
+                <input {...getInputProps()} />
                 {isUploading ? (
-                  <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Uploading...
-                  </>
+                  <div className="flex flex-col items-center">
+                    <Loader2 className="h-10 w-10 animate-spin text-primary mb-2" />
+                    <p>Uploading...</p>
+                  </div>
                 ) : (
-                  <>
-                    <Upload className="mr-2 h-4 w-4" />
-                    Upload Resume
-                  </>
+                  <div className="flex flex-col items-center">
+                    <Upload className="h-10 w-10 text-muted-foreground mb-2" />
+                    <p className="text-sm font-medium">
+                      Drag & drop your resume PDF here, or click to select
+                    </p>
+                    <p className="text-xs text-muted-foreground mt-1">
+                      Only PDF files accepted (max 5MB)
+                    </p>
+                  </div>
                 )}
-              </Button>
-              <Input
-                id="resume"
-                type="file"
-                accept=".pdf,.doc,.docx"
-                className="hidden"
-                onChange={handleResumeUpload}
-                disabled={isUploading}
-              />
-              <span className="text-sm text-muted-foreground">
-                {form.watch("resumeUrl")
-                  ? "Resume uploaded"
-                  : "PDF, DOC or DOCX (max 5MB)"}
-              </span>
-            </div>
+              </div>
+            ) : (
+              <div className="flex items-center gap-2 border rounded-md p-3">
+                <FileIcon className="h-8 w-8 text-primary" />
+                <div className="flex-1">
+                  <p className="text-sm font-medium truncate">{fileName}</p>
+                  <p className="text-xs text-muted-foreground">PDF Document</p>
+                </div>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  className="h-8 w-8"
+                  onClick={removeFile}
+                  disabled={isUploading}
+                >
+                  <X className="h-4 w-4" />
+                  <span className="sr-only">Remove file</span>
+                </Button>
+              </div>
+            )}
           </div>
 
           <FormField
             control={form.control}
-            name="phoneNumber"
+            name="preferredLanguage"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Phone Number</FormLabel>
-                <FormControl>
-                  <Input placeholder="+1 (555) 123-4567" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            control={form.control}
-            name="availability"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Availability</FormLabel>
-                <FormControl>
-                  <Input
-                    placeholder="e.g., Available immediately, 2 weeks notice, etc."
-                    {...field}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            control={form.control}
-            name="additionalInfo"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Additional Information (Optional)</FormLabel>
-                <FormControl>
-                  <Textarea
-                    placeholder="Any additional information you'd like to share..."
-                    {...field}
-                  />
-                </FormControl>
+                <FormLabel>Preferred Language</FormLabel>
+                <Select
+                  onValueChange={field.onChange}
+                  defaultValue={field.value}
+                >
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select your preferred language" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    {localsLanguages
+                      .filter((lang) => lang.active)
+                      .map((lang) => (
+                        <SelectItem key={lang.code} value={lang.code}>
+                          {lang.flag} {lang.name}
+                        </SelectItem>
+                      ))}
+                  </SelectContent>
+                </Select>
+                <FormDescription>
+                  Select the language you prefer for communications.
+                </FormDescription>
                 <FormMessage />
               </FormItem>
             )}
