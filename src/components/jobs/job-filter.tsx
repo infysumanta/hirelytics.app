@@ -16,9 +16,10 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
-import { CheckIcon, FilterIcon, X } from "lucide-react";
+import { CheckIcon, FilterIcon, MapPinIcon, X } from "lucide-react";
 import { technicalSkills, Skill, SkillCategory } from "@/data/technical-skills";
 import { useDebounce } from "@/hooks/use-debounce";
+import { countries, getCountryLabel } from "@/data/countries";
 
 type JobFilterProps = {
   onSearchChange: (value: string) => void;
@@ -119,27 +120,78 @@ export function JobFilter({
           )}
         </div>
 
-        <div className="relative">
-          <Input
-            placeholder="Filter by location..."
-            value={location}
-            onChange={(e) => setLocation(e.target.value)}
-            className="w-full"
-          />
-          {location && (
+        <Popover>
+          <PopoverTrigger asChild>
             <Button
-              variant="ghost"
-              size="icon"
-              className="absolute right-1 top-1/2 -translate-y-1/2 h-6 w-6 rounded-full"
-              onClick={() => {
-                setLocation("");
-                onLocationChange("");
-              }}
+              variant="outline"
+              role="combobox"
+              className="justify-between w-full"
             >
-              <X className="h-3 w-3" />
+              <div className="flex items-center gap-2">
+                <MapPinIcon className="h-4 w-4" />
+                {location ? getCountryLabel(location) : "Filter by location"}
+              </div>
+              <FilterIcon className="h-4 w-4 opacity-50" />
             </Button>
-          )}
-        </div>
+          </PopoverTrigger>
+          <PopoverContent className="w-[300px] md:w-[400px] p-0" align="start">
+            <Command>
+              <CommandInput placeholder="Search locations..." />
+              <CommandList>
+                <CommandEmpty>No locations found.</CommandEmpty>
+                <CommandGroup heading="Options">
+                  <CommandItem
+                    value="remote"
+                    onSelect={() => {
+                      setLocation("remote");
+                      onLocationChange("remote");
+                    }}
+                  >
+                    <div
+                      className={cn(
+                        "mr-2 flex h-4 w-4 items-center justify-center rounded-sm border",
+                        location === "remote"
+                          ? "bg-primary border-primary"
+                          : "opacity-50",
+                      )}
+                    >
+                      {location === "remote" && (
+                        <CheckIcon className="h-3 w-3 text-primary-foreground" />
+                      )}
+                    </div>
+                    Remote
+                  </CommandItem>
+                </CommandGroup>
+                <CommandGroup heading="Countries">
+                  {countries.slice(1).map((country) => (
+                    <CommandItem
+                      key={country.value}
+                      value={country.value}
+                      onSelect={() => {
+                        setLocation(country.value);
+                        onLocationChange(country.value);
+                      }}
+                    >
+                      <div
+                        className={cn(
+                          "mr-2 flex h-4 w-4 items-center justify-center rounded-sm border",
+                          location === country.value
+                            ? "bg-primary border-primary"
+                            : "opacity-50",
+                        )}
+                      >
+                        {location === country.value && (
+                          <CheckIcon className="h-3 w-3 text-primary-foreground" />
+                        )}
+                      </div>
+                      {country.label}
+                    </CommandItem>
+                  ))}
+                </CommandGroup>
+              </CommandList>
+            </Command>
+          </PopoverContent>
+        </Popover>
 
         <Popover open={open} onOpenChange={setOpen}>
           <PopoverTrigger asChild>
@@ -199,7 +251,7 @@ export function JobFilter({
       </div>
 
       <div className="flex flex-wrap gap-2">
-        {selectedSkills.length > 0 && (
+        {(selectedSkills.length > 0 || location) && (
           <>
             {selectedSkills.map((skill) => {
               const skillInfo = technicalSkills.find((s) => s.value === skill);
@@ -217,6 +269,24 @@ export function JobFilter({
                 </Badge>
               );
             })}
+
+            {location && (
+              <Badge variant="secondary" className="px-2 py-1">
+                <MapPinIcon className="h-3 w-3 mr-1" />
+                {getCountryLabel(location)}
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="ml-1 h-4 w-4 rounded-full"
+                  onClick={() => {
+                    setLocation("");
+                    onLocationChange("");
+                  }}
+                >
+                  <X className="h-2 w-2" />
+                </Button>
+              </Badge>
+            )}
 
             <Button
               variant="ghost"

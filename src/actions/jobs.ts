@@ -41,7 +41,7 @@ export async function getJobs({
 
     // Filter by location
     if (location) {
-      query.location = { $regex: location, $options: "i" };
+      query.location = location;
     }
 
     // Calculate pagination

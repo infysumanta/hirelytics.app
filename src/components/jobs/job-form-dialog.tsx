@@ -10,6 +10,7 @@ import {
   Loader2,
   Check,
   ChevronsUpDown,
+  MapPin,
   X as XIcon,
 } from "lucide-react";
 import { format } from "date-fns";
@@ -54,6 +55,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
 import { Switch } from "@/components/ui/switch";
 import { technicalSkills, skillsByCategory } from "@/data/technical-skills";
+import { countries, getCountryLabel } from "@/data/countries";
 
 // Define form schema
 const formSchema = z.object({
@@ -403,11 +405,77 @@ export function JobFormDialog({
                   control={form.control}
                   name="location"
                   render={({ field }) => (
-                    <FormItem>
+                    <FormItem className="flex flex-col">
                       <FormLabel>Location</FormLabel>
-                      <FormControl>
-                        <Input placeholder="e.g. New York, NY" {...field} />
-                      </FormControl>
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <FormControl>
+                            <Button
+                              variant="outline"
+                              role="combobox"
+                              className={cn(
+                                "w-full justify-between",
+                                !field.value && "text-muted-foreground",
+                              )}
+                            >
+                              <div className="flex items-center gap-2">
+                                <MapPin className="h-4 w-4" />
+                                {field.value
+                                  ? getCountryLabel(field.value)
+                                  : "Select location"}
+                              </div>
+                              <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                            </Button>
+                          </FormControl>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-[300px] p-0" align="start">
+                          <Command>
+                            <CommandInput placeholder="Search location..." />
+                            <CommandList>
+                              <CommandEmpty>No location found.</CommandEmpty>
+                              <CommandGroup heading="Options">
+                                <CommandItem
+                                  value="remote"
+                                  onSelect={() => field.onChange("remote")}
+                                >
+                                  <Check
+                                    className={cn(
+                                      "mr-2 h-4 w-4",
+                                      field.value === "remote"
+                                        ? "opacity-100"
+                                        : "opacity-0",
+                                    )}
+                                  />
+                                  Remote
+                                </CommandItem>
+                              </CommandGroup>
+                              <CommandGroup heading="Countries">
+                                <ScrollArea className="h-72">
+                                  {countries.slice(1).map((country) => (
+                                    <CommandItem
+                                      value={country.value}
+                                      key={country.value}
+                                      onSelect={() =>
+                                        field.onChange(country.value)
+                                      }
+                                    >
+                                      <Check
+                                        className={cn(
+                                          "mr-2 h-4 w-4",
+                                          field.value === country.value
+                                            ? "opacity-100"
+                                            : "opacity-0",
+                                        )}
+                                      />
+                                      {country.label}
+                                    </CommandItem>
+                                  ))}
+                                </ScrollArea>
+                              </CommandGroup>
+                            </CommandList>
+                          </Command>
+                        </PopoverContent>
+                      </Popover>
                       <FormMessage />
                     </FormItem>
                   )}

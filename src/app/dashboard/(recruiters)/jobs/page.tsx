@@ -11,6 +11,7 @@ import { format } from "date-fns";
 import { Plus, Eye, Edit, Trash2, Link } from "lucide-react";
 import { toast } from "sonner";
 import { JobFormDialog } from "@/components/jobs/job-form-dialog";
+import { getCountryLabel } from "@/data/countries";
 
 // Define job type
 interface Job {
@@ -88,6 +89,10 @@ export default function JobsPage() {
     {
       accessorKey: "location",
       header: "Location",
+      cell: ({ row }) => {
+        const location = row.getValue("location") as string;
+        return getCountryLabel(location);
+      },
     },
     {
       accessorKey: "expiryDate",

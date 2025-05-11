@@ -13,6 +13,7 @@ import { ClientShareButton } from "@/components/jobs/client-share-button";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getSkillLabel } from "@/data/technical-skills";
+import { getCountryLabel } from "@/data/countries";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import rehypeRaw from "rehype-raw";
@@ -169,7 +170,7 @@ export default async function JobDetailsPage({ params }: Props) {
               <CardContent className="pt-6">
                 <div className="flex items-center mb-4">
                   <MapPinIcon className="h-4 w-4 mr-2 text-muted-foreground" />
-                  <span>{job.location}</span>
+                  <span>{getCountryLabel(job.location)}</span>
                 </div>
 
                 {job.salary && (

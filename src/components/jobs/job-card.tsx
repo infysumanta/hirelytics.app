@@ -11,6 +11,7 @@ import {
 import { CalendarIcon, MapPinIcon, BriefcaseIcon, EyeIcon } from "lucide-react";
 import Link from "next/link";
 import { getSkillLabel } from "@/data/technical-skills";
+import { getCountryLabel } from "@/data/countries";
 import ReactMarkdown from "react-markdown";
 import { JobShareButtons } from "./job-share-buttons";
 
@@ -51,7 +52,7 @@ export function JobCard({ job }: JobCardProps) {
       <CardContent className="pb-2">
         <div className="flex items-center text-sm text-muted-foreground mb-3">
           <MapPinIcon className="h-4 w-4 mr-1" />
-          <span>{job.location}</span>
+          <span>{getCountryLabel(job.location)}</span>
           {job.salary && (
             <>
               <span className="mx-1">•</span>

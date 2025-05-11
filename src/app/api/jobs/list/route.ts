@@ -2,6 +2,12 @@ import { NextRequest, NextResponse } from "next/server";
 import { connectToDatabase } from "@/lib/mongodb";
 import Job from "@/models/job";
 import User from "@/models/user";
+interface JobQuery {
+  isActive: boolean;
+  $or?: Array<{ [key: string]: { $regex: string; $options: string } }>;
+  skills?: { $in: string[] };
+  location?: string;
+}
 
 export async function GET(req: NextRequest) {
   try {
@@ -18,8 +24,7 @@ export async function GET(req: NextRequest) {
       : [];
     const location = searchParams.get("location") || "";
 
-    // Build query
-    const query: any = { isActive: true };
+    const query: JobQuery = { isActive: true };
 
     // Add search functionality
     if (search) {
@@ -37,7 +42,7 @@ export async function GET(req: NextRequest) {
 
     // Filter by location
     if (location) {
-      query.location = { $regex: location, $options: "i" };
+      query.location = location;
     }
 
     // Calculate pagination
@@ -91,10 +96,12 @@ export async function GET(req: NextRequest) {
       hasMore,
       nextPage: hasMore ? page + 1 : null,
     });
-  } catch (error: any) {
+  } catch (error: Error | unknown) {
+    const errorMessage =
+      error instanceof Error ? error.message : "An unknown error occurred";
     console.error("Error fetching jobs:", error);
     return NextResponse.json(
-      { error: "Failed to fetch jobs: " + error.message },
+      { error: "Failed to fetch jobs: " + errorMessage },
       { status: 500 },
     );
   }
