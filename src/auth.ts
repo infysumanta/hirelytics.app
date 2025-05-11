@@ -29,6 +29,7 @@ export const {
       if (user) {
         token.role = user.role as UserRole;
         token.id = user.id;
+        token.isActive = user.isActive;
       }
       return token;
     },
@@ -36,12 +37,14 @@ export const {
       if (token && session.user) {
         session.user.role = token.role as UserRole;
         session.user.id = token.id as string;
+        session.user.isActive = token.isActive as boolean;
       }
       return session;
     },
     async authorized({ auth, request }) {
       const user = auth?.user;
       const isLoggedIn = !!user;
+      const isActive = user?.isActive !== false; // Consider undefined as active for backward compatibility
 
       const { pathname } = request.nextUrl;
 
@@ -70,13 +73,20 @@ export const {
         return Response.redirect(new URL("/login", request.nextUrl));
       }
 
-      // Dashboard is accessible to all authenticated users
-      if (pathname === "/dashboard") {
-        return true;
+      // If user is logged in but account is disabled, redirect to login with error
+      if (isLoggedIn && !isActive) {
+        return Response.redirect(
+          new URL("/login?error=Account+is+disabled", request.nextUrl),
+        );
       }
 
-      // For any other protected route, require authentication
-      return isLoggedIn;
+      // Dashboard is accessible to all authenticated and active users
+      if (pathname === "/dashboard") {
+        return isActive;
+      }
+
+      // For any other protected route, require authentication and active account
+      return isLoggedIn && isActive;
     },
   },
   providers: [

@@ -4,10 +4,12 @@ import bcrypt from "bcryptjs";
 export type UserRole = "admin" | "recruiter" | "candidate";
 
 export interface IUser extends Document {
+  _id: string;
   name: string;
   email: string;
   password: string;
   role: UserRole;
+  isActive: boolean;
   createdAt: Date;
   updatedAt: Date;
   comparePassword: (password: string) => Promise<boolean>;
@@ -44,6 +46,10 @@ const UserSchema = new Schema<IUser>(
       },
       default: "candidate",
     },
+    isActive: {
+      type: Boolean,
+      default: true,
+    },
   },
   { timestamps: true },
 );
@@ -56,6 +62,7 @@ UserSchema.pre("save", async function (next) {
     const salt = await bcrypt.genSalt(10);
     this.password = await bcrypt.hash(this.password, salt);
     next();
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
     next(error);
   }
@@ -73,8 +80,8 @@ const User: Model<IUser> =
   mongoose.models.User ||
   (typeof window === "undefined" &&
   typeof global !== "undefined" &&
-  !global.EdgeRuntime
+  !("EdgeRuntime" in global)
     ? mongoose.model<IUser>("User", UserSchema)
-    : (null as any));
+    : (null as unknown as Model<IUser>));
 
 export default User;

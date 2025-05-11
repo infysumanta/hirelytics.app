@@ -15,23 +15,16 @@ import { motion, AnimatePresence } from "framer-motion";
 import { setUserLocale } from "@/i18n/service";
 export function LanguageSelector() {
   const locale = useLocale();
-  console.log(locale);
   const t = useTranslations("Common.language");
 
   // Function to handle language change
   const handleLanguageChange = async (newLocale: Locale) => {
     // Call the server action to change the language
-
     await setUserLocale(newLocale);
-
-    // Reload the page to apply the language change
-    window.location.reload();
   };
 
   // Get the current language details
   const currentLanguage = localsLanguages.find((lang) => lang.code === locale);
-
-  console.log({ currentLanguage });
 
   return (
     <DropdownMenu>

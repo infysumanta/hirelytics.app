@@ -207,6 +207,12 @@
 		"browseJobs": "Browse available jobs",
 		"myApplications": "My Applications",
 		"trackApplications": "View and manage your submitted applications.",
-		"loading": "Loading..."
+		"loading": "Loading...",
+		"userManagementDescription": "Manage system users and their roles.",
+		"systemSettingsDescription": "Configure application settings and preferences.",
+		"jobPostingsDescription": "Manage your job listings and applications.",
+		"candidateApplicationsDescription": "Review and manage applications from candidates.",
+		"jobListingsDescription": "Browse available jobs and apply for them.",
+		"myApplicationsDescription": "View and manage your submitted applications."
 	}
 }

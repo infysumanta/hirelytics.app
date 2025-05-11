@@ -1,5 +1,5 @@
-'use client';
-import { useTransition } from 'react';
+"use client";
+import { useTransition } from "react";
 
 import {
   Select,
@@ -7,9 +7,9 @@ import {
   SelectValue,
   SelectContent,
   SelectTrigger,
-} from '@/components/ui/select';
-import { Locale, LocalsLanguage } from '@/i18n/config';
-import { setUserLocale } from '@/i18n/service';
+} from "@/components/ui/select";
+import { Locale, LocalsLanguage } from "@/i18n/config";
+import { setUserLocale } from "@/i18n/service";
 
 type Props = {
   defaultValue: string;
@@ -26,14 +26,14 @@ export default function LocaleSwitcherSelect({
     const locale = value as Locale;
     startTransition(() => {
       setUserLocale(locale);
-      // Reload the page to apply the language change
+      // Reload the page to apply the language change without changing URL
       window.location.reload();
     });
   }
-  
+
   return (
     <div>
-      {localsLanguages?.filter(lang => lang.active)?.length > 1 && (
+      {localsLanguages?.filter((lang) => lang.active)?.length > 1 && (
         <Select
           disabled={isPending}
           value={defaultValue}
@@ -44,8 +44,8 @@ export default function LocaleSwitcherSelect({
           </SelectTrigger>
           <SelectContent>
             {localsLanguages
-              ?.filter(lang => lang.active)
-              ?.map(lang => (
+              ?.filter((lang) => lang.active)
+              ?.map((lang) => (
                 <SelectItem
                   key={lang.code}
                   value={lang.code}
