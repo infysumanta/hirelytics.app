@@ -4,6 +4,7 @@ import Job from "@/models/job";
 import { auth } from "@/auth";
 import { z } from "zod";
 import mongoose from "mongoose";
+import User from "@/models/user";
 
 // Helper function to check if user is a recruiter
 async function isRecruiter() {
@@ -46,13 +47,17 @@ export async function GET(
     // Find job by ID or urlId
     let job;
     if (mongoose.Types.ObjectId.isValid(id)) {
-      job = await Job.findById(id).populate("recruiter", "name email");
+      job = await Job.findById(id);
+      // .populate("recruiter", "name email");
     } else {
-      job = await Job.findOne({ urlId: id }).populate(
-        "recruiter",
-        "name email",
-      );
+      job = await Job.findOne({ urlId: id });
+      // .populate(
+      //   "recruiter",
+      //   "name email",
+      // );
     }
+
+    const recruiter = await User.findOne({ _id: job?.recruiter });
 
     if (!job) {
       return NextResponse.json({ error: "Job not found" }, { status: 404 });
@@ -76,9 +81,9 @@ export async function GET(
         createdAt: job.createdAt,
         updatedAt: job.updatedAt,
         recruiter: {
-          id: (job.recruiter as any)._id.toString(),
-          name: (job.recruiter as any).name,
-          email: (job.recruiter as any).email,
+          id: recruiter?._id.toString(),
+          name: recruiter?.name,
+          email: recruiter?.email,
         },
       },
     });
@@ -142,6 +147,7 @@ export async function PATCH(
     }
 
     // Prepare update data
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const updateData: any = { ...validatedData };
     if (validatedData.expiryDate) {
       updateData.expiryDate = new Date(validatedData.expiryDate);
@@ -157,13 +163,13 @@ export async function PATCH(
     // Return updated job data
     return NextResponse.json({
       job: {
-        id: updatedJob._id.toString(),
-        title: updatedJob.title,
-        companyName: updatedJob.companyName,
-        skills: updatedJob.skills,
-        expiryDate: updatedJob.expiryDate,
-        urlId: updatedJob.urlId,
-        isActive: updatedJob.isActive,
+        id: updatedJob?._id.toString(),
+        title: updatedJob?.title,
+        companyName: updatedJob?.companyName,
+        skills: updatedJob?.skills,
+        expiryDate: updatedJob?.expiryDate,
+        urlId: updatedJob?.urlId,
+        isActive: updatedJob?.isActive,
       },
       message: "Job updated successfully",
     });
