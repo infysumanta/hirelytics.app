@@ -1,3 +1,5 @@
+"use client";
+
 import { IJob } from "@/models/job";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -14,6 +16,8 @@ import { getSkillLabel } from "@/data/technical-skills";
 import { getCountryLabel } from "@/data/countries";
 import ReactMarkdown from "react-markdown";
 import { JobShareButtons } from "./job-share-buttons";
+import { JobApplyButton } from "./job-apply-button";
+import { usePathname } from "next/navigation";
 
 interface JobWithId extends Omit<IJob, "_id"> {
   id: string;
@@ -30,6 +34,13 @@ export function JobCard({ job }: JobCardProps) {
     month: "short",
     day: "numeric",
   });
+
+  // Check if job is expired
+  const isExpired = new Date(job.expiryDate) < new Date();
+
+  // Check if we're in the dashboard context
+  const pathname = usePathname();
+  const isDashboard = pathname?.startsWith("/dashboard");
 
   return (
     <Card className="h-full transition-all duration-300 hover:shadow-md hover:border-primary/30 bg-background/70 backdrop-blur-sm border border-primary/10">
@@ -86,12 +97,29 @@ export function JobCard({ job }: JobCardProps) {
           <CalendarIcon className="h-3.5 w-3.5 mr-1" />
           <span>Expires: {formattedDate}</span>
         </div>
-        <div>
-          <Link href={`/jobs/${job.urlId}`}>
-            <Button variant="default" size="sm" className="h-8">
-              <EyeIcon className="h-3.5 w-3.5 mr-1" /> View Job
-            </Button>
-          </Link>
+        <div className="flex gap-2">
+          {isDashboard ? (
+            <>
+              <Link href={`/dashboard/jobs/${job.urlId}`}>
+                <Button variant="outline" size="sm" className="h-8">
+                  <EyeIcon className="h-3.5 w-3.5 mr-1" /> Details
+                </Button>
+              </Link>
+              <JobApplyButton
+                jobId={job.urlId}
+                job={job as IJob}
+                disabled={isExpired || !job.isActive}
+                isExpired={isExpired}
+                variant="small"
+              />
+            </>
+          ) : (
+            <Link href={`/jobs/${job.urlId}`}>
+              <Button variant="default" size="sm" className="h-8">
+                <EyeIcon className="h-3.5 w-3.5 mr-1" /> View Job
+              </Button>
+            </Link>
+          )}
         </div>
       </CardFooter>
     </Card>

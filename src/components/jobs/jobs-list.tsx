@@ -114,16 +114,6 @@ export function JobsList() {
 
   return (
     <div className="container px-4 py-8 mx-auto">
-      <div className="mb-6">
-        <h1 className="text-3xl font-bold tracking-tight mb-2">
-          Find your next opportunity
-        </h1>
-        <p className="text-muted-foreground">
-          Browse through available job positions and find the perfect match for
-          your skills.
-        </p>
-      </div>
-
       <div className="backdrop-blur-sm rounded-lg p-4 mb-6 h-full transition-all duration-300 hover:shadow-md hover:border-primary/30 bg-background/70 border border-primary/10">
         <JobFilter
           onSearchChange={handleSearchChange}

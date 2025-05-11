@@ -9,7 +9,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
-import { User2Icon, UserIcon } from "lucide-react";
+import { User2Icon, UserIcon, BriefcaseIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 
@@ -43,9 +43,9 @@ export function NavMain() {
       icon: IconDashboard,
     },
     {
-      title: "Jobs",
-      url: "/dashboard/jobs",
-      icon: UserIcon,
+      title: "Job Listing",
+      url: "/dashboard/job-listing",
+      icon: BriefcaseIcon,
     },
   ];
 
@@ -54,6 +54,11 @@ export function NavMain() {
       title: "Dashboard",
       url: "/dashboard",
       icon: IconDashboard,
+    },
+    {
+      title: "Jobs",
+      url: "/dashboard/jobs",
+      icon: BriefcaseIcon,
     },
   ];
 
