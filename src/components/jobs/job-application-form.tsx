@@ -45,7 +45,7 @@ interface JobApplicationFormProps {
   jobId: string;
   job: IJob;
   inModal?: boolean;
-  onSubmitSuccess?: () => void;
+  onSubmitSuccess?: (applicationId: string) => void;
   onClose?: () => void;
 }
 
@@ -178,12 +178,15 @@ export function JobApplicationForm({
         description: "Your application has been sent to the employer.",
       });
 
+      // Get the application ID from the response
+      const applicationId = result.application._id;
+
       // Either call the success callback or redirect
       if (onSubmitSuccess) {
-        onSubmitSuccess();
+        onSubmitSuccess(applicationId);
       } else {
-        // Redirect to dashboard success page
-        router.push(`/dashboard/jobs/${jobId}/application-success`);
+        // Redirect to dashboard application success page using application ID
+        router.push(`/dashboard/applications/${applicationId}`);
       }
     } catch (error) {
       console.error("Application submission error:", error);

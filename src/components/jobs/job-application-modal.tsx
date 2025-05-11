@@ -24,10 +24,11 @@ export function JobApplicationModal({
 }: JobApplicationModalProps) {
   const router = useRouter();
 
-  const handleApplicationSuccess = () => {
+  // This function will now receive the application ID from the form
+  const handleApplicationSuccess = (applicationId: string) => {
     onClose();
-    // Navigate to dashboard job-specific success page
-    router.push(`/dashboard/jobs/${job.urlId}/application-success`);
+    // Navigate to dashboard application-specific success page
+    router.push(`/dashboard/applications/${applicationId}`);
   };
 
   return (
