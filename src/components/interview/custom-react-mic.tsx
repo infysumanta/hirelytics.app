@@ -1,7 +1,38 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { ReactMic as BaseReactMic } from "react-mic";
+import dynamic from "next/dynamic";
+
+// Define ReactMic component props type
+type ReactMicProps = {
+  record: boolean;
+  className?: string;
+  onStop: (recordedBlob: {
+    blob: Blob;
+    blobURL: string;
+    startTime: number;
+    stopTime: number;
+  }) => void;
+  onData: (recordedData: unknown) => void;
+  onError: (err: Error) => void;
+  strokeColor?: string;
+  backgroundColor?: string;
+  mimeType?: string;
+  visualSetting?: string;
+};
+
+// Use dynamic import with ssr: false to avoid window is not defined error
+const DynamicReactMic = dynamic<ReactMicProps>(
+  () =>
+    import("react-mic").then((mod) => {
+      const { ReactMic } = mod;
+      return ReactMic;
+    }),
+  {
+    ssr: false,
+    loading: () => <div className="h-24 bg-muted rounded-md" />,
+  },
+);
 
 interface CustomReactMicProps {
   record: boolean;
@@ -13,7 +44,7 @@ interface CustomReactMicProps {
     startTime: number;
     stopTime: number;
   }) => void;
-  onData: (recordedData: any) => void;
+  onData: (recordedData: unknown) => void;
   onError: (err: Error) => void;
   strokeColor?: string;
   backgroundColor?: string;
@@ -71,7 +102,7 @@ export function CustomReactMic({
   }, [deviceId, initializeAudioStream, audioStream]);
 
   return (
-    <BaseReactMic
+    <DynamicReactMic
       key={key}
       record={record}
       className={className}

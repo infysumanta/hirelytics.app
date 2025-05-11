@@ -1,10 +1,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { Check, RefreshCw, Settings } from "lucide-react";
+import { Check, RefreshCw } from "lucide-react";
 import {
   Select,
   SelectContent,
@@ -99,88 +98,81 @@ export function MediaDeviceSelector({
   };
 
   return (
-    <Card className="w-full">
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <Settings className="h-5 w-5" /> Media Device Settings
-        </CardTitle>
-      </CardHeader>
-      <CardContent className="space-y-4">
-        {error && <div className="text-red-500 text-sm mb-2">{error}</div>}
+    <div className="w-full space-y-4">
+      {error && <div className="text-red-500 text-sm mb-2">{error}</div>}
 
-        <div className="space-y-2">
-          <Label htmlFor="camera-select">Camera</Label>
-          <Select
-            disabled={isLoading || videoDevices.length === 0}
-            value={selectedVideoDevice}
-            onValueChange={setSelectedVideoDevice}
-          >
-            <SelectTrigger className="w-full">
-              <SelectValue
-                placeholder={isLoading ? "Loading cameras..." : "Select camera"}
-              />
-            </SelectTrigger>
-            <SelectContent>
-              {videoDevices.map((device) => (
-                <SelectItem key={device.deviceId} value={device.deviceId}>
-                  {device.label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
+      <div className="space-y-2">
+        <Label htmlFor="camera-select">Camera</Label>
+        <Select
+          disabled={isLoading || videoDevices.length === 0}
+          value={selectedVideoDevice}
+          onValueChange={setSelectedVideoDevice}
+        >
+          <SelectTrigger className="w-full">
+            <SelectValue
+              placeholder={isLoading ? "Loading cameras..." : "Select camera"}
+            />
+          </SelectTrigger>
+          <SelectContent>
+            {videoDevices.map((device) => (
+              <SelectItem key={device.deviceId} value={device.deviceId}>
+                {device.label}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
 
-        <div className="space-y-2">
-          <Label htmlFor="microphone-select">Microphone</Label>
-          <Select
-            disabled={isLoading || audioDevices.length === 0}
-            value={selectedAudioDevice}
-            onValueChange={setSelectedAudioDevice}
-          >
-            <SelectTrigger className="w-full">
-              <SelectValue
-                placeholder={
-                  isLoading ? "Loading microphones..." : "Select microphone"
-                }
-              />
-            </SelectTrigger>
-            <SelectContent>
-              {audioDevices.map((device) => (
-                <SelectItem key={device.deviceId} value={device.deviceId}>
-                  {device.label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
+      <div className="space-y-2">
+        <Label htmlFor="microphone-select">Microphone</Label>
+        <Select
+          disabled={isLoading || audioDevices.length === 0}
+          value={selectedAudioDevice}
+          onValueChange={setSelectedAudioDevice}
+        >
+          <SelectTrigger className="w-full">
+            <SelectValue
+              placeholder={
+                isLoading ? "Loading microphones..." : "Select microphone"
+              }
+            />
+          </SelectTrigger>
+          <SelectContent>
+            {audioDevices.map((device) => (
+              <SelectItem key={device.deviceId} value={device.deviceId}>
+                {device.label}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
 
-        <div className="flex gap-3 justify-end pt-2">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={enumerateDevices}
-            disabled={isLoading}
-          >
-            <div className="flex items-center">
-              {isLoading ? (
-                <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
-              ) : (
-                <RefreshCw className="h-4 w-4 mr-2" />
-              )}
-              {isLoading ? "Refreshing..." : "Refresh devices"}
-            </div>
-          </Button>
-          <Button
-            size="sm"
-            onClick={handleSaveDeviceSelection}
-            disabled={!selectedVideoDevice || !selectedAudioDevice || isLoading}
-          >
-            <div className="flex items-center">
-              <Check className="h-4 w-4 mr-2" /> Apply settings
-            </div>
-          </Button>
-        </div>
-      </CardContent>
-    </Card>
+      <div className="flex gap-3 justify-end pt-2">
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={enumerateDevices}
+          disabled={isLoading}
+        >
+          <div className="flex items-center">
+            {isLoading ? (
+              <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
+            ) : (
+              <RefreshCw className="h-4 w-4 mr-2" />
+            )}
+            {isLoading ? "Refreshing..." : "Refresh devices"}
+          </div>
+        </Button>
+        <Button
+          size="sm"
+          onClick={handleSaveDeviceSelection}
+          disabled={!selectedVideoDevice || !selectedAudioDevice || isLoading}
+        >
+          <div className="flex items-center">
+            <Check className="h-4 w-4 mr-2" /> Apply settings
+          </div>
+        </Button>
+      </div>
+    </div>
   );
 }

@@ -6,7 +6,12 @@ import { Video, Mic, Check, RefreshCw, Settings } from "lucide-react";
 import Webcam from "react-webcam";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { MediaDeviceSelector } from "./media-device-selector";
-import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import { CustomReactMic } from "./custom-react-mic";
 
 interface DeviceCheckProps {
@@ -276,7 +281,11 @@ export function DeviceCheck({
             <Settings className="h-5 w-5" /> Configure Devices
           </Button>
         </DialogTrigger>
+
         <DialogContent className="sm:max-w-[500px]">
+          <DialogTitle className="flex gap-2">
+            <Settings className="h-5 w-5" /> Media Device Settings
+          </DialogTitle>
           <MediaDeviceSelector
             initialAudioDeviceId={selectedAudioDeviceId || undefined}
             initialVideoDeviceId={selectedVideoDeviceId || undefined}
