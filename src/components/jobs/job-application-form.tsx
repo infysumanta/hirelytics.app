@@ -7,6 +7,7 @@ import { useForm } from "react-hook-form";
 import * as z from "zod";
 import { toast } from "sonner";
 import { useDropzone } from "react-dropzone";
+import { useSession } from "next-auth/react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -29,9 +30,12 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { localsLanguages } from "@/i18n/config";
+import { processFileForStorage } from "@/lib/file-utils";
 
 const formSchema = z.object({
   resumeUrl: z.string().optional(),
+  resumeBase64: z.string().optional(),
+  fileName: z.string().optional(),
   preferredLanguage: z.string().min(1, {
     message: "Please select your preferred language.",
   }),
@@ -46,6 +50,7 @@ interface JobApplicationFormProps {
 }
 
 export function JobApplicationForm({
+  jobId,
   job,
   inModal = false,
   onSubmitSuccess,
@@ -73,12 +78,14 @@ export function JobApplicationForm({
       setIsUploading(true);
       setFileName(file.name);
 
-      // Simulate file upload - in a real app, you would upload to your storage service
       try {
-        // Mock upload delay
-        await new Promise((resolve) => setTimeout(resolve, 1500)); // Mock successful upload
-        const mockUrl = `https://storage.example.com/resumes/${file.name}`;
-        form.setValue("resumeUrl", mockUrl);
+        // Process file for storage (upload to S3 and convert to base64)
+        const { url, base64, fileName } = await processFileForStorage(file);
+
+        // Set form values
+        form.setValue("resumeUrl", url);
+        form.setValue("resumeBase64", base64);
+        form.setValue("fileName", fileName);
 
         toast.success("Resume uploaded successfully", {
           description: "Your resume has been attached to your application",
@@ -100,6 +107,8 @@ export function JobApplicationForm({
   const removeFile = useCallback(() => {
     setFileName(null);
     form.setValue("resumeUrl", "");
+    form.setValue("resumeBase64", "");
+    form.setValue("fileName", "");
   }, [form]);
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
@@ -111,15 +120,60 @@ export function JobApplicationForm({
     disabled: isUploading,
   });
 
+  const { data: session } = useSession();
+
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsSubmitting(true);
 
-    try {
-      // This would be an actual API call in a real application
-      console.log("Submitting application:", values);
-      await new Promise((resolve) => setTimeout(resolve, 2000));
+    // Check if user is logged in
+    if (!session || !session.user) {
+      toast.error("Authentication required", {
+        description: "Please log in before applying for this job.",
+      });
+      setIsSubmitting(false);
+      return;
+    }
 
-      // Simulate successful submission
+    // Ensure file was uploaded
+    if (!values.resumeUrl || !values.resumeBase64) {
+      toast.error("Missing resume", {
+        description: "Please upload your resume before submitting.",
+      });
+      setIsSubmitting(false);
+      return;
+    }
+
+    try {
+      // Log job and jobId for debugging
+      console.log("Job object:", job);
+      console.log("JobId prop:", jobId);
+
+      // Prepare application data - Use the URL ID which is what's used in the database as jobId
+      const applicationData = {
+        jobId: jobId,
+        userId: session?.user?.id || "",
+        // Candidatename and email are now optional in the model
+        resumeUrl: values.resumeUrl,
+        resumeBase64: values.resumeBase64,
+        fileName: values.fileName,
+        preferredLanguage: values.preferredLanguage,
+      };
+
+      // Submit to API
+      const response = await fetch("/api/applications", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(applicationData),
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.message || "Failed to submit application");
+      }
+
       toast.success("Application submitted successfully!", {
         description: "Your application has been sent to the employer.",
       });
