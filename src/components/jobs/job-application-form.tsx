@@ -182,8 +182,8 @@ export function JobApplicationForm({
       if (onSubmitSuccess) {
         onSubmitSuccess();
       } else {
-        // Redirect to success page after submission
-        router.push("/dashboard/jobs/application-success");
+        // Redirect to dashboard success page
+        router.push(`/dashboard/jobs/${jobId}/application-success`);
       }
     } catch (error) {
       console.error("Application submission error:", error);

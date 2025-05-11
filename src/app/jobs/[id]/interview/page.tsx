@@ -1,0 +1,120 @@
+import { Metadata } from "next";
+import { getJobById } from "@/actions/jobs";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { ArrowLeftIcon, Video, Mic } from "lucide-react";
+import Link from "next/link";
+import { notFound } from "next/navigation";
+import { AnimatedBackground } from "@/components/ui/animated-background";
+
+type Props = {
+  params: { id: string };
+};
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const id = params.id;
+
+  try {
+    const job = await getJobById(id);
+    return {
+      title: `Interview for ${job.title} | Hirelytics`,
+      description: `Virtual interview for the ${job.title} position at ${job.companyName}`,
+    };
+  } catch {
+    return {
+      title: "Interview | Hirelytics",
+      description: "Virtual interview for your job application",
+    };
+  }
+}
+
+export default async function InterviewPage({ params }: Props) {
+  const id = params.id;
+
+  let job;
+  try {
+    job = await getJobById(id);
+  } catch {
+    notFound();
+  }
+
+  return (
+    <AnimatedBackground
+      patternColor="primary"
+      colorScheme="blue"
+      className="min-h-screen"
+    >
+      <div className="container px-4 py-8 mx-auto">
+        <Link
+          href={`/jobs/${id}/application-success`}
+          className="inline-flex items-center text-sm mb-6 hover:underline"
+        >
+          <ArrowLeftIcon className="h-4 w-4 mr-1" /> Back to application
+        </Link>
+
+        <div className="max-w-3xl mx-auto">
+          <Card className="mb-6 bg-background/70 backdrop-blur-sm">
+            <CardHeader>
+              <h1 className="text-3xl font-bold">{job.title} - AI Interview</h1>
+              <p className="text-muted-foreground">
+                Virtual interview for {job.companyName}
+              </p>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-6">
+                <div className="bg-muted/50 p-6 rounded-lg text-center">
+                  <h2 className="text-2xl font-bold mb-4">
+                    Ready to begin your interview?
+                  </h2>
+                  <p className="text-muted-foreground mb-6">
+                    Our AI-powered system will guide you through a series of
+                    questions to assess your skills and experience for this
+                    position. Please ensure your camera and microphone are
+                    working properly.
+                  </p>
+
+                  <div className="flex flex-wrap gap-4 justify-center">
+                    <Button size="lg" className="gap-2">
+                      <Video className="h-5 w-5" /> Check Camera
+                    </Button>
+                    <Button size="lg" className="gap-2">
+                      <Mic className="h-5 w-5" /> Check Microphone
+                    </Button>
+                    <Button size="lg" variant="default" className="w-full mt-4">
+                      Start Interview
+                    </Button>
+                  </div>
+                </div>
+
+                <div className="bg-muted/30 p-6 rounded-lg">
+                  <h3 className="font-medium mb-2">Interview Tips</h3>
+                  <ul className="list-disc list-inside space-y-2 text-muted-foreground">
+                    <li>
+                      Find a quiet place with good lighting and minimal
+                      background noise
+                    </li>
+                    <li>
+                      Dress professionally as you would for an in-person
+                      interview
+                    </li>
+                    <li>
+                      Speak clearly and take your time to answer thoughtfully
+                    </li>
+                    <li>
+                      Have your resume and relevant documents nearby for
+                      reference
+                    </li>
+                    <li>
+                      The interview will take approximately 15-20 minutes to
+                      complete
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    </AnimatedBackground>
+  );
+}
