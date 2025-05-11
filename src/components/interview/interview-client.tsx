@@ -47,6 +47,9 @@ export function InterviewClient({ applicationId }: InterviewClientProps) {
   }, []);
 
   const handleStartInterview = () => {
+    // Save application ID in localStorage for resuming later if needed
+    localStorage.setItem("currentInterviewId", applicationId);
+
     // Navigate to the actual interview session
     router.push(`/dashboard/applications/${applicationId}/interview/session`);
   };

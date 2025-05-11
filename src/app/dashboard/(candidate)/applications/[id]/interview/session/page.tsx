@@ -4,6 +4,7 @@ import { connectToDatabase } from "@/lib/mongodb";
 import { getJobById } from "@/actions/jobs";
 import { notFound } from "next/navigation";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { InterviewSession } from "@/components/interview/interview-session";
 
 type Props = {
   params: { id: string };
@@ -55,32 +56,23 @@ export default async function InterviewSessionPage({ params }: Props) {
     }
 
     return (
-      <div className="container px-4 py-8 mx-auto">
-        <div className="max-w-3xl mx-auto">
-          <Card className="mb-6">
-            <CardHeader>
-              <h1 className="text-3xl font-bold">
+      <div className="container px-4 py-4 mx-auto">
+        <div className="mx-auto">
+          <Card className="mb-2">
+            <CardHeader className="py-3">
+              <h1 className="text-xl font-bold">
                 {job.title} - Live Interview
               </h1>
-              <p className="text-muted-foreground">
+              <p className="text-sm text-muted-foreground">
                 AI Interview session for {job.companyName}
               </p>
             </CardHeader>
-            <CardContent>
-              <div className="text-center p-8">
-                <h2 className="text-2xl font-semibold mb-4">
-                  Interview in Progress
-                </h2>
-                <p className="mb-6">
-                  The AI interviewer will guide you through a series of
-                  questions. Answer naturally as you would in a real interview.
-                </p>
-                <p className="text-muted-foreground">
-                  This is a placeholder for the actual interview interface that
-                  would include video streaming, question display, and answer
-                  recording functionality.
-                </p>
-              </div>
+            <CardContent className="p-4">
+              <InterviewSession
+                applicationId={applicationId}
+                jobTitle={job.title}
+                companyName={job.companyName}
+              />
             </CardContent>
           </Card>
         </div>
