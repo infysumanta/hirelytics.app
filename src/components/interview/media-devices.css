@@ -1,0 +1,52 @@
+/* Device selector styles for react-select */
+.react-select-container .react-select__control {
+  background-color: var(--background);
+  border-color: var(--border);
+  border-radius: var(--radius);
+  border-width: 1px;
+  box-shadow: none;
+  min-height: 38px;
+}
+
+.react-select-container .react-select__control:hover {
+  border-color: var(--ring);
+}
+
+.react-select-container .react-select__control--is-focused {
+  border-color: var(--ring);
+  box-shadow: 0 0 0 1px var(--ring);
+}
+
+.react-select-container .react-select__menu {
+  background-color: var(--background);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--foreground);
+}
+
+.react-select-container .react-select__option {
+  background-color: var(--background);
+  color: var(--foreground);
+  cursor: pointer;
+}
+
+.react-select-container .react-select__option--is-focused {
+  background-color: var(--accent);
+}
+
+.react-select-container .react-select__option--is-selected {
+  background-color: var(--primary);
+  color: var(--primary-foreground);
+}
+
+.react-select-container .react-select__value-container {
+  padding: 8px 12px;
+}
+
+.react-select-container .react-select__indicator-separator {
+  background-color: var(--border);
+}
+
+.react-select-container .react-select__indicator {
+  color: var(--muted-foreground);
+}

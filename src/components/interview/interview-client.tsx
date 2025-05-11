@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { DeviceCheck } from "./device-check";
 import { useRouter } from "next/navigation";
@@ -14,12 +14,37 @@ interface InterviewClientProps {
 export function InterviewClient({ applicationId }: InterviewClientProps) {
   const [cameraChecked, setCameraChecked] = useState(false);
   const [micChecked, setMicChecked] = useState(false);
+  const [selectedVideoDevice, setSelectedVideoDevice] = useState<string | null>(
+    null,
+  );
+  const [selectedAudioDevice, setSelectedAudioDevice] = useState<string | null>(
+    null,
+  );
   const router = useRouter();
 
   const handleDeviceCheckComplete = (camera: boolean, microphone: boolean) => {
     setCameraChecked(camera);
     setMicChecked(microphone);
   };
+
+  // Save device preferences to localStorage when they change
+  useEffect(() => {
+    if (selectedVideoDevice) {
+      localStorage.setItem("preferredVideoDevice", selectedVideoDevice);
+    }
+    if (selectedAudioDevice) {
+      localStorage.setItem("preferredAudioDevice", selectedAudioDevice);
+    }
+  }, [selectedVideoDevice, selectedAudioDevice]);
+
+  // Load device preferences from localStorage on component mount
+  useEffect(() => {
+    const savedVideoDevice = localStorage.getItem("preferredVideoDevice");
+    const savedAudioDevice = localStorage.getItem("preferredAudioDevice");
+
+    if (savedVideoDevice) setSelectedVideoDevice(savedVideoDevice);
+    if (savedAudioDevice) setSelectedAudioDevice(savedAudioDevice);
+  }, []);
 
   const handleStartInterview = () => {
     // Navigate to the actual interview session
@@ -41,7 +66,18 @@ export function InterviewClient({ applicationId }: InterviewClientProps) {
         </p>
 
         <div className="flex flex-wrap gap-4 justify-center">
-          <DeviceCheck onComplete={handleDeviceCheckComplete} />
+          <DeviceCheck
+            onComplete={handleDeviceCheckComplete}
+            initialVideoDeviceId={selectedVideoDevice}
+            initialAudioDeviceId={selectedAudioDevice}
+            onDeviceChange={(
+              videoId: string | null,
+              audioId: string | null,
+            ) => {
+              setSelectedVideoDevice(videoId);
+              setSelectedAudioDevice(audioId);
+            }}
+          />
 
           <Button
             size="lg"

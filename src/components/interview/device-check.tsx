@@ -2,21 +2,41 @@
 
 import { useState, useRef, useCallback, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { Video, Mic, Check, RefreshCw } from "lucide-react";
+import { Video, Mic, Check, RefreshCw, Settings } from "lucide-react";
 import Webcam from "react-webcam";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { ReactMic } from "react-mic";
+import { MediaDeviceSelector } from "./media-device-selector";
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+import { CustomReactMic } from "./custom-react-mic";
 
 interface DeviceCheckProps {
   onComplete: (cameraChecked: boolean, microphoneChecked: boolean) => void;
+  initialVideoDeviceId?: string | null;
+  initialAudioDeviceId?: string | null;
+  onDeviceChange?: (
+    videoDeviceId: string | null,
+    audioDeviceId: string | null,
+  ) => void;
 }
 
-export function DeviceCheck({ onComplete }: DeviceCheckProps) {
+export function DeviceCheck({
+  onComplete,
+  initialVideoDeviceId,
+  initialAudioDeviceId,
+  onDeviceChange,
+}: DeviceCheckProps) {
   const [cameraChecked, setCameraChecked] = useState(false);
   const [microphoneChecked, setMicrophoneChecked] = useState(false);
   const [showCamera, setShowCamera] = useState(false);
   const [cameraError, setCameraError] = useState<string | null>(null);
   const [microphoneError, setMicrophoneError] = useState<string | null>(null);
+  const [selectedVideoDeviceId, setSelectedVideoDeviceId] = useState<
+    string | null
+  >(initialVideoDeviceId || null);
+  const [selectedAudioDeviceId, setSelectedAudioDeviceId] = useState<
+    string | null
+  >(initialAudioDeviceId || null);
+  const [showDeviceSelector, setShowDeviceSelector] = useState(false);
 
   // Audio recording states
   const [isRecording, setIsRecording] = useState(false);
@@ -44,8 +64,14 @@ export function DeviceCheck({ onComplete }: DeviceCheckProps) {
     setCameraError(null);
     setShowCamera(true);
 
+    const videoConstraints: MediaStreamConstraints = {
+      video: selectedVideoDeviceId
+        ? { deviceId: { exact: selectedVideoDeviceId } }
+        : true,
+    };
+
     navigator.mediaDevices
-      .getUserMedia({ video: true })
+      .getUserMedia(videoConstraints)
       .then(() => {
         // The Webcam component will handle the stream
         // Just mark as successful after showing the camera feed
@@ -57,15 +83,21 @@ export function DeviceCheck({ onComplete }: DeviceCheckProps) {
         setCameraError(`Error accessing camera: ${err.message}`);
         setShowCamera(false);
       });
-  }, []);
+  }, [selectedVideoDeviceId]);
 
   const handleMicrophoneCheck = useCallback(() => {
     setMicrophoneError(null);
     setAudioBlob(null);
 
+    const audioConstraints: MediaStreamConstraints = {
+      audio: selectedAudioDeviceId
+        ? { deviceId: { exact: selectedAudioDeviceId } }
+        : true,
+    };
+
     // Request microphone permission first
     navigator.mediaDevices
-      .getUserMedia({ audio: true })
+      .getUserMedia(audioConstraints)
       .then(() => {
         // Start recording with ReactMic once we have permission
         setIsRecording(true);
@@ -80,7 +112,7 @@ export function DeviceCheck({ onComplete }: DeviceCheckProps) {
       .catch((err: Error) => {
         setMicrophoneError(`Error accessing microphone: ${err.message}`);
       });
-  }, []);
+  }, [selectedAudioDeviceId]);
 
   // When camera check is complete, clean up the camera stream
   useEffect(() => {
@@ -131,7 +163,11 @@ export function DeviceCheck({ onComplete }: DeviceCheckProps) {
               audio={false}
               width={400}
               height={300}
-              videoConstraints={{ facingMode: "user" }}
+              videoConstraints={
+                selectedVideoDeviceId
+                  ? { deviceId: selectedVideoDeviceId }
+                  : { facingMode: "user" }
+              }
               className="rounded-md"
             />
           </div>
@@ -177,8 +213,9 @@ export function DeviceCheck({ onComplete }: DeviceCheckProps) {
         <div className="w-full max-w-xs mt-2">
           {/* Show the ReactMic component only during recording, hide once test is complete */}
           <div style={{ display: isRecording ? "block" : "none" }}>
-            <ReactMic
+            <CustomReactMic
               record={isRecording}
+              deviceId={selectedAudioDeviceId}
               className="w-full h-16 rounded-md"
               onStop={(recordedBlob: {
                 blob: Blob;
@@ -231,6 +268,33 @@ export function DeviceCheck({ onComplete }: DeviceCheckProps) {
           )}
         </div>
       </div>
+
+      {/* Device Settings Dialog */}
+      <Dialog open={showDeviceSelector} onOpenChange={setShowDeviceSelector}>
+        <DialogTrigger asChild>
+          <Button variant="outline" className="gap-2 mt-4 w-full">
+            <Settings className="h-5 w-5" /> Configure Devices
+          </Button>
+        </DialogTrigger>
+        <DialogContent className="sm:max-w-[500px]">
+          <MediaDeviceSelector
+            initialAudioDeviceId={selectedAudioDeviceId || undefined}
+            initialVideoDeviceId={selectedVideoDeviceId || undefined}
+            onDevicesSelected={(videoDeviceId, audioDeviceId) => {
+              setSelectedVideoDeviceId(videoDeviceId);
+              setSelectedAudioDeviceId(audioDeviceId);
+              // Notify parent component about device changes
+              if (onDeviceChange) {
+                onDeviceChange(videoDeviceId, audioDeviceId);
+              }
+              setShowDeviceSelector(false);
+              // Reset checks when devices change
+              setCameraChecked(false);
+              setMicrophoneChecked(false);
+            }}
+          />
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
