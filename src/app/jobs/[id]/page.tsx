@@ -20,12 +20,15 @@ import rehypeRaw from "rehype-raw";
 import { AnimatedBackground } from "@/components/ui/animated-background";
 
 type Props = {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 };
 
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
+export async function generateMetadata(props: Props): Promise<Metadata> {
+  const params = await props.params;
+  const id = params.id;
+
   try {
-    const job = await getJobById(params.id);
+    const job = await getJobById(id);
     return {
       title: `${job.title} at ${job.companyName} | Hirelytics`,
       description: job.description?.slice(0, 160),
@@ -39,10 +42,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   }
 }
 
-export default async function JobDetailsPage({ params }: Props) {
+export default async function JobDetailsPage(props: Props) {
+  const params = await props.params;
+  const id = params.id;
+
   let job;
   try {
-    job = await getJobById(params.id);
+    job = await getJobById(id);
   } catch {
     notFound();
   }

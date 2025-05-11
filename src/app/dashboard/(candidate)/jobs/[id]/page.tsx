@@ -18,12 +18,15 @@ import rehypeRaw from "rehype-raw";
 import { JobApplyButton } from "@/components/jobs/job-apply-button";
 
 type Props = {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 };
 
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
+export async function generateMetadata(props: Props): Promise<Metadata> {
+  const params = await props.params;
+  const id = params.id;
+
   try {
-    const job = await getJobById(params.id);
+    const job = await getJobById(id);
     return {
       title: `${job.title} at ${job.companyName} | Candidate Dashboard | Hirelytics`,
       description: job.description?.slice(0, 160),
@@ -37,10 +40,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   }
 }
 
-export default async function CandidateJobDetailsPage({ params }: Props) {
+export default async function CandidateJobDetailsPage(props: Props) {
+  const params = await props.params;
+  const id = params.id;
+
   let job;
   try {
-    job = await getJobById(params.id);
+    job = await getJobById(id);
   } catch {
     notFound();
   }
@@ -188,7 +194,7 @@ export default async function CandidateJobDetailsPage({ params }: Props) {
               <div className="mb-6">
                 <h3 className="font-medium mb-2">Required Skills</h3>
                 <div className="flex flex-wrap gap-2">
-                  {job.skills.map((skill) => (
+                  {job.skills.map((skill: string) => (
                     <Badge key={skill} variant="secondary">
                       {getSkillLabel(skill)}
                     </Badge>
@@ -198,7 +204,7 @@ export default async function CandidateJobDetailsPage({ params }: Props) {
 
               <div className="space-y-3">
                 <JobApplyButton
-                  jobId={params.id}
+                  jobId={id}
                   disabled={isExpired || !job.isActive}
                   isExpired={isExpired}
                   job={job}
