@@ -185,7 +185,7 @@ export function JobApplicationForm({
       }
 
       toast.success("Application submitted successfully!", {
-        description: "Your application has been sent to the employer.",
+        description: "Your resume will now be analyzed.",
       });
 
       // Get the application ID from the response
@@ -195,8 +195,8 @@ export function JobApplicationForm({
       if (onSubmitSuccess) {
         onSubmitSuccess(applicationId);
       } else {
-        // Redirect to dashboard application success page using application ID
-        router.push(`/dashboard/applications/${applicationId}`);
+        // Redirect to the analysis page
+        router.push(`/dashboard/applications/${applicationId}/analysis`);
       }
     } catch (error) {
       console.error("Application submission error:", error);

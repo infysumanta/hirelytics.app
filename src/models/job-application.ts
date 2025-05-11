@@ -1,5 +1,19 @@
 import mongoose, { Document, Schema } from "mongoose";
 
+export interface ParsedResume {
+  extractedText: string;
+  skills: string[];
+  experience: {
+    years: number;
+    companies: string[];
+  };
+  education: {
+    degree: string;
+    institution: string;
+  }[];
+  analyzedAt: Date;
+}
+
 export interface IJobApplication extends Document {
   jobId: string;
   userId: string; // User ID reference
@@ -12,6 +26,7 @@ export interface IJobApplication extends Document {
   s3Bucket?: string; // S3 bucket name for generating signed URLs
   preferredLanguage: string;
   status: "pending" | "reviewed" | "accepted" | "rejected";
+  parsedResume?: ParsedResume; // Parsed resume data
   createdAt: Date;
   updatedAt: Date;
 }
@@ -56,6 +71,21 @@ const JobApplicationSchema = new Schema(
       type: String,
       enum: ["pending", "reviewed", "accepted", "rejected"],
       default: "pending",
+    },
+    parsedResume: {
+      extractedText: String,
+      skills: [String],
+      experience: {
+        years: Number,
+        companies: [String],
+      },
+      education: [
+        {
+          degree: String,
+          institution: String,
+        },
+      ],
+      analyzedAt: Date,
     },
   },
   {

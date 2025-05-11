@@ -57,3 +57,66 @@ export async function GET(
     );
   }
 }
+
+export async function PATCH(
+  req: NextRequest,
+  { params }: { params: { id: string } },
+) {
+  try {
+    await connectToDatabase();
+
+    // Check authentication
+    const session = await auth();
+    if (!session) {
+      return NextResponse.json(
+        {
+          error: "Unauthorized",
+          message: "You must be logged in to update application data",
+        },
+        { status: 401 },
+      );
+    }
+
+    const id = params.id;
+
+    // Find the application
+    const application = await JobApplication.findById(id);
+
+    if (!application) {
+      return NextResponse.json(
+        { success: false, message: "Application not found" },
+        { status: 404 },
+      );
+    }
+
+    // Get request body
+    const data = await req.json();
+
+    // Only allow specific fields to be updated
+    const allowedUpdates = {
+      ...(data.status ? { status: data.status } : {}),
+    };
+
+    // Update application
+    const updatedApplication = await JobApplication.findByIdAndUpdate(
+      id,
+      { $set: allowedUpdates },
+      { new: true },
+    );
+
+    // Return updated application
+    return NextResponse.json({
+      success: true,
+      application: {
+        ...updatedApplication.toJSON(),
+        resumeBase64: "**base64 data stored**", // Don't expose the full base64 data
+      },
+    });
+  } catch (error) {
+    console.error("Error updating application:", error);
+    return NextResponse.json(
+      { success: false, message: "Failed to update application" },
+      { status: 500 },
+    );
+  }
+}
