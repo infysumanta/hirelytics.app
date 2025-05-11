@@ -4,6 +4,8 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { DeviceCheck } from "./device-check";
 import { useRouter } from "next/navigation";
+import { AIInterviewBackground } from "./ai-interview-background";
+import { AIInterviewerIcon } from "./ai-interviewer-icon";
 
 interface InterviewClientProps {
   applicationId: string;
@@ -58,15 +60,23 @@ export function InterviewClient({ applicationId }: InterviewClientProps) {
 
   return (
     <div className="space-y-6">
-      <div className="bg-muted/50 p-6 rounded-lg text-center">
-        <h2 className="text-2xl font-bold mb-4">
-          Ready to begin your interview?
-        </h2>
-        <p className="text-muted-foreground mb-6">
-          Our AI-powered system will guide you through a series of questions to
-          assess your skills and experience for this position. Please ensure
-          your camera and microphone are working properly.
-        </p>
+      <div className="relative bg-muted/50 p-6 rounded-lg text-center overflow-hidden">
+        {/* Interview background */}
+        <AIInterviewBackground className="opacity-30" />
+
+        <div className="relative z-10">
+          <div className="mx-auto mb-4 flex flex-col items-center">
+            <AIInterviewerIcon size={84} />
+            <h2 className="text-2xl font-bold mt-4">
+              Ready to begin your interview?
+            </h2>
+          </div>
+          <p className="text-muted-foreground mb-6">
+            Our AI-powered system will guide you through a series of questions
+            to assess your skills and experience for this position. Please
+            ensure your camera and microphone are working properly.
+          </p>
+        </div>
 
         <div className="flex flex-wrap gap-4 justify-center">
           <DeviceCheck

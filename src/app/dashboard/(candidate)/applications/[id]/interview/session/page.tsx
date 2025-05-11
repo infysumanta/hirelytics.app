@@ -5,6 +5,7 @@ import { getJobById } from "@/actions/jobs";
 import { notFound } from "next/navigation";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { InterviewSession } from "@/components/interview/interview-session";
+import { AIInterviewBackground } from "@/components/interview/ai-interview-background";
 
 type Props = {
   params: { id: string };
@@ -56,9 +57,14 @@ export default async function InterviewSessionPage({ params }: Props) {
     }
 
     return (
-      <div className="container px-4 py-4 mx-auto">
-        <div className="mx-auto">
-          <Card className="mb-2">
+      <div className="container px-4 py-4 mx-auto relative">
+        {/* Apply a subtle background for the entire page */}
+        <div className="absolute inset-0 -z-10">
+          <AIInterviewBackground className="opacity-30" />
+        </div>
+
+        <div className="mx-auto relative z-10">
+          <Card className="mb-2 border-border/60 shadow-lg">
             <CardHeader className="py-3">
               <h1 className="text-xl font-bold">
                 {job.title} - Live Interview

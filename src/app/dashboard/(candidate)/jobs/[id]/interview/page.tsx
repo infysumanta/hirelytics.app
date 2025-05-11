@@ -4,6 +4,8 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Video, Mic } from "lucide-react";
 import { notFound } from "next/navigation";
+import { AIInterviewBackground } from "@/components/interview/ai-interview-background";
+import { AIInterviewerIcon } from "@/components/interview/ai-interviewer-icon";
 
 type Props = {
   params: { id: string };
@@ -48,27 +50,38 @@ export default async function InterviewPage({ params }: Props) {
           </CardHeader>
           <CardContent>
             <div className="space-y-6">
-              <div className="bg-muted/50 p-6 rounded-lg text-center">
-                <h2 className="text-2xl font-bold mb-4">
-                  Ready to begin your interview?
-                </h2>
-                <p className="text-muted-foreground mb-6">
-                  Our AI-powered system will guide you through a series of
-                  questions to assess your skills and experience for this
-                  position. Please ensure your camera and microphone are working
-                  properly.
-                </p>
+              <div className="relative bg-muted/50 p-6 rounded-lg text-center overflow-hidden">
+                {/* Interview background */}
+                <div className="absolute inset-0">
+                  <AIInterviewBackground />
+                </div>
 
-                <div className="flex flex-wrap gap-4 justify-center">
-                  <Button size="lg" className="gap-2">
-                    <Video className="h-5 w-5" /> Check Camera
-                  </Button>
-                  <Button size="lg" className="gap-2">
-                    <Mic className="h-5 w-5" /> Check Microphone
-                  </Button>
-                  <Button size="lg" variant="default" className="w-full mt-4">
-                    Start Interview
-                  </Button>
+                <div className="relative z-10">
+                  <div className="flex flex-col items-center mb-4">
+                    <AIInterviewerIcon size={84} />
+                    <h2 className="text-2xl font-bold mt-4">
+                      Ready to begin your interview?
+                    </h2>
+                  </div>
+
+                  <p className="text-muted-foreground mb-6">
+                    Our AI-powered system will guide you through a series of
+                    questions to assess your skills and experience for this
+                    position. Please ensure your camera and microphone are
+                    working properly.
+                  </p>
+
+                  <div className="flex flex-wrap gap-4 justify-center">
+                    <Button size="lg" className="gap-2">
+                      <Video className="h-5 w-5" /> Check Camera
+                    </Button>
+                    <Button size="lg" className="gap-2">
+                      <Mic className="h-5 w-5" /> Check Microphone
+                    </Button>
+                    <Button size="lg" variant="default" className="w-full mt-4">
+                      Start Interview
+                    </Button>
+                  </div>
                 </div>
               </div>
 

@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="1440" height="720" viewBox="0 0 1440 720" fill="none" xmlns="http://www.w3.org/2000/svg">
+	<!-- Background gradient -->
+	<rect width="1440" height="720" fill="url(#bg_gradient)" />
+
+	<!-- Grid patterns -->
+	<path d="M0 20H1440" stroke="url(#line_gradient)" stroke-width="0.5" stroke-dasharray="8 8" />
+	<path d="M0 80H1440" stroke="url(#line_gradient)" stroke-width="0.5" stroke-dasharray="8 8" />
+	<path d="M0 140H1440" stroke="url(#line_gradient)" stroke-width="0.5" stroke-dasharray="8 8" />
+	<path d="M0 200H1440" stroke="url(#line_gradient)" stroke-width="0.5" stroke-dasharray="8 8" />
+	<path d="M0 260H1440" stroke="url(#line_gradient)" stroke-width="0.5" stroke-dasharray="8 8" />
+	<path d="M0 320H1440" stroke="url(#line_gradient)" stroke-width="0.5" stroke-dasharray="8 8" />
+	<path d="M0 380H1440" stroke="url(#line_gradient)" stroke-width="0.5" stroke-dasharray="8 8" />
+	<path d="M0 440H1440" stroke="url(#line_gradient)" stroke-width="0.5" stroke-dasharray="8 8" />
+	<path d="M0 500H1440" stroke="url(#line_gradient)" stroke-width="0.5" stroke-dasharray="8 8" />
+	<path d="M0 560H1440" stroke="url(#line_gradient)" stroke-width="0.5" stroke-dasharray="8 8" />
+	<path d="M0 620H1440" stroke="url(#line_gradient)" stroke-width="0.5" stroke-dasharray="8 8" />
+	<path d="M0 680H1440" stroke="url(#line_gradient)" stroke-width="0.5" stroke-dasharray="8 8" />
+
+	<path d="M40 0V720" stroke="url(#line_gradient)" stroke-width="0.5" stroke-dasharray="8 8" />
+	<path d="M160 0V720" stroke="url(#line_gradient)" stroke-width="0.5" stroke-dasharray="8 8" />
+	<path d="M280 0V720" stroke="url(#line_gradient)" stroke-width="0.5" stroke-dasharray="8 8" />
+	<path d="M400 0V720" stroke="url(#line_gradient)" stroke-width="0.5" stroke-dasharray="8 8" />
+	<path d="M520 0V720" stroke="url(#line_gradient)" stroke-width="0.5" stroke-dasharray="8 8" />
+	<path d="M640 0V720" stroke="url(#line_gradient)" stroke-width="0.5" stroke-dasharray="8 8" />
+	<path d="M760 0V720" stroke="url(#line_gradient)" stroke-width="0.5" stroke-dasharray="8 8" />
+	<path d="M880 0V720" stroke="url(#line_gradient)" stroke-width="0.5" stroke-dasharray="8 8" />
+	<path d="M1000 0V720" stroke="url(#line_gradient)" stroke-width="0.5" stroke-dasharray="8 8" />
+	<path d="M1120 0V720" stroke="url(#line_gradient)" stroke-width="0.5" stroke-dasharray="8 8" />
+	<path d="M1240 0V720" stroke="url(#line_gradient)" stroke-width="0.5" stroke-dasharray="8 8" />
+	<path d="M1360 0V720" stroke="url(#line_gradient)" stroke-width="0.5" stroke-dasharray="8 8" />
+
+	<!-- Circuit nodes -->
+	<circle cx="160" cy="140" r="4" fill="#3B82F6" fill-opacity="0.3" />
+	<circle cx="280" cy="200" r="4" fill="#3B82F6" fill-opacity="0.3" />
+	<circle cx="400" cy="260" r="4" fill="#3B82F6" fill-opacity="0.3" />
+	<circle cx="520" cy="320" r="4" fill="#3B82F6" fill-opacity="0.3" />
+	<circle cx="640" cy="380" r="4" fill="#3B82F6" fill-opacity="0.3" />
+	<circle cx="760" cy="440" r="4" fill="#3B82F6" fill-opacity="0.3" />
+	<circle cx="880" cy="500" r="4" fill="#3B82F6" fill-opacity="0.3" />
+	<circle cx="1000" cy="560" r="4" fill="#3B82F6" fill-opacity="0.3" />
+	<circle cx="1120" cy="620" r="4" fill="#3B82F6" fill-opacity="0.3" />
+
+	<circle cx="1240" cy="140" r="4" fill="#8B5CF6" fill-opacity="0.3" />
+	<circle cx="1120" cy="200" r="4" fill="#8B5CF6" fill-opacity="0.3" />
+	<circle cx="1000" cy="260" r="4" fill="#8B5CF6" fill-opacity="0.3" />
+	<circle cx="880" cy="320" r="4" fill="#8B5CF6" fill-opacity="0.3" />
+	<circle cx="760" cy="380" r="4" fill="#8B5CF6" fill-opacity="0.3" />
+	<circle cx="640" cy="440" r="4" fill="#8B5CF6" fill-opacity="0.3" />
+	<circle cx="520" cy="500" r="4" fill="#8B5CF6" fill-opacity="0.3" />
+	<circle cx="400" cy="560" r="4" fill="#8B5CF6" fill-opacity="0.3" />
+	<circle cx="280" cy="620" r="4" fill="#8B5CF6" fill-opacity="0.3" />
+
+	<!-- Larger nodes with glows -->
+	<circle cx="720" cy="360" r="8" fill="#3B82F6" fill-opacity="0.6" />
+	<circle cx="720" cy="360" r="16" fill="#3B82F6" fill-opacity="0.2" />
+	<circle cx="720" cy="360" r="24" fill="#3B82F6" fill-opacity="0.1" />
+
+	<circle cx="400" cy="180" r="6" fill="#8B5CF6" fill-opacity="0.6" />
+	<circle cx="400" cy="180" r="12" fill="#8B5CF6" fill-opacity="0.2" />
+	<circle cx="400" cy="180" r="18" fill="#8B5CF6" fill-opacity="0.1" />
+
+	<circle cx="1040" cy="540" r="6" fill="#3B82F6" fill-opacity="0.6" />
+	<circle cx="1040" cy="540" r="12" fill="#3B82F6" fill-opacity="0.2" />
+	<circle cx="1040" cy="540" r="18" fill="#3B82F6" fill-opacity="0.1" />
+
+	<!-- Connecting lines with gradient -->
+	<path d="M160 140L280 200L400 260L520 320L640 380L760 440L880 500L1000 560L1120 620"
+		stroke="url(#line_gradient)" stroke-width="1.5" stroke-opacity="0.3" />
+
+	<path d="M1240 140L1120 200L1000 260L880 320L760 380L640 440L520 500L400 560L280 620"
+		stroke="url(#line_gradient)" stroke-width="1.5" stroke-opacity="0.3" />
+
+	<path d="M400 180L500 240L600 300L700 360L800 420L900 480L1000 540"
+		stroke="url(#line_gradient)" stroke-width="2" stroke-opacity="0.4" />
+
+	<!-- Gradient definitions -->
+	<defs>
+		<linearGradient id="bg_gradient" x1="0" y1="0" x2="1440" y2="720"
+			gradientUnits="userSpaceOnUse">
+			<stop stop-color="#0F172A" stop-opacity="0.02" />
+			<stop offset="1" stop-color="#172554" stop-opacity="0.05" />
+		</linearGradient>
+
+		<linearGradient id="line_gradient" x1="0" y1="0" x2="1440" y2="720"
+			gradientUnits="userSpaceOnUse">
+			<stop stop-color="#3B82F6" />
+			<stop offset="1" stop-color="#8B5CF6" />
+		</linearGradient>
+	</defs>
+</svg>

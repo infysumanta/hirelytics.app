@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+	<!-- Main circle background with gradient -->
+	<circle cx="256" cy="256" r="248" fill="url(#paint0_radial)" stroke-width="16"
+		stroke="url(#paint1_linear)" />
+
+	<!-- Robot/AI face features -->
+	<!-- Eyes -->
+	<circle cx="192" cy="200" r="28" fill="white" />
+	<circle cx="320" cy="200" r="28" fill="white" />
+	<circle cx="192" cy="200" r="16" fill="#3B82F6" />
+	<circle cx="320" cy="200" r="16" fill="#3B82F6" />
+	<circle cx="192" cy="200" r="8" fill="#1E40AF" />
+	<circle cx="320" cy="200" r="8" fill="#1E40AF" />
+
+	<!-- Mouth/speaker -->
+	<rect x="192" y="280" width="128" height="64" rx="32" fill="white" />
+	<rect x="208" y="296" width="96" height="32" rx="16" fill="#3B82F6" />
+
+	<!-- Circuit lines -->
+	<path
+		d="M120 150C120 144.477 124.477 140 130 140H180C185.523 140 190 144.477 190 150V150C190 155.523 185.523 160 180 160H130C124.477 160 120 155.523 120 150V150Z"
+		fill="#3B82F6" />
+	<path
+		d="M322 150C322 144.477 326.477 140 332 140H382C387.523 140 392 144.477 392 150V150C392 155.523 387.523 160 382 160H332C326.477 160 322 155.523 322 150V150Z"
+		fill="#3B82F6" />
+	<path
+		d="M256 340C262.627 340 268 345.373 268 352V398C268 404.627 262.627 410 256 410V410C249.373 410 244 404.627 244 398V352C244 345.373 249.373 340 256 340V340Z"
+		fill="#3B82F6" />
+	<circle cx="256" cy="410" r="16" fill="#3B82F6" />
+
+	<!-- Small dots for tech effect -->
+	<circle cx="150" cy="220" r="6" fill="#3B82F6" />
+	<circle cx="362" cy="220" r="6" fill="#3B82F6" />
+	<circle cx="150" cy="260" r="6" fill="#3B82F6" />
+	<circle cx="362" cy="260" r="6" fill="#3B82F6" />
+
+	<!-- Connection points -->
+	<path d="M112 200H160" stroke="#3B82F6" stroke-width="4" />
+	<path d="M352 200H400" stroke="#3B82F6" stroke-width="4" />
+
+	<!-- Gradient definitions -->
+	<defs>
+		<radialGradient id="paint0_radial" cx="0" cy="0" r="1"
+			gradientUnits="userSpaceOnUse"
+			gradientTransform="translate(256 256) rotate(90) scale(248)">
+			<stop stop-color="#172554" />
+			<stop offset="1" stop-color="#0F172A" />
+		</radialGradient>
+		<linearGradient id="paint1_linear" x1="0" y1="0" x2="512" y2="512"
+			gradientUnits="userSpaceOnUse">
+			<stop stop-color="#3B82F6" />
+			<stop offset="1" stop-color="#8B5CF6" />
+		</linearGradient>
+	</defs>
+</svg>

@@ -21,6 +21,8 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { AIInterviewBackground } from "./ai-interview-background";
+import { AIInterviewerIcon } from "./ai-interviewer-icon";
 import { MediaDeviceSelector } from "./media-device-selector";
 interface Message {
   id: string;
@@ -179,19 +181,26 @@ export function InterviewSession({
           {/* AI Video */}
           <div
             ref={aiVideoRef}
-            className={`bg-gradient-to-br from-black to-black/90 relative ${isMobile ? "h-1/2" : "flex-1"} flex flex-col items-center justify-center`}
+            className={`relative ${isMobile ? "h-1/2" : "flex-1"} flex flex-col items-center justify-center overflow-hidden`}
           >
-            <div className="absolute top-3 left-3 bg-black/50 backdrop-blur-sm px-3 py-1 rounded-md text-sm font-medium text-white/90 shadow-md border border-white/10">
+            {/* AI Interview background with circuits pattern */}
+            <AIInterviewBackground />
+
+            <div className="absolute top-3 left-3 bg-background/50 backdrop-blur-sm px-3 py-1 rounded-md text-sm font-medium shadow-md border border-border/50 z-10">
               AI Interviewer
             </div>
+
             {/* Branded AI placeholder with logo & brand name */}
-            <div className="flex flex-col items-center gap-3">
-              <div className="w-24 h-24 rounded-full bg-primary/20 border-2 border-primary flex items-center justify-center shadow-lg shadow-primary/10">
-                <MessageSquare className="h-12 w-12 text-primary/70" />
-              </div>
+            <div className="flex flex-col items-center gap-3 z-10">
+              <AIInterviewerIcon
+                size={96}
+                className="shadow-lg shadow-primary/10"
+              />
               <div className="text-center">
-                <h3 className="font-semibold text-white/90">Hirelytics AI</h3>
-                <p className="text-xs text-white/60">Interview Assistant</p>
+                <h3 className="font-semibold">Hirelytics AI</h3>
+                <p className="text-xs text-muted-foreground">
+                  Interview Assistant
+                </p>
               </div>
             </div>
           </div>

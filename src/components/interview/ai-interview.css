@@ -1,0 +1,73 @@
+/* Interview components styling with dark/light mode support */
+
+/* AI Interviewer Styles */
+.ai-interviewer-placeholder {
+  position: relative;
+  backdrop-filter: blur(8px);
+  transition: all 0.3s ease;
+}
+
+/* Light mode specific styles */
+:root {
+  --ai-gradient-start: rgba(59, 130, 246, 0.05);
+  --ai-gradient-end: rgba(139, 92, 246, 0.1);
+  --ai-border: rgba(59, 130, 246, 0.2);
+  --ai-shadow: rgba(59, 130, 246, 0.15);
+  --ai-text: #1e293b;
+  --ai-bg-pattern: rgba(59, 130, 246, 0.03);
+}
+
+/* Dark mode specific styles */
+.dark {
+  --ai-gradient-start: rgba(59, 130, 246, 0.15);
+  --ai-gradient-end: rgba(139, 92, 246, 0.25);
+  --ai-border: rgba(59, 130, 246, 0.3);
+  --ai-shadow: rgba(59, 130, 246, 0.25);
+  --ai-text: #f8fafc;
+  --ai-bg-pattern: rgba(59, 130, 246, 0.07);
+}
+
+/* Shared styles */
+.ai-interview-container {
+  background: linear-gradient(
+    135deg,
+    var(--ai-gradient-start),
+    var(--ai-gradient-end)
+  );
+  border: 1px solid var(--ai-border);
+  box-shadow: 0 8px 32px var(--ai-shadow);
+  color: var(--ai-text);
+}
+
+.ai-interviewer-icon {
+  filter: drop-shadow(0 4px 8px var(--ai-shadow));
+  transform-origin: center;
+  transition: transform 0.3s ease;
+}
+
+.ai-interviewer-icon:hover {
+  transform: scale(1.05);
+}
+
+/* Animated elements */
+@keyframes pulse-light {
+  0%,
+  100% {
+    opacity: 0.4;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+.ai-pulse-animation {
+  animation: pulse-light 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* AI Interview background circuit patterns */
+.ai-circuit-pattern {
+  background-image: url("/ai-interview-background.svg");
+  background-size: cover;
+  background-repeat: no-repeat;
+  opacity: var(--ai-bg-pattern);
+}
