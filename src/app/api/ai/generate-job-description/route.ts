@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/auth";
 import { z } from "zod";
+import { google } from "@ai-sdk/google";
+import { generateText } from "ai";
 
 // Helper function to check if user is a recruiter
 async function isRecruiter() {
@@ -33,9 +35,8 @@ export async function POST(req: NextRequest) {
     // Format skills for the prompt
     const skillsList = skills.join(", ");
 
-    // Create a prompt for the AI (not used in this mock implementation)
-    // In a real implementation with Vercel AI SDK, you would use this prompt
-    const _prompt = `
+    // Create the prompt for Gemini
+    const prompt = `
       Generate a detailed job description for a ${jobTitle} position at ${companyName}.
       The required skills include: ${skillsList}.
 
@@ -49,39 +50,11 @@ export async function POST(req: NextRequest) {
       Make it professional, engaging, and around 300-500 words.
     `;
 
-    // For now, we'll generate a mock response since we don't have the Vercel AI SDK set up yet
-    // In a real implementation, you would call the Gemini API here
-    const generatedDescription = `
-# ${jobTitle} at ${companyName}
-
-## About the Company
-${companyName} is a leading organization in the industry, dedicated to innovation and excellence. We are committed to creating a positive work environment where employees can thrive and grow professionally.
-
-## Job Overview
-We are seeking a talented and motivated ${jobTitle} specialist to join our team. The ideal candidate will be passionate about their work and committed to delivering high-quality results.
-
-## Responsibilities
-- Collaborate with cross-functional teams to achieve project goals
-- Develop and implement strategies to improve processes and outcomes
-- Analyze data and provide insights to inform decision-making
-- Communicate effectively with stakeholders at all levels
-- Stay updated on industry trends and best practices
-
-## Requirements
-- Bachelor's degree in a relevant field
-- 3+ years of experience in a similar role
-- Strong analytical and problem-solving skills
-- Excellent communication and interpersonal abilities
-- Proficiency in the following skills: ${skillsList}
-- Ability to work independently and as part of a team
-
-## Benefits
-- Competitive salary and benefits package
-- Professional development opportunities
-- Flexible work arrangements
-- Collaborative and inclusive work environment
-- Opportunity to work on impactful projects
-    `;
+    // Use Gemini model with Vercel AI SDK
+    const { text: generatedDescription } = await generateText({
+      model: google("gemini-2.0-flash-lite"),
+      prompt: prompt,
+    });
 
     // Return the generated description
     return NextResponse.json({
