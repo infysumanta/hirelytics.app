@@ -14,7 +14,9 @@ export default function JobsPage() {
       colorScheme="blue"
       className="min-h-screen"
     >
-      <JobsList />
+      <div className="container mx-auto py-6 space-y-8">
+        <JobsList />
+      </div>
     </AnimatedBackground>
   );
 }

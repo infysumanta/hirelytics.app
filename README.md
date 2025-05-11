@@ -12,6 +12,12 @@ A role-based authentication system built with Next.js, NextAuth v5, and MongoDB.
   - Password hashing with bcrypt
   - Form validation with Zod
 - **MongoDB Integration**: User data stored in MongoDB
+- **Social Media Sharing**: Share job posts across multiple platforms including:
+  - Facebook
+  - LinkedIn
+  - Telegram
+  - WhatsApp
+  - Facebook Messenger
 - **Modern UI**: Built with Tailwind CSS and shadcn/ui components
 
 ## Getting Started
@@ -36,15 +42,7 @@ A role-based authentication system built with Next.js, NextAuth v5, and MongoDB.
    pnpm install
    ```
 
-3. Set up environment variables:
-
-   ```bash
-   cp .env.example .env.local
-   ```
-
-   Edit `.env.local` and add your MongoDB connection string and other required variables.
-
-4. Run the development server:
+3. Run the development server:
 
    ```bash
    pnpm dev

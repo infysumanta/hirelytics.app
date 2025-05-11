@@ -124,7 +124,7 @@ export function JobsList() {
         </p>
       </div>
 
-      <div className="bg-background/60 backdrop-blur-sm rounded-lg p-4 mb-6">
+      <div className="backdrop-blur-sm rounded-lg p-4 mb-6 h-full transition-all duration-300 hover:shadow-md hover:border-primary/30 bg-background/70 border border-primary/10">
         <JobFilter
           onSearchChange={handleSearchChange}
           onSkillsChange={handleSkillsChange}

@@ -8,8 +8,8 @@ import {
   MapPinIcon,
   BriefcaseIcon,
   ArrowLeftIcon,
-  Share2Icon,
 } from "lucide-react";
+import { ClientShareButton } from "@/components/jobs/client-share-button";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getSkillLabel } from "@/data/technical-skills";
@@ -209,9 +209,12 @@ export default async function JobDetailsPage({ params }: Props) {
                   >
                     {isExpired ? "Job Expired" : "Apply Now"}
                   </Button>
-                  <Button variant="outline" className="w-full">
-                    <Share2Icon className="h-4 w-4 mr-2" /> Share Job
-                  </Button>
+                  {/* Using a client component wrapper */}
+                  <ClientShareButton
+                    jobId={params.id}
+                    jobTitle={job.title}
+                    companyName={job.companyName}
+                  />
                 </div>
               </CardContent>
             </Card>
