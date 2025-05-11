@@ -17,6 +17,7 @@ import { getCountryLabel } from "@/data/countries";
 import ReactMarkdown from "react-markdown";
 import { JobShareButtons } from "./job-share-buttons";
 import { JobApplyButton } from "./job-apply-button";
+import { JobApplyRedirectButton } from "./job-apply-redirect-button";
 import { usePathname } from "next/navigation";
 
 interface JobWithId extends Omit<IJob, "_id"> {
@@ -114,11 +115,19 @@ export function JobCard({ job }: JobCardProps) {
               />
             </>
           ) : (
-            <Link href={`/jobs/${job.urlId}`}>
-              <Button variant="default" size="sm" className="h-8">
-                <EyeIcon className="h-3.5 w-3.5 mr-1" /> View Job
-              </Button>
-            </Link>
+            <>
+              <Link href={`/jobs/${job.urlId}`}>
+                <Button variant="outline" size="sm" className="h-8">
+                  <EyeIcon className="h-3.5 w-3.5 mr-1" /> Details
+                </Button>
+              </Link>
+              <JobApplyRedirectButton
+                jobId={job.urlId}
+                isExpired={isExpired}
+                isActive={job.isActive}
+                variant="small"
+              />
+            </>
           )}
         </div>
       </CardFooter>

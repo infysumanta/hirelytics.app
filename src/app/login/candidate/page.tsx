@@ -5,18 +5,13 @@ import { LoginForm } from "@/components/auth/login-form";
 import { motion } from "framer-motion";
 import { AnimatedBackground } from "@/components/ui/animated-background";
 import { AnimatedAuthCard } from "@/components/ui/auth-card";
-
-// Animation variants
-const fadeIn = {
-  hidden: { opacity: 0, y: 20 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: { duration: 0.6 },
-  },
-};
+import { useSearchParams } from "next/navigation";
 
 export default function CandidateLoginPage() {
+  // Get redirect parameter from URL if present
+  const searchParams = useSearchParams();
+  const redirectUrl = searchParams.get("redirect");
+
   // Create footer content with animations
   const footerContent = (
     <>
@@ -26,7 +21,7 @@ export default function CandidateLoginPage() {
         transition={{ delay: 0.3 }}
         className="text-sm text-muted-foreground text-center"
       >
-        Don't have an account?{" "}
+        Don&apos;t have an account?{" "}
         <Link
           href="/register/candidate"
           className="text-primary underline underline-offset-4 hover:text-primary/90"
@@ -60,7 +55,7 @@ export default function CandidateLoginPage() {
           colorScheme="blue"
           footer={footerContent}
         >
-          <LoginForm role="candidate" />
+          <LoginForm role="candidate" callbackUrl={redirectUrl || undefined} />
         </AnimatedAuthCard>
       </div>
     </AnimatedBackground>

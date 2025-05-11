@@ -1,7 +1,6 @@
 import { Metadata } from "next";
 import { getJobById } from "@/actions/jobs";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import {
   CalendarIcon,
@@ -10,6 +9,7 @@ import {
   ArrowLeftIcon,
 } from "lucide-react";
 import { ClientShareButton } from "@/components/jobs/client-share-button";
+import { JobApplyRedirectButton } from "@/components/jobs/job-apply-redirect-button";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getSkillLabel } from "@/data/technical-skills";
@@ -204,12 +204,11 @@ export default async function JobDetailsPage({ params }: Props) {
                 </div>
 
                 <div className="space-y-3">
-                  <Button
-                    className="w-full"
-                    disabled={isExpired || !job.isActive}
-                  >
-                    {isExpired ? "Job Expired" : "Apply Now"}
-                  </Button>
+                  <JobApplyRedirectButton
+                    jobId={params.id}
+                    isExpired={isExpired}
+                    isActive={job.isActive}
+                  />
                   {/* Using a client component wrapper */}
                   <ClientShareButton
                     jobId={params.id}
