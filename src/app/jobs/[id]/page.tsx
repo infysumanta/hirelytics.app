@@ -9,6 +9,9 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { AnimatedBackground } from "@/components/ui/animated-background";
 import { getSkillLabel } from "@/data/technical-skills";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
+import rehypeRaw from "rehype-raw";
 
 interface JobDetails {
   id: string;
@@ -62,18 +65,6 @@ export default function JobDetailPage() {
 
   // Check if job is expired
   const isExpired = job ? new Date(job.expiryDate) < new Date() : false;
-
-  // Format description with Markdown
-  const formatDescription = (description: string) => {
-    // Simple markdown parsing for headings, lists, and paragraphs
-    return description
-      .replace(/^# (.*$)/gm, '<h1 class="text-2xl font-bold my-4">$1</h1>')
-      .replace(/^## (.*$)/gm, '<h2 class="text-xl font-semibold my-3">$1</h2>')
-      .replace(/^### (.*$)/gm, '<h3 class="text-lg font-medium my-2">$1</h3>')
-      .replace(/^\* (.*$)/gm, '<li class="ml-6 list-disc">$1</li>')
-      .replace(/^- (.*$)/gm, '<li class="ml-6 list-disc">$1</li>')
-      .replace(/\n\n/g, '</p><p class="my-2">');
-  };
 
   if (isLoading) {
     return (
@@ -143,12 +134,30 @@ export default function JobDetailPage() {
             </div>
           </div>
           <CardContent className="p-6">
-            <div
-              className="prose max-w-none"
-              dangerouslySetInnerHTML={{
-                __html: `<p class="my-2">${formatDescription(job.description)}</p>`,
-              }}
-            />
+            <div className="prose max-w-none prose-headings:text-foreground prose-p:text-foreground/90 prose-a:text-primary">
+              <ReactMarkdown
+                remarkPlugins={[remarkGfm]}
+                rehypePlugins={[rehypeRaw]}
+                components={{
+                  a: (props) => (
+                    <a
+                      {...props}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-primary hover:underline"
+                    />
+                  ),
+                  code: (props) => (
+                    <code
+                      {...props}
+                      className="bg-muted px-1 py-0.5 rounded text-sm font-mono"
+                    />
+                  ),
+                }}
+              >
+                {job.description}
+              </ReactMarkdown>
+            </div>
 
             <div className="mt-6">
               <h3 className="text-lg font-semibold mb-2">Skills</h3>
