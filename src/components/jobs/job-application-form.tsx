@@ -42,12 +42,14 @@ interface JobApplicationFormProps {
   job: IJob;
   inModal?: boolean;
   onSubmitSuccess?: () => void;
+  onClose?: () => void;
 }
 
 export function JobApplicationForm({
   job,
   inModal = false,
   onSubmitSuccess,
+  onClose,
 }: JobApplicationFormProps) {
   const [isUploading, setIsUploading] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -242,11 +244,13 @@ export function JobApplicationForm({
           <Button
             type="button"
             variant="outline"
-            onClick={
-              inModal
-                ? () => onSubmitSuccess && onSubmitSuccess()
-                : () => router.back()
-            }
+            onClick={() => {
+              if (inModal) {
+                onClose?.();
+              } else {
+                router.back();
+              }
+            }}
             disabled={isSubmitting}
           >
             {inModal ? "Close" : "Cancel"}

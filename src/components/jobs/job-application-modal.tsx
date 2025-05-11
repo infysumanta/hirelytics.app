@@ -1,13 +1,9 @@
 "use client";
 
-import { useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Loader2 } from "lucide-react";
 import {
   Dialog,
   DialogContent,
   DialogDescription,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
@@ -26,11 +22,9 @@ export function JobApplicationModal({
   isOpen,
   onClose,
 }: JobApplicationModalProps) {
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const router = useRouter();
 
   const handleApplicationSuccess = () => {
-    setIsSubmitting(false);
     onClose();
     // Navigate to success page
     router.push("/dashboard/jobs/application-success");
@@ -53,6 +47,7 @@ export function JobApplicationModal({
             job={job}
             onSubmitSuccess={handleApplicationSuccess}
             inModal={true}
+            onClose={onClose}
           />
         </div>
       </DialogContent>
