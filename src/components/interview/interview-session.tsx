@@ -11,7 +11,7 @@ import {
   VideoOff,
   Send,
   Settings,
-  MessageSquare,
+  User,
 } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
 import Webcam from "react-webcam";
@@ -302,8 +302,15 @@ export function InterviewSession({
                 key={message.id}
                 className={`flex ${message.sender === "ai" ? "justify-start" : "justify-end"}`}
               >
+                {message.sender === "ai" && (
+                  <div className="flex-shrink-0 mr-2 self-end mb-1">
+                    <div className="w-8 h-8 rounded-full bg-primary/10 border border-primary/20 overflow-hidden flex items-center justify-center">
+                      <AIInterviewerIcon size={28} />
+                    </div>
+                  </div>
+                )}
                 <div
-                  className={`max-w-[85%] p-3 rounded-lg shadow-sm ${
+                  className={`max-w-[75%] p-3 rounded-lg shadow-sm ${
                     message.sender === "ai"
                       ? "bg-muted-foreground/10 text-foreground border border-border/50"
                       : "bg-primary/90 text-primary-foreground"
@@ -317,6 +324,13 @@ export function InterviewSession({
                     })}
                   </p>
                 </div>
+                {message.sender === "user" && (
+                  <div className="flex-shrink-0 ml-2 self-end mb-1">
+                    <div className="w-8 h-8 rounded-full bg-primary/20 border border-primary/30 overflow-hidden flex items-center justify-center text-primary">
+                      <User className="h-5 w-5" />
+                    </div>
+                  </div>
+                )}
               </div>
             ))}
             <div ref={messagesEndRef} />
