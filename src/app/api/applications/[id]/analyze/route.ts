@@ -132,7 +132,7 @@ export async function POST(
       );
     }
 
-    const id = params.id;
+    const { id } = await params;
     const application = await JobApplication.findById(id);
 
     if (!application) {
@@ -140,18 +140,6 @@ export async function POST(
         { error: "Application not found" },
         { status: 404 },
       );
-    }
-
-    // Check if application already has parsed data
-    if (application.parsedResume) {
-      return NextResponse.json({
-        success: true,
-        message: "Resume already analyzed",
-        application: {
-          ...application.toJSON(),
-          resumeBase64: "**base64 data stored**", // Don't expose the full base64 data
-        },
-      });
     }
 
     // Get the PDF from S3 if we have s3Key and s3Bucket
@@ -215,8 +203,6 @@ export async function POST(
         { status: 500 },
       );
     }
-
-    console.log(parsedText);
 
     // Extract information from the text
     const skills = extractSkills(parsedText);
