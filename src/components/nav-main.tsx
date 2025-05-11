@@ -60,6 +60,11 @@ export function NavMain() {
       url: "/dashboard/jobs",
       icon: BriefcaseIcon,
     },
+    {
+      title: "Applications",
+      url: "/dashboard/applications",
+      icon: UserIcon,
+    },
   ];
 
   const menu =

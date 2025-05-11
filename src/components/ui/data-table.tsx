@@ -38,6 +38,7 @@ interface DataTableProps<TData, TValue> {
   data: TData[];
   searchKey?: string;
   searchPlaceholder?: string;
+  isLoading?: boolean;
   pagination?: {
     pageIndex: number;
     pageSize: number;
@@ -52,11 +53,12 @@ export function DataTable<TData, TValue>({
   data,
   searchKey,
   searchPlaceholder = "Search...",
+  isLoading = false,
   pagination,
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
-    []
+    [],
   );
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
@@ -103,7 +105,9 @@ export function DataTable<TData, TValue>({
             <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
             <Input
               placeholder={searchPlaceholder}
-              value={(table.getColumn(searchKey)?.getFilterValue() as string) ?? ""}
+              value={
+                (table.getColumn(searchKey)?.getFilterValue() as string) ?? ""
+              }
               onChange={(event) =>
                 table.getColumn(searchKey)?.setFilterValue(event.target.value)
               }
@@ -124,7 +128,7 @@ export function DataTable<TData, TValue>({
                         ? null
                         : flexRender(
                             header.column.columnDef.header,
-                            header.getContext()
+                            header.getContext(),
                           )}
                     </TableHead>
                   );
@@ -133,7 +137,19 @@ export function DataTable<TData, TValue>({
             ))}
           </TableHeader>
           <TableBody>
-            {table.getRowModel().rows?.length ? (
+            {isLoading ? (
+              <TableRow>
+                <TableCell
+                  colSpan={columns.length}
+                  className="h-24 text-center"
+                >
+                  <div className="flex justify-center items-center">
+                    <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary"></div>
+                    <span className="ml-2">Loading...</span>
+                  </div>
+                </TableCell>
+              </TableRow>
+            ) : table.getRowModel().rows?.length ? (
               table.getRowModel().rows.map((row) => (
                 <TableRow
                   key={row.id}
@@ -143,7 +159,7 @@ export function DataTable<TData, TValue>({
                     <TableCell key={cell.id}>
                       {flexRender(
                         cell.column.columnDef.cell,
-                        cell.getContext()
+                        cell.getContext(),
                       )}
                     </TableCell>
                   ))}
@@ -172,7 +188,10 @@ export function DataTable<TData, TValue>({
         </div>
         <div className="flex items-center space-x-2">
           <Select
-            value={pagination?.pageSize.toString() || table.getState().pagination.pageSize.toString()}
+            value={
+              pagination?.pageSize.toString() ||
+              table.getState().pagination.pageSize.toString()
+            }
             onValueChange={(value) => {
               if (pagination) {
                 pagination.onPageSizeChange(Number(value));
@@ -182,7 +201,12 @@ export function DataTable<TData, TValue>({
             }}
           >
             <SelectTrigger className="h-8 w-[70px]">
-              <SelectValue placeholder={pagination?.pageSize.toString() || table.getState().pagination.pageSize.toString()} />
+              <SelectValue
+                placeholder={
+                  pagination?.pageSize.toString() ||
+                  table.getState().pagination.pageSize.toString()
+                }
+              />
             </SelectTrigger>
             <SelectContent side="top">
               {[5, 10, 20, 30, 40, 50].map((pageSize) => (
