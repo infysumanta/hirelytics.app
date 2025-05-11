@@ -1,17 +1,17 @@
 import { Metadata } from "next";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Video, Mic } from "lucide-react";
 import { notFound } from "next/navigation";
 import { JobApplication } from "@/models/job-application";
 import { connectToDatabase } from "@/lib/mongodb";
 import { getJobById } from "@/actions/jobs";
+import { InterviewClient } from "@/components/interview/interview-client";
 
 type Props = {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 };
 
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
+export async function generateMetadata(props: Props): Promise<Metadata> {
+  const params = await props.params;
   const applicationId = params.id;
 
   try {
@@ -39,7 +39,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   }
 }
 
-export default async function InterviewPage({ params }: Props) {
+export default async function InterviewPage(props: Props) {
+  const params = await props.params;
   const applicationId = params.id;
 
   try {
@@ -67,56 +68,11 @@ export default async function InterviewPage({ params }: Props) {
               </p>
             </CardHeader>
             <CardContent>
-              <div className="space-y-6">
-                <div className="bg-muted/50 p-6 rounded-lg text-center">
-                  <h2 className="text-2xl font-bold mb-4">
-                    Ready to begin your interview?
-                  </h2>
-                  <p className="text-muted-foreground mb-6">
-                    Our AI-powered system will guide you through a series of
-                    questions to assess your skills and experience for this
-                    position. Please ensure your camera and microphone are
-                    working properly.
-                  </p>
-
-                  <div className="flex flex-wrap gap-4 justify-center">
-                    <Button size="lg" className="gap-2">
-                      <Video className="h-5 w-5" /> Check Camera
-                    </Button>
-                    <Button size="lg" className="gap-2">
-                      <Mic className="h-5 w-5" /> Check Microphone
-                    </Button>
-                    <Button size="lg" variant="default" className="w-full mt-4">
-                      Start Interview
-                    </Button>
-                  </div>
-                </div>
-
-                <div className="bg-muted/30 p-6 rounded-lg">
-                  <h3 className="font-medium mb-2">Interview Tips</h3>
-                  <ul className="list-disc list-inside space-y-2 text-muted-foreground">
-                    <li>
-                      Find a quiet place with good lighting and minimal
-                      background noise
-                    </li>
-                    <li>
-                      Dress professionally as you would for an in-person
-                      interview
-                    </li>
-                    <li>
-                      Speak clearly and take your time to answer thoughtfully
-                    </li>
-                    <li>
-                      Have your resume and relevant documents nearby for
-                      reference
-                    </li>
-                    <li>
-                      The interview will take approximately 15-20 minutes to
-                      complete
-                    </li>
-                  </ul>
-                </div>
-              </div>
+              <InterviewClient
+                applicationId={applicationId}
+                jobTitle={job.title}
+                companyName={job.companyName}
+              />
             </CardContent>
           </Card>
         </div>
