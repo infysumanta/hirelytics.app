@@ -66,7 +66,7 @@ export default function Home() {
       <AnimatedBackground
         colorScheme="indigo"
         patternOpacity={0.2}
-        className="py-20 md:py-32"
+        className="py-5 md:py-5"
       >
         <div className="absolute inset-0 z-0 opacity-40">
           <div className="absolute top-0 left-0 h-[500px] w-[500px] rounded-full bg-blue-600/30 dark:bg-blue-500/30 blur-[120px] animate-pulse-slow"></div>
