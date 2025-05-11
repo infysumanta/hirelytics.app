@@ -195,7 +195,7 @@ export default async function JobDetailsPage({ params }: Props) {
                 <div className="mb-6">
                   <h3 className="font-medium mb-2">Required Skills</h3>
                   <div className="flex flex-wrap gap-2">
-                    {job.skills.map((skill) => (
+                    {job.skills.map((skill: string) => (
                       <Badge key={skill} variant="secondary">
                         {getSkillLabel(skill)}
                       </Badge>

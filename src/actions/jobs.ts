@@ -59,8 +59,11 @@ export async function getJobs({
     const hasMore = jobs.length > limit;
     const paginatedJobs = hasMore ? jobs.slice(0, limit) : jobs;
 
+    // Serialize MongoDB documents for passing to client components
+    const serializedJobs = JSON.parse(JSON.stringify(paginatedJobs));
+
     return {
-      jobs: paginatedJobs,
+      jobs: serializedJobs,
       hasMore,
       nextPage: hasMore ? page + 1 : null,
     };
@@ -84,7 +87,8 @@ export async function getJobById(id: string) {
       throw new Error("Job not found");
     }
 
-    return job;
+    // Serialize MongoDB document for passing to client components
+    return JSON.parse(JSON.stringify(job));
   } catch (error: unknown) {
     console.error("Error fetching job:", error);
     throw new Error(
