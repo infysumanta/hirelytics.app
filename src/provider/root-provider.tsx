@@ -6,6 +6,7 @@ import { SessionProvider } from "next-auth/react";
 import { auth } from "@/auth";
 
 import { NuqsAdapter } from "nuqs/adapters/next/app";
+import { HeaderTitleProvider } from "./_header-title-provider";
 interface RootProviderProps {
   children: React.ReactNode;
 }
@@ -33,7 +34,9 @@ export default async function RootProvider({ children }: RootProviderProps) {
               enableSystem
               disableTransitionOnChange
             >
-              <NuqsAdapter>{children}</NuqsAdapter>
+              <NuqsAdapter>
+                <HeaderTitleProvider>{children}</HeaderTitleProvider>
+              </NuqsAdapter>
             </ThemeProvider>
           </SessionProvider>
         </ReactQueryProvider>
