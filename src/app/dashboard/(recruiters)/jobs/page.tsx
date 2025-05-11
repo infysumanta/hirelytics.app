@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/button";
 import { format } from "date-fns";
 import { Plus, Eye, Edit, Trash2, Link } from "lucide-react";
 import { toast } from "sonner";
-import { CreateJobDialog } from "@/components/jobs/create-job-dialog";
+import { JobFormDialog } from "@/components/jobs/job-form-dialog";
 
 // Define job type
 interface Job {
@@ -33,6 +33,8 @@ interface Job {
 export default function JobsPage() {
   const t = useTranslations("Dashboard");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [dialogMode, setDialogMode] = useState<"create" | "edit">("create");
+  const [selectedJobId, setSelectedJobId] = useState<string | undefined>();
   const [page, setPage] = useState(0);
   const [pageSize, setPageSize] = useState(10);
   const [searchQuery] = useState("");
@@ -148,7 +150,16 @@ export default function JobsPage() {
             >
               <Eye className="h-4 w-4" />
             </Button>
-            <Button variant="ghost" size="icon" title="Edit job">
+            <Button
+              variant="ghost"
+              size="icon"
+              title="Edit job"
+              onClick={() => {
+                setSelectedJobId(job.id);
+                setDialogMode("edit");
+                setIsDialogOpen(true);
+              }}
+            >
               <Edit className="h-4 w-4" />
             </Button>
             <Button
@@ -204,7 +215,13 @@ export default function JobsPage() {
           <h1 className="text-3xl font-bold mb-2">{t("jobManagement")}</h1>
           <p className="text-muted-foreground">{t("manageJobs")}</p>
         </div>
-        <Button onClick={() => setIsDialogOpen(true)}>
+        <Button
+          onClick={() => {
+            setDialogMode("create");
+            setSelectedJobId(undefined);
+            setIsDialogOpen(true);
+          }}
+        >
           <Plus className="mr-2 h-4 w-4" />
           Create Job
         </Button>
@@ -224,10 +241,12 @@ export default function JobsPage() {
         }}
       />
 
-      <CreateJobDialog
+      <JobFormDialog
         open={isDialogOpen}
         onOpenChange={setIsDialogOpen}
-        onJobCreated={handleJobCreated}
+        onSubmitSuccess={handleJobCreated}
+        jobId={selectedJobId}
+        mode={dialogMode}
       />
     </div>
   );
