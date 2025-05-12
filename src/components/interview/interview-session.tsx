@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -13,7 +13,9 @@ import {
   Settings,
   User,
   AlertTriangle,
+  Loader2,
 } from "lucide-react";
+import { TypingIndicator } from "./typing-indicator";
 import { useIsMobile } from "@/hooks/use-mobile";
 import Webcam from "react-webcam";
 import {
@@ -27,13 +29,9 @@ import { AIInterviewerIcon } from "./ai-interviewer-icon";
 import { MediaDeviceSelector } from "./media-device-selector";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { INTERVIEW_ALERTS } from "@/constants/interview-alerts";
+import { useInterviewChat } from "@/hooks/use-interview-chat";
 
-interface Message {
-  id: string;
-  text: string;
-  sender: "ai" | "user";
-  timestamp: Date;
-}
+// Message interface is now imported from the useInterviewChat hook
 
 interface InterviewSessionProps {
   applicationId: string;
@@ -46,21 +44,11 @@ interface InterviewSessionProps {
 export function InterviewSession({
   applicationId,
   jobTitle,
-  companyName,
   cameraMonitoring = true,
   monitoringInterval = 30000, // Default 30 seconds
 }: InterviewSessionProps) {
   const [videoEnabled, setVideoEnabled] = useState(true);
   const [micEnabled, setMicEnabled] = useState(true);
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      id: "1",
-      text: `Hello! I'm your AI interviewer for the ${jobTitle} position at ${companyName}. Let's start with you introducing yourself briefly.`,
-      sender: "ai",
-      timestamp: new Date(),
-    },
-  ]);
-  const [messageInput, setMessageInput] = useState("");
   const [selectedVideoDevice, setSelectedVideoDevice] = useState<string | null>(
     null,
   );
@@ -76,6 +64,20 @@ export function InterviewSession({
   const [alerts, setAlerts] = useState<string[]>([]);
   const monitoringIntervalRef = useRef<NodeJS.Timeout | undefined>(undefined);
   const intervalValueRef = useRef(monitoringInterval);
+
+  // Use our interview chat hook
+  const {
+    messages, 
+    messageInput, 
+    setMessageInput, 
+    sendMessage: sendChatMessage,
+    isLoading,
+    isUserTurn,
+    isInitializing
+  } = useInterviewChat({
+    applicationId,
+    jobTitle,
+  });
 
   const videoRef = useRef<Webcam>(null);
   const aiVideoRef = useRef<HTMLDivElement>(null);
@@ -107,7 +109,7 @@ export function InterviewSession({
   }, [messages]);
 
   // Function to capture and upload image
-  const captureAndUploadImage = useCallback(async () => {
+  const captureAndUploadImage = async () => {
     if (!videoRef.current || !isMonitoring) return;
 
     const imageSrc = videoRef.current.getScreenshot();
@@ -137,7 +139,7 @@ export function InterviewSession({
     } catch (error) {
       console.error("Error uploading monitoring image:", error);
     }
-  }, [applicationId, isMonitoring]);
+  };
 
   // Handle camera monitoring setup and prop changes
   useEffect(() => {
@@ -316,39 +318,6 @@ export function InterviewSession({
     setMicEnabled(!micEnabled);
   };
 
-  const sendMessage = () => {
-    if (messageInput.trim() === "") return;
-
-    // Add user message
-    const userMessage: Message = {
-      id: Date.now().toString(),
-      text: messageInput,
-      sender: "user",
-      timestamp: new Date(),
-    };
-
-    setMessages((prevMessages) => [...prevMessages, userMessage]);
-    setMessageInput("");
-
-    // In a real implementation, this would send the message to the backend API
-    // using the applicationId to track the interview session
-    console.log(
-      `Sending message to interview API for application ${applicationId}`,
-    );
-
-    // Simulate AI response after a short delay
-    setTimeout(() => {
-      const aiMessage: Message = {
-        id: (Date.now() + 1).toString(),
-        text: `Thank you for sharing. Let me ask you another question about your experience with ${jobTitle}.`,
-        sender: "ai",
-        timestamp: new Date(),
-      };
-
-      setMessages((prevMessages) => [...prevMessages, aiMessage]);
-    }, 2000);
-  };
-
   const handleDeviceChange = (
     videoDeviceId: string | null,
     audioDeviceId: string | null,
@@ -359,9 +328,9 @@ export function InterviewSession({
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === "Enter" && !e.shiftKey) {
+    if (e.key === "Enter" && !e.shiftKey && isUserTurn && !isLoading) {
       e.preventDefault();
-      sendMessage();
+      sendChatMessage();
     }
   };
 
@@ -388,7 +357,7 @@ export function InterviewSession({
             <div className="flex flex-col items-center gap-3 z-10">
               <AIInterviewerIcon
                 size={96}
-                className="shadow-lg shadow-primary/10"
+                className={`shadow-lg shadow-primary/10 ${isLoading || isInitializing ? 'animate-pulse' : ''}`}
               />
               <div className="text-center">
                 <h3 className="font-semibold">Hirelytics AI</h3>
@@ -396,6 +365,14 @@ export function InterviewSession({
                   Interview Assistant
                 </p>
               </div>
+              
+              {isInitializing && (
+                <TypingIndicator text="Initializing interview" className="mt-2" />
+              )}
+              
+              {isLoading && !isInitializing && (
+                <TypingIndicator text="Thinking" className="mt-2" />
+              )}
             </div>
           </div>
 
@@ -485,8 +462,26 @@ export function InterviewSession({
 
       {/* Chat Section - 30% on desktop, 100% on mobile */}
       <div className="chat-section flex flex-col bg-muted rounded-lg overflow-hidden w-full md:w-[30%] min-w-[280px] h-[350px] md:h-auto mt-4 md:mt-0">
-        <div className="p-3 border-b bg-gradient-to-r from-muted/80 to-muted/50">
+        <div className="p-3 border-b bg-gradient-to-r from-muted/80 to-muted/50 flex items-center justify-between">
           <h3 className="font-semibold text-foreground/90">Interview Chat</h3>
+          
+          {isInitializing && (
+            <div className="text-xs px-2 py-1 bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400 rounded-full">
+              Initializing...
+            </div>
+          )}
+          
+          {!isUserTurn && !isInitializing && (
+            <div className="text-xs px-2 py-1 bg-primary/10 text-primary rounded-full">
+              AI is responding...
+            </div>
+          )}
+          
+          {isUserTurn && messages.length > 0 && !isInitializing && (
+            <div className="text-xs px-2 py-1 bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400 rounded-full">
+              Your turn
+            </div>
+          )}
         </div>
 
         <ScrollArea className="flex-1 px-3 py-4">
@@ -534,20 +529,33 @@ export function InterviewSession({
         <div className="p-3 border-t bg-background/80 backdrop-blur-sm">
           <div className="flex gap-2 items-end">
             <Textarea
-              placeholder="Type your message..."
+              placeholder={
+                isInitializing
+                  ? "Initializing interview..."
+                  : isUserTurn
+                  ? "Type your message..."
+                  : "Please wait for the AI to respond..."
+              }
               value={messageInput}
               onChange={(e) => setMessageInput(e.target.value)}
               onKeyDown={handleKeyPress}
-              className="min-h-12 resize-none bg-background border-muted focus:border-primary/30 rounded-lg transition-all"
+              disabled={!isUserTurn || isLoading || isInitializing}
+              className={`min-h-12 resize-none bg-background border-muted focus:border-primary/30 rounded-lg transition-all ${
+                (!isUserTurn || isInitializing) ? "opacity-50" : ""
+              }`}
               rows={2}
             />
             <Button
               size="icon"
-              onClick={sendMessage}
-              disabled={!messageInput.trim()}
+              onClick={sendChatMessage}
+              disabled={!messageInput.trim() || !isUserTurn || isLoading || isInitializing}
               className="mb-1 h-10 w-10 rounded-full bg-primary hover:bg-primary/90 transition-all"
             >
-              <Send className="h-4 w-4" />
+              {isLoading || isInitializing ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <Send className="h-4 w-4" />
+              )}
             </Button>
           </div>
         </div>

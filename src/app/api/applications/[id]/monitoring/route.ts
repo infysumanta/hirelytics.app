@@ -50,7 +50,7 @@ export async function POST(
     // Update application document
     await connectToDatabase();
     await JobApplication.updateOne(
-      { _id: params.id },
+      { _id: id },
       {
         $push: {
           monitoringImages: {
