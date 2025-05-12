@@ -1,4 +1,5 @@
 import mongoose, { Document, Schema } from "mongoose";
+import { InterviewState, InterviewStateSchema } from "./interview-state";
 
 export interface ParsedResume {
   extractedText: string;
@@ -33,6 +34,9 @@ interface InterviewMessage {
   text: string;
   sender: "ai" | "user" | "system";
   timestamp: Date;
+  questionId?: string; // Optional field to link messages to specific questions
+  questionCategory?: string; // Technical, project, or behavioral
+  feedback?: string; // AI feedback on a user's answer
 }
 
 export interface IJobApplication extends Document {
@@ -48,6 +52,7 @@ export interface IJobApplication extends Document {
   preferredLanguage: string;
   status: "pending" | "reviewed" | "accepted" | "rejected";
   parsedResume?: ParsedResume; // Parsed resume data including match score and AI comments
+  interviewState?: InterviewState; // Track the state of the interview process
   monitoringEnabled?: boolean; // Whether camera monitoring is enabled
   monitoringInterval?: number; // Interval in milliseconds between captures
   monitoringImages?: MonitoringImage[]; // Array of captured monitoring images
@@ -135,8 +140,12 @@ const JobApplicationSchema = new Schema(
           enum: ["ai", "user", "system"],
         },
         timestamp: Date,
+        questionId: String,
+        questionCategory: String,
+        feedback: String,
       },
     ],
+    interviewState: InterviewStateSchema,
   },
   {
     timestamps: true,

@@ -64,8 +64,16 @@ export async function POST(req: NextRequest) {
       ${application.parsedResume?.extractedText || "No resume text available"}
       """
       
-      Based on the job description and resume details above, provide a professional, friendly greeting and first interview question that's relevant to the job role.
-      Keep your response concise (2-3 sentences maximum) and end with a specific question related to the candidate's background or the job requirements.
+      You'll be conducting a structured interview process with the following phases:
+      
+      1. Introduction: Introduce yourself professionally with a brief welcome message and explain the interview process. 
+      2. Brief Candidate Introduction: Ask the candidate for a brief introduction/overview of their background.
+      3. Technical Questions: After their introduction, provide brief feedback and then proceed to ask 3 technical questions, one at a time.
+      4. Project Discussion: After technical questions, ask about their most significant project and ask 3 follow-up questions about it.
+      5. Behavioral Questions: Ask 3 behavioral questions about work environment preferences and collaboration style.
+      6. Conclusion: Thank the candidate with a professional closing message.
+      
+      Your initial response should be just the introduction and request for the candidate to introduce themselves. Be professional, confident, and take control of the interview process. Explain that you'll be asking technical, project-related, and behavioral questions, and that you'll provide evaluation feedback after the interview. Set the expectation that you'll be guiding the conversation structure. Keep responses concise (2-3 sentences maximum).
     `;
 
     // Generate initial greeting and question
@@ -112,7 +120,7 @@ About: ${application.parsedResume.about || "No summary available"}
 }
     `.trim();
 
-    // Save both system message and initial AI greeting to the database
+    // Save both system message and initial AI greeting to the database and initialize interview state
     await JobApplication.findByIdAndUpdate(
       applicationId,
       {
@@ -129,6 +137,15 @@ About: ${application.parsedResume.about || "No summary available"}
               timestamp: new Date(),
             },
           ],
+        },
+        $set: {
+          interviewState: {
+            currentPhase: "introduction",
+            technicalQuestionsAsked: 0,
+            projectQuestionsAsked: 0,
+            behavioralQuestionsAsked: 0,
+            askedQuestions: [],
+          },
         },
       },
       { new: true },
