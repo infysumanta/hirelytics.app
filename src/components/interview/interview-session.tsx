@@ -67,13 +67,13 @@ export function InterviewSession({
 
   // Use our interview chat hook
   const {
-    messages, 
-    messageInput, 
-    setMessageInput, 
+    messages,
+    messageInput,
+    setMessageInput,
     sendMessage: sendChatMessage,
     isLoading,
     isUserTurn,
-    isInitializing
+    isInitializing,
   } = useInterviewChat({
     applicationId,
     jobTitle,
@@ -357,7 +357,7 @@ export function InterviewSession({
             <div className="flex flex-col items-center gap-3 z-10">
               <AIInterviewerIcon
                 size={96}
-                className={`shadow-lg shadow-primary/10 ${isLoading || isInitializing ? 'animate-pulse' : ''}`}
+                className={`shadow-lg shadow-primary/10 ${isLoading || isInitializing ? "animate-pulse" : ""}`}
               />
               <div className="text-center">
                 <h3 className="font-semibold">Hirelytics AI</h3>
@@ -365,11 +365,14 @@ export function InterviewSession({
                   Interview Assistant
                 </p>
               </div>
-              
+
               {isInitializing && (
-                <TypingIndicator text="Initializing interview" className="mt-2" />
+                <TypingIndicator
+                  text="Initializing interview"
+                  className="mt-2"
+                />
               )}
-              
+
               {isLoading && !isInitializing && (
                 <TypingIndicator text="Thinking" className="mt-2" />
               )}
@@ -464,19 +467,19 @@ export function InterviewSession({
       <div className="chat-section flex flex-col bg-muted rounded-lg overflow-hidden w-full md:w-[30%] min-w-[280px] h-[350px] md:h-auto mt-4 md:mt-0">
         <div className="p-3 border-b bg-gradient-to-r from-muted/80 to-muted/50 flex items-center justify-between">
           <h3 className="font-semibold text-foreground/90">Interview Chat</h3>
-          
+
           {isInitializing && (
             <div className="text-xs px-2 py-1 bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400 rounded-full">
               Initializing...
             </div>
           )}
-          
+
           {!isUserTurn && !isInitializing && (
             <div className="text-xs px-2 py-1 bg-primary/10 text-primary rounded-full">
               AI is responding...
             </div>
           )}
-          
+
           {isUserTurn && messages.length > 0 && !isInitializing && (
             <div className="text-xs px-2 py-1 bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400 rounded-full">
               Your turn
@@ -533,22 +536,27 @@ export function InterviewSession({
                 isInitializing
                   ? "Initializing interview..."
                   : isUserTurn
-                  ? "Type your message..."
-                  : "Please wait for the AI to respond..."
+                    ? "Type your message..."
+                    : "Please wait for the AI to respond..."
               }
               value={messageInput}
               onChange={(e) => setMessageInput(e.target.value)}
               onKeyDown={handleKeyPress}
               disabled={!isUserTurn || isLoading || isInitializing}
               className={`min-h-12 resize-none bg-background border-muted focus:border-primary/30 rounded-lg transition-all ${
-                (!isUserTurn || isInitializing) ? "opacity-50" : ""
+                !isUserTurn || isInitializing ? "opacity-50" : ""
               }`}
               rows={2}
             />
             <Button
               size="icon"
               onClick={sendChatMessage}
-              disabled={!messageInput.trim() || !isUserTurn || isLoading || isInitializing}
+              disabled={
+                !messageInput.trim() ||
+                !isUserTurn ||
+                isLoading ||
+                isInitializing
+              }
               className="mb-1 h-10 w-10 rounded-full bg-primary hover:bg-primary/90 transition-all"
             >
               {isLoading || isInitializing ? (

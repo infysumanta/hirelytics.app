@@ -22,7 +22,10 @@ export async function POST(req: NextRequest) {
     // Get application details
     const application = await JobApplication.findById(applicationId);
     if (!application) {
-      return NextResponse.json({ error: "Application not found" }, { status: 404 });
+      return NextResponse.json(
+        { error: "Application not found" },
+        { status: 404 },
+      );
     }
 
     // Get job details
@@ -46,20 +49,22 @@ export async function POST(req: NextRequest) {
     `;
 
     // Generate initial greeting and question
-    const initialGreeting = await generateGeminiText(initPrompt, "gemini-1.5-pro");
+    const initialGreeting = await generateGeminiText(
+      initPrompt,
+      "gemini-1.5-pro",
+    );
 
-    return NextResponse.json({ 
+    return NextResponse.json({
       greeting: initialGreeting,
       jobTitle: job.title,
       companyName: job.companyName,
-      applicationId
+      applicationId,
     });
-    
   } catch (error) {
     console.error("Error initializing interview:", error);
     return NextResponse.json(
       { error: error instanceof Error ? error.message : "An error occurred" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

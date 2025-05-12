@@ -45,7 +45,7 @@ export function useInterviewChat({
     const initializeInterview = async () => {
       setIsInitializing(true);
       setIsLoading(true);
-      
+
       try {
         const response = await fetch("/api/ai/interview/init", {
           method: "POST",
@@ -62,7 +62,7 @@ export function useInterviewChat({
         }
 
         const data = await response.json();
-        
+
         // Set initial greeting from AI
         const initialMessage: Message = {
           id: Date.now().toString(),
@@ -72,20 +72,20 @@ export function useInterviewChat({
         };
 
         setMessages([initialMessage]);
-        
+
         // Add to conversation history
         conversationHistoryRef.current = [
           {
             role: "assistant",
             content: data.greeting,
-          }
+          },
         ];
-        
+
         // After initial greeting, it's user's turn
         setIsUserTurn(true);
       } catch (error) {
         console.error("Error initializing interview:", error);
-        
+
         // Fallback message if initialization fails
         const fallbackMessage: Message = {
           id: Date.now().toString(),
@@ -99,7 +99,7 @@ export function useInterviewChat({
           {
             role: "assistant",
             content: fallbackMessage.text,
-          }
+          },
         ];
         setIsUserTurn(true);
       } finally {
@@ -117,9 +117,12 @@ export function useInterviewChat({
     const lastMessage = messages[messages.length - 1];
     if (lastMessage) {
       const role = lastMessage.sender === "ai" ? "assistant" : "user";
-      
+
       // Check if this message is already in the history to avoid duplicates
-      const lastHistoryMessage = conversationHistoryRef.current[conversationHistoryRef.current.length - 1];
+      const lastHistoryMessage =
+        conversationHistoryRef.current[
+          conversationHistoryRef.current.length - 1
+        ];
       if (lastHistoryMessage?.content !== lastMessage.text) {
         conversationHistoryRef.current.push({
           role,
@@ -165,7 +168,7 @@ export function useInterviewChat({
       }
 
       const data = await response.json();
-      
+
       // Add AI response
       const aiMessage: Message = {
         id: (Date.now() + 1).toString(),
@@ -175,12 +178,12 @@ export function useInterviewChat({
       };
 
       setMessages((prevMessages) => [...prevMessages, aiMessage]);
-      
+
       // After AI responds, it's user's turn again
       setIsUserTurn(true);
     } catch (error) {
       console.error("Error in interview chat:", error);
-      
+
       // Add error message
       const errorMessage: Message = {
         id: (Date.now() + 1).toString(),
