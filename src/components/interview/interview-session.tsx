@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -35,12 +35,16 @@ interface InterviewSessionProps {
   applicationId: string;
   jobTitle: string;
   companyName: string;
+  cameraMonitoring?: boolean;
+  monitoringInterval?: number;
 }
 
 export function InterviewSession({
   applicationId,
   jobTitle,
   companyName,
+  cameraMonitoring = true,
+  monitoringInterval = 30000, // Default 30 seconds
 }: InterviewSessionProps) {
   const [videoEnabled, setVideoEnabled] = useState(true);
   const [micEnabled, setMicEnabled] = useState(true);
@@ -60,6 +64,9 @@ export function InterviewSession({
     null,
   );
   const [showSettings, setShowSettings] = useState(false);
+  const [isMonitoring, setIsMonitoring] = useState(cameraMonitoring);
+  const monitoringIntervalRef = useRef<NodeJS.Timeout | undefined>(undefined);
+  const intervalValueRef = useRef(monitoringInterval);
 
   const videoRef = useRef<Webcam>(null);
   const aiVideoRef = useRef<HTMLDivElement>(null);
@@ -89,6 +96,105 @@ export function InterviewSession({
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
+
+  // Function to capture and upload image
+  const captureAndUploadImage = useCallback(async () => {
+    if (!videoRef.current || !isMonitoring) return;
+
+    const imageSrc = videoRef.current.getScreenshot();
+    if (!imageSrc) return;
+
+    try {
+      console.log("Capturing and uploading image...");
+      const response = await fetch(
+        `/api/applications/${applicationId}/monitoring`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            image: imageSrc,
+            timestamp: new Date().toISOString(),
+          }),
+        },
+      );
+
+      if (!response.ok) {
+        console.error("Failed to upload monitoring image");
+      } else {
+        console.log("Successfully uploaded monitoring image");
+      }
+    } catch (error) {
+      console.error("Error uploading monitoring image:", error);
+    }
+  }, [applicationId, isMonitoring]);
+
+  // Handle camera monitoring setup and prop changes
+  useEffect(() => {
+    console.log("Camera monitoring props changed:", {
+      cameraMonitoring,
+      monitoringInterval,
+    });
+    setIsMonitoring(cameraMonitoring);
+    intervalValueRef.current = monitoringInterval;
+  }, [cameraMonitoring, monitoringInterval]);
+
+  // Take initial picture when video is ready
+  useEffect(() => {
+    console.log(videoEnabled, isMonitoring);
+    let initialCapture: NodeJS.Timeout;
+    if (videoEnabled && isMonitoring) {
+      // Wait a short moment for video to initialize
+      initialCapture = setTimeout(() => {
+        console.log("Taking initial capture");
+        captureAndUploadImage();
+      }, 1000);
+    }
+    return () => {
+      if (initialCapture) clearTimeout(initialCapture);
+    };
+  }, [videoEnabled, isMonitoring, captureAndUploadImage]);
+
+  // Set up monitoring interval
+  useEffect(() => {
+    const setupMonitoring = () => {
+      if (isMonitoring && videoEnabled) {
+        console.log(
+          "Starting monitoring interval with delay:",
+          intervalValueRef.current,
+        );
+        // Set up interval (initial capture is handled by the effect above)
+        monitoringIntervalRef.current = setInterval(
+          captureAndUploadImage,
+          intervalValueRef.current,
+        );
+      }
+    };
+
+    // Clear existing interval if any
+    if (monitoringIntervalRef.current) {
+      clearInterval(monitoringIntervalRef.current);
+      monitoringIntervalRef.current = undefined;
+    }
+
+    // Set up new interval
+    setupMonitoring();
+
+    return () => {
+      if (monitoringIntervalRef.current) {
+        clearInterval(monitoringIntervalRef.current);
+        monitoringIntervalRef.current = undefined;
+      }
+    };
+  }, [isMonitoring, videoEnabled, captureAndUploadImage]);
+
+  // Clear monitoring when video is disabled
+  useEffect(() => {
+    if (!videoEnabled && monitoringIntervalRef.current) {
+      clearInterval(monitoringIntervalRef.current);
+    }
+  }, [videoEnabled]);
 
   const toggleVideo = () => {
     if (videoRef.current && videoRef.current.video) {

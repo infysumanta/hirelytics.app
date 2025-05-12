@@ -23,6 +23,11 @@ export interface ParsedResume {
   missingSkills?: string[]; // Important skills from job that candidate lacks
 }
 
+interface MonitoringImage {
+  s3Key: string;
+  timestamp: Date;
+}
+
 export interface IJobApplication extends Document {
   jobId: string;
   userId: string; // User ID reference
@@ -36,6 +41,9 @@ export interface IJobApplication extends Document {
   preferredLanguage: string;
   status: "pending" | "reviewed" | "accepted" | "rejected";
   parsedResume?: ParsedResume; // Parsed resume data including match score and AI comments
+  monitoringEnabled?: boolean; // Whether camera monitoring is enabled
+  monitoringInterval?: number; // Interval in milliseconds between captures
+  monitoringImages?: MonitoringImage[]; // Array of captured monitoring images
   createdAt: Date;
   updatedAt: Date;
 }
@@ -51,30 +59,25 @@ const JobApplicationSchema = new Schema(
       ref: "User",
       required: [true, "User ID is required"],
     },
+    candidateName: String,
+    email: String,
     resumeUrl: {
       type: String,
       required: [true, "Resume URL is required"],
     },
     resumeBase64: {
       type: String,
-      required: [true, "Resume base64 data is required"],
+      required: [true, "Resume base64 content is required"],
     },
     fileName: {
       type: String,
       required: [true, "File name is required"],
     },
-    s3Key: {
-      type: String,
-      // Optional but useful for generating signed URLs
-    },
-    s3Bucket: {
-      type: String,
-      // Optional but useful for generating signed URLs
-    },
+    s3Key: String,
+    s3Bucket: String,
     preferredLanguage: {
       type: String,
       required: [true, "Preferred language is required"],
-      default: "en",
     },
     status: {
       type: String,
@@ -83,6 +86,7 @@ const JobApplicationSchema = new Schema(
     },
     parsedResume: {
       extractedText: String,
+      about: String,
       skills: [String],
       experience: {
         years: Number,
@@ -95,18 +99,26 @@ const JobApplicationSchema = new Schema(
         },
       ],
       analyzedAt: Date,
-      // Match-specific fields with improved schema
-      matchScore: {
-        type: Number,
-        min: 0,
-        max: 100,
-      },
+      matchScore: Number,
       aiComments: String,
       matchedAt: Date,
-      // Additional match fields for future expansion
       topSkillMatches: [String],
       missingSkills: [String],
     },
+    monitoringEnabled: {
+      type: Boolean,
+      default: false,
+    },
+    monitoringInterval: {
+      type: Number,
+      default: 30000, // Default 30 seconds
+    },
+    monitoringImages: [
+      {
+        s3Key: String,
+        timestamp: Date,
+      },
+    ],
   },
   {
     timestamps: true,

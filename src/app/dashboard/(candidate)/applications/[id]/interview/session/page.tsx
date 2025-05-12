@@ -8,10 +8,11 @@ import { InterviewSession } from "@/components/interview/interview-session";
 import { AIInterviewBackground } from "@/components/interview/ai-interview-background";
 
 type Props = {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 };
 
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
+export async function generateMetadata(props: Props): Promise<Metadata> {
+  const params = await props.params;
   const applicationId = params.id;
 
   try {
@@ -39,7 +40,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   }
 }
 
-export default async function InterviewSessionPage({ params }: Props) {
+export default async function InterviewSessionPage(props: Props) {
+  const params = await props.params;
   const applicationId = params.id;
 
   try {
