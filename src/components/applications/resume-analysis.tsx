@@ -15,6 +15,7 @@ import {
 import { IJobApplication } from "@/models/job-application";
 import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
+import ResumeMatchResult from "./resume-match-result";
 
 interface ResumeAnalysisProps {
   applicationId: string;
@@ -32,11 +33,17 @@ export function ResumeAnalysis({ applicationId }: ResumeAnalysisProps) {
       try {
         setIsLoading(true);
 
-        // Call the analysis API endpoint
+        // Call the analysis API endpoint with explicit runMatching=true
         const response = await fetch(
           `/api/applications/${applicationId}/analyze`,
           {
             method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              runMatching: true, // Always run matching by default
+            }),
           },
         );
 
@@ -99,10 +106,40 @@ export function ResumeAnalysis({ applicationId }: ResumeAnalysisProps) {
     <Card className="p-8">
       <CardHeader className="text-center">
         <h1 className="text-2xl font-bold">Resume Analysis</h1>
-        <p className="text-muted-foreground">
-          We&apos;re analyzing your resume to match your skills with the job
-          requirements
-        </p>
+
+        {application?.parsedResume?.matchScore ? (
+          <div className="mt-4">
+            <div
+              className="inline-flex items-center px-4 py-2 rounded-full text-white font-semibold text-sm gap-2 shadow-md"
+              style={{
+                backgroundColor:
+                  application.parsedResume.matchScore >= 70
+                    ? "rgb(34, 197, 94)"
+                    : application.parsedResume.matchScore >= 50
+                      ? "rgb(251, 191, 36)"
+                      : "rgb(239, 68, 68)",
+              }}
+            >
+              <span className="flex items-center gap-1">
+                {application.parsedResume.matchScore >= 70 ? (
+                  <>✓ Strong Match:</>
+                ) : application.parsedResume.matchScore >= 50 ? (
+                  <>◐ Potential Match:</>
+                ) : (
+                  <>✗ Low Match:</>
+                )}
+                <span className="font-bold ml-1">
+                  {application.parsedResume.matchScore}%
+                </span>
+              </span>
+            </div>
+          </div>
+        ) : (
+          <p className="text-muted-foreground">
+            We&apos;re analyzing your resume to match your skills with the job
+            requirements
+          </p>
+        )}
       </CardHeader>
 
       <CardContent>
@@ -230,6 +267,53 @@ export function ResumeAnalysis({ applicationId }: ResumeAnalysisProps) {
                     </Card>
                   </>
                 )}
+
+                {/* Resume Match Score Component */}
+                <ResumeMatchResult
+                  score={application?.parsedResume?.matchScore}
+                  comments={application?.parsedResume?.aiComments}
+                  matchedAt={application?.parsedResume?.matchedAt?.toString()}
+                  topSkillMatches={application?.parsedResume?.topSkillMatches}
+                  missingSkills={application?.parsedResume?.missingSkills}
+                  onRefreshRequest={async () => {
+                    // Display loading state
+                    setIsLoading(true);
+                    toast.info("Refreshing match analysis...", {
+                      id: "refresh-analysis",
+                      duration: 3000,
+                    });
+
+                    try {
+                      // Call the analysis API endpoint with explicit matching request
+                      const response = await fetch(
+                        `/api/applications/${applicationId}/analyze`,
+                        {
+                          method: "POST",
+                          headers: { "Content-Type": "application/json" },
+                          body: JSON.stringify({ runMatching: true }),
+                        },
+                      );
+
+                      if (!response.ok) {
+                        throw new Error("Failed to refresh analysis");
+                      }
+
+                      const result = await response.json();
+                      setApplication(result.application);
+
+                      toast.success("Match analysis updated", {
+                        id: "refresh-analysis",
+                      });
+                    } catch (err) {
+                      console.error("Error refreshing match analysis:", err);
+                      toast.error("Failed to refresh analysis", {
+                        id: "refresh-analysis",
+                      });
+                    } finally {
+                      setIsLoading(false);
+                    }
+                  }}
+                />
 
                 <Card className="p-4">
                   <div className="flex items-start gap-3">

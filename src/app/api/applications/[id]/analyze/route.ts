@@ -1,11 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
 import { connectToDatabase } from "@/lib/mongodb";
 import { JobApplication } from "@/models/job-application";
+import Job from "@/models/job";
 import { auth } from "@/auth";
 import { GetObjectCommand } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { createS3Client } from "@/lib/s3-client";
 import pdf from "pdf-parse";
+import { generateGeminiText, parseGeminiMatchResponse } from "@/lib/ai-utils";
 
 // Create S3 client
 const s3Client = createS3Client();
@@ -124,13 +126,16 @@ export async function POST(
 
     // Check authentication
     const session = await auth();
-    console.log({ session });
     if (!session) {
       return NextResponse.json(
         { error: "Unauthorized", message: "Authentication required" },
         { status: 401 },
       );
     }
+
+    // Get options from request body
+    const body = await req.json().catch(() => ({}));
+    const { runMatching = true } = body; // Default to true - always run matching unless explicitly disabled
 
     const { id } = await params;
     const application = await JobApplication.findById(id);
@@ -209,16 +214,96 @@ export async function POST(
     const experience = extractExperience(parsedText);
     const education = extractEducation(parsedText);
 
-    // Create parsed resume object
+    // Create parsed resume object with optional matching fields
     const parsedResume = {
       extractedText: parsedText,
       skills,
       experience,
       education,
       analyzedAt: new Date(),
+      matchScore: undefined as number | undefined,
+      aiComments: undefined as string | undefined,
+      matchedAt: undefined as Date | undefined,
+      topSkillMatches: undefined as string[] | undefined,
+      missingSkills: undefined as string[] | undefined,
     };
 
-    // Store the parsed data in the application
+    // If runMatching is true, also perform matching against job description
+    let matchResult = null;
+    if (runMatching) {
+      try {
+        // Get the job details directly
+        const job = await Job.findById(application.jobId);
+
+        if (job) {
+          // Extract relevant information for matching
+          const { title, description, requirements, skills: jobSkills } = job;
+
+          // Create prompt for Gemini
+          const prompt = `
+            I need you to analyze a job candidate's resume against a job description and provide a comprehensive assessment. 
+            
+            Job Information:
+            Title: ${title}
+            Description: ${description}
+            Required Skills: ${jobSkills.join(", ")}
+            ${requirements ? `Additional Requirements: ${requirements}` : ""}
+
+            Candidate Information:
+            Resume Text: ${parsedText.substring(0, 5000)} ${parsedText.length > 5000 ? "...(truncated)" : ""}
+            Identified Skills: ${skills.join(", ")}
+            Experience: ${experience.years} years at companies: ${experience.companies.join(", ")}
+            Education: ${education.map((e: { degree: string; institution: string }) => `${e.degree} from ${e.institution}`).join("; ")}
+
+            Format your response exactly as follows:
+            
+            Score: [0-100]
+            Analysis: [150-300 words analyzing the candidate's fit for the role, strengths, and weaknesses]
+            Top Skills: [List the most relevant matching skills, separated by commas]
+            Missing Skills: [List critical skills from the job description that the candidate appears to lack, separated by commas]
+            
+            Make sure to provide a fair and objective assessment. The score should reflect how well the candidate's qualifications match the job requirements, with 100 being a perfect match.
+          `;
+
+          // Generate match score and analysis with Gemini
+          const geminiResponse = await generateGeminiText(prompt);
+
+          // Parse the response with our enhanced parser
+          const {
+            score: matchScore,
+            analysis: aiComments,
+            topMatches: topSkillMatches,
+            missingSkills,
+          } = parseGeminiMatchResponse(geminiResponse);
+
+          // Update parsed resume with matching data and additional fields
+          parsedResume.matchScore = matchScore;
+          parsedResume.aiComments = aiComments;
+          parsedResume.matchedAt = new Date();
+
+          // Include additional data if available
+          if (topSkillMatches) parsedResume.topSkillMatches = topSkillMatches;
+          if (missingSkills) parsedResume.missingSkills = missingSkills;
+
+          matchResult = {
+            success: true,
+            match: {
+              score: matchScore,
+              comments: aiComments,
+              matchedAt: parsedResume.matchedAt,
+              topSkillMatches: parsedResume.topSkillMatches,
+              missingSkills: parsedResume.missingSkills,
+            },
+          };
+        } else {
+          console.error("Job not found for application:", application.jobId);
+        }
+      } catch (matchError) {
+        console.error("Error during match process:", matchError);
+      }
+    }
+
+    // Store the parsed data in the application (including any match data)
     application.parsedResume = parsedResume;
     await application.save();
 
@@ -229,6 +314,7 @@ export async function POST(
         ...application.toJSON(),
         resumeBase64: "**base64 data stored**", // Don't expose the full base64 data
       },
+      matching: matchResult,
     });
   } catch (error) {
     console.error("Error analyzing resume:", error);

@@ -39,7 +39,7 @@ export async function GET(
   { params }: { params: { id: string } },
 ) {
   try {
-    const { id } = params;
+    const { id } = await params;
 
     // Connect to database
     await connectToDatabase();

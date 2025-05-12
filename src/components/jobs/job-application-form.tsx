@@ -52,7 +52,6 @@ interface JobApplicationFormProps {
 }
 
 export function JobApplicationForm({
-  jobId,
   job,
   inModal = false,
   onSubmitSuccess,
@@ -153,11 +152,11 @@ export function JobApplicationForm({
     try {
       // Log job and jobId for debugging
       console.log("Job object:", job);
-      console.log("JobId prop:", jobId);
+      console.log("JobId prop:", job.id);
 
       // Prepare application data - Use the URL ID which is what's used in the database as jobId
       const applicationData = {
-        jobId: jobId,
+        jobId: job.id,
         userId: session?.user?.id || "",
         // Candidatename and email are now optional in the model
         resumeUrl: values.resumeUrl,
@@ -192,12 +191,7 @@ export function JobApplicationForm({
       const applicationId = result.application._id;
 
       // Either call the success callback or redirect
-      if (onSubmitSuccess) {
-        onSubmitSuccess(applicationId);
-      } else {
-        // Redirect to the analysis page
-        router.push(`/dashboard/applications/${applicationId}/analysis`);
-      }
+      onSubmitSuccess?.(applicationId);
     } catch (error) {
       console.error("Application submission error:", error);
       toast.error("Submission failed", {

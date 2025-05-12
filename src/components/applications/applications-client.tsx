@@ -10,7 +10,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Eye } from "lucide-react";
+import { Eye, BarChart2, CheckCircle } from "lucide-react";
 
 // Application status type
 export type ApplicationStatus =
@@ -28,6 +28,14 @@ export interface JobApplication {
   resumeUrl: string;
   preferredLanguage: string;
   status: ApplicationStatus;
+  parsedResume?: {
+    skills: string[];
+    matchScore?: number;
+    aiComments?: string;
+    matchedAt?: string;
+    topSkillMatches?: string[];
+    missingSkills?: string[];
+  };
   createdAt: string;
   updatedAt: string;
 }
@@ -167,6 +175,62 @@ export function ApplicationsClient() {
       },
     },
     {
+      accessorKey: "parsedResume.matchScore",
+      header: "Match Score",
+      sortingFn: (rowA, rowB) => {
+        const scoreA = rowA.original.parsedResume?.matchScore || 0;
+        const scoreB = rowB.original.parsedResume?.matchScore || 0;
+        return scoreB - scoreA; // Sort in descending order (highest first)
+      },
+      cell: ({ row }) => {
+        const application = row.original;
+        const matchScore = application.parsedResume?.matchScore;
+
+        if (matchScore === undefined)
+          return (
+            <span className="text-muted-foreground text-sm">Not analyzed</span>
+          );
+
+        let badgeColor = "";
+        let statusIcon = "";
+
+        if (matchScore >= 70) {
+          badgeColor = "bg-green-100 text-green-800 border-green-300";
+          statusIcon = "✓";
+        } else if (matchScore >= 50) {
+          badgeColor = "bg-amber-100 text-amber-800 border-amber-300";
+          statusIcon = "◐";
+        } else {
+          badgeColor = "bg-red-100 text-red-800 border-red-300";
+          statusIcon = "✗";
+        }
+
+        return (
+          <div className="flex items-center gap-2">
+            <div className="w-[52px] flex-shrink-0">
+              <div className="h-2 w-full rounded-full bg-muted overflow-hidden">
+                <div
+                  className={`h-full rounded-full ${
+                    matchScore >= 70
+                      ? "bg-green-500"
+                      : matchScore >= 50
+                        ? "bg-amber-500"
+                        : "bg-red-500"
+                  }`}
+                  style={{ width: `${matchScore}%` }}
+                />
+              </div>
+            </div>
+            <span
+              className={`inline-flex items-center px-2 py-1 rounded-md text-xs font-medium border ${badgeColor}`}
+            >
+              {statusIcon} {matchScore}%
+            </span>
+          </div>
+        );
+      },
+    },
+    {
       accessorKey: "createdAt",
       header: "Applied Date",
       cell: ({ row }) => {
@@ -179,16 +243,56 @@ export function ApplicationsClient() {
       cell: ({ row }) => {
         const application = row.original;
         return (
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() =>
-              window.open(`/dashboard/jobs/${application.job.urlId}`, "_blank")
-            }
-          >
-            <Eye className="h-4 w-4 mr-1" />
-            View Job
-          </Button>
+          <div className="flex space-x-2">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() =>
+                window.open(
+                  `/dashboard/jobs/${application.job.urlId}`,
+                  "_blank",
+                )
+              }
+            >
+              <Eye className="h-4 w-4 mr-1" />
+              View Job
+            </Button>
+            <Button
+              variant={
+                application.parsedResume?.matchScore !== undefined
+                  ? "outline"
+                  : "secondary"
+              }
+              size="sm"
+              onClick={() =>
+                window.open(
+                  `/dashboard/applications/${application._id}/analyze`,
+                  "_blank",
+                )
+              }
+              className={
+                application.parsedResume?.matchScore !== undefined
+                  ? application.parsedResume.matchScore >= 70
+                    ? "text-green-600 hover:text-green-700"
+                    : application.parsedResume.matchScore >= 50
+                      ? "text-amber-600 hover:text-amber-700"
+                      : "text-red-600 hover:text-red-700"
+                  : ""
+              }
+            >
+              {application.parsedResume?.matchScore !== undefined ? (
+                <>
+                  <BarChart2 className="h-4 w-4 mr-1" />
+                  View Analysis
+                </>
+              ) : (
+                <>
+                  <CheckCircle className="h-4 w-4 mr-1" />
+                  Analyze Resume
+                </>
+              )}
+            </Button>
+          </div>
         );
       },
     },

@@ -12,6 +12,14 @@ export interface ParsedResume {
     institution: string;
   }[];
   analyzedAt: Date;
+  // Match-specific fields
+  matchScore?: number; // 0-100 score indicating compatibility with job
+  aiComments?: string; // AI-generated analysis of the match
+  matchedAt?: Date; // When the match was performed
+
+  // For future expansion
+  topSkillMatches?: string[]; // Skills that matched job requirements
+  missingSkills?: string[]; // Important skills from job that candidate lacks
 }
 
 export interface IJobApplication extends Document {
@@ -26,7 +34,7 @@ export interface IJobApplication extends Document {
   s3Bucket?: string; // S3 bucket name for generating signed URLs
   preferredLanguage: string;
   status: "pending" | "reviewed" | "accepted" | "rejected";
-  parsedResume?: ParsedResume; // Parsed resume data
+  parsedResume?: ParsedResume; // Parsed resume data including match score and AI comments
   createdAt: Date;
   updatedAt: Date;
 }
@@ -86,6 +94,17 @@ const JobApplicationSchema = new Schema(
         },
       ],
       analyzedAt: Date,
+      // Match-specific fields with improved schema
+      matchScore: {
+        type: Number,
+        min: 0,
+        max: 100,
+      },
+      aiComments: String,
+      matchedAt: Date,
+      // Additional match fields for future expansion
+      topSkillMatches: [String],
+      missingSkills: [String],
     },
   },
   {

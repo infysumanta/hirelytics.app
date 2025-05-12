@@ -28,7 +28,7 @@ export function JobApplicationModal({
   const handleApplicationSuccess = (applicationId: string) => {
     onClose();
     // Navigate to dashboard application-specific success page
-    router.push(`/dashboard/applications/${applicationId}`);
+    router.push(`/dashboard/applications/${applicationId}/analysis`);
   };
 
   return (

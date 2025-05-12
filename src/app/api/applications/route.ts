@@ -127,9 +127,25 @@ export async function GET(req: NextRequest) {
     if (jobId) filter.jobId = jobId;
     if (userId) filter.userId = userId;
 
-    // Get job applications with filters
+    // Get job applications with filters - explicitly include only the fields we need
+    // This is more efficient than excluding fields, especially for match score data
     const jobApplications = await JobApplication.find(filter)
-      .select("-resumeBase64") // Don't include the base64 data in listings to reduce payload size
+      .select({
+        jobId: 1,
+        userId: 1,
+        fileName: 1,
+        status: 1,
+        resumeUrl: 1,
+        preferredLanguage: 1,
+        createdAt: 1,
+        updatedAt: 1,
+        // Include all match-related fields from parsedResume
+        "parsedResume.matchScore": 1,
+        "parsedResume.matchedAt": 1,
+        "parsedResume.skills": 1,
+        "parsedResume.topSkillMatches": 1,
+        "parsedResume.missingSkills": 1,
+      })
       .sort({ createdAt: -1 });
 
     return NextResponse.json({ success: true, applications: jobApplications });
