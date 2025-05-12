@@ -552,38 +552,78 @@ export function InterviewSession({
               {messages.map((message) => (
                 <div
                   key={message.id}
-                  className={`flex ${message.sender === "ai" ? "justify-start" : "justify-end"}`}
+                  className={`flex ${
+                    message.sender === "system"
+                      ? "justify-center"
+                      : message.sender === "ai"
+                        ? "justify-start"
+                        : "justify-end"
+                  }`}
                 >
-                  {message.sender === "ai" && (
-                    <div className="flex-shrink-0 mr-2 self-end mb-1">
-                      <div className="w-8 h-8 rounded-full bg-primary/10 border border-primary/20 overflow-hidden flex items-center justify-center">
-                        <AIInterviewerIcon size={28} />
+                  {message.sender === "system" ? (
+                    // System message (centered, special styling)
+                    <div className="w-full max-w-[90%] px-4 py-3 my-2 rounded-lg bg-muted/80 border border-border/80 shadow-sm">
+                      <div className="text-xs uppercase tracking-wider text-muted-foreground font-semibold mb-1">
+                        System Information
+                      </div>
+                      <div className="text-sm prose-sm prose-headings:text-primary prose-headings:my-1 prose-p:my-1 prose-hr:my-2 markdown-content">
+                        {message.text.split("\n").map((line, i) =>
+                          line.startsWith("##") ? (
+                            <h3
+                              key={i}
+                              className="text-sm font-medium mt-2 mb-1"
+                            >
+                              {line.replace("##", "")}
+                            </h3>
+                          ) : line.startsWith("#") ? (
+                            <h2
+                              key={i}
+                              className="text-base font-semibold mt-2 mb-1"
+                            >
+                              {line.replace("#", "")}
+                            </h2>
+                          ) : (
+                            <p key={i} className="text-sm my-0.5">
+                              {line}
+                            </p>
+                          ),
+                        )}
                       </div>
                     </div>
-                  )}
-                  <div
-                    className={`max-w-[75%] p-3 rounded-lg shadow-sm ${
-                      message.sender === "ai"
-                        ? "bg-muted-foreground/10 text-foreground border border-border/50"
-                        : "bg-primary/90 text-primary-foreground"
-                    } ${message.sender === "ai" ? "rounded-tl-none" : "rounded-tr-none"} transition-all hover:shadow-md`}
-                  >
-                    <p className="text-sm whitespace-pre-wrap">
-                      {message.text}
-                    </p>
-                    <p className="text-xs opacity-70 mt-1 text-right">
-                      {message.timestamp.toLocaleTimeString([], {
-                        hour: "2-digit",
-                        minute: "2-digit",
-                      })}
-                    </p>
-                  </div>
-                  {message.sender === "user" && (
-                    <div className="flex-shrink-0 ml-2 self-end mb-1">
-                      <div className="w-8 h-8 rounded-full bg-primary/20 border border-primary/30 overflow-hidden flex items-center justify-center text-primary">
-                        <User className="h-5 w-5" />
+                  ) : (
+                    <>
+                      {message.sender === "ai" && (
+                        <div className="flex-shrink-0 mr-2 self-end mb-1">
+                          <div className="w-8 h-8 rounded-full bg-primary/10 border border-primary/20 overflow-hidden flex items-center justify-center">
+                            <AIInterviewerIcon size={28} />
+                          </div>
+                        </div>
+                      )}
+                      <div
+                        className={`max-w-[75%] p-3 rounded-lg shadow-sm ${
+                          message.sender === "ai"
+                            ? "bg-muted-foreground/10 text-foreground border border-border/50"
+                            : "bg-primary/90 text-primary-foreground"
+                        } ${message.sender === "ai" ? "rounded-tl-none" : "rounded-tr-none"} transition-all hover:shadow-md`}
+                      >
+                        <p className="text-sm whitespace-pre-wrap">
+                          {message.text}
+                        </p>
+                        <p className="text-xs opacity-70 mt-1 text-right">
+                          {message.timestamp.toLocaleTimeString([], {
+                            hour: "2-digit",
+                            minute: "2-digit",
+                          })}
+                        </p>
                       </div>
-                    </div>
+                      {message.sender === "user" && (
+                        <div className="flex-shrink-0 ml-2 self-end mb-1">
+                          <div className="w-8 h-8 rounded-full bg-primary/20 border border-primary/30 overflow-hidden flex items-center justify-center text-primary">
+                            <User className="h-5 w-5" />
+                          </div>
+                        </div>
+                      )}
+                    </>
                   )}
                 </div>
               ))}

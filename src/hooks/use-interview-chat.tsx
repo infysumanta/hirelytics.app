@@ -6,7 +6,7 @@ import { toast } from "sonner";
 export interface Message {
   id: string;
   text: string;
-  sender: "ai" | "user";
+  sender: "ai" | "user" | "system";
   timestamp: Date;
 }
 
@@ -70,7 +70,11 @@ export function useInterviewChat({
           // Load existing chat history
           const formattedMessages: Message[] = data.chatHistory.map(
             (
-              msg: { text: string; sender: "ai" | "user"; timestamp: string },
+              msg: {
+                text: string;
+                sender: "ai" | "user" | "system";
+                timestamp: string;
+              },
               index: number,
             ) => ({
               id: `history-${index}`,
@@ -82,11 +86,13 @@ export function useInterviewChat({
 
           setMessages(formattedMessages);
 
-          // Build conversation history for context
-          conversationHistoryRef.current = formattedMessages.map((msg) => ({
-            role: msg.sender === "ai" ? "assistant" : "user",
-            content: msg.text,
-          }));
+          // Build conversation history for context - filter out system messages for AI context
+          conversationHistoryRef.current = formattedMessages
+            .filter((msg) => msg.sender !== "system") // Exclude system messages from AI context
+            .map((msg) => ({
+              role: msg.sender === "ai" ? "assistant" : "user",
+              content: msg.text,
+            }));
 
           console.log(
             "Loaded existing chat history:",
@@ -97,23 +103,52 @@ export function useInterviewChat({
             `Continuing previous interview with ${formattedMessages.length} messages`,
           );
         } else {
-          // Start new chat with initial greeting
-          const initialMessage: Message = {
-            id: Date.now().toString(),
-            text: data.greeting,
-            sender: "ai",
-            timestamp: new Date(),
-          };
+          // Start new chat with returned chat history which should include system message and initial greeting
+          if (data.chatHistory && data.chatHistory.length > 0) {
+            const formattedMessages: Message[] = data.chatHistory.map(
+              (
+                msg: {
+                  text: string;
+                  sender: "ai" | "user" | "system";
+                  timestamp: string | Date;
+                },
+                index: number,
+              ) => ({
+                id: `new-${index}`,
+                text: msg.text,
+                sender: msg.sender,
+                timestamp: new Date(msg.timestamp),
+              }),
+            );
 
-          setMessages([initialMessage]);
+            setMessages(formattedMessages);
 
-          // Add to conversation history
-          conversationHistoryRef.current = [
-            {
-              role: "assistant",
-              content: data.greeting,
-            },
-          ];
+            // Build conversation history for context - filter out system messages
+            conversationHistoryRef.current = formattedMessages
+              .filter((msg) => msg.sender !== "system") // Exclude system messages from AI context
+              .map((msg) => ({
+                role: msg.sender === "ai" ? "assistant" : "user",
+                content: msg.text,
+              }));
+          } else {
+            // Fallback to just using the greeting if for some reason chatHistory is not included
+            const initialMessage: Message = {
+              id: Date.now().toString(),
+              text: data.greeting,
+              sender: "ai",
+              timestamp: new Date(),
+            };
+
+            setMessages([initialMessage]);
+
+            // Add to conversation history
+            conversationHistoryRef.current = [
+              {
+                role: "assistant",
+                content: data.greeting,
+              },
+            ];
+          }
 
           toast.success("Interview session initialized");
         }
@@ -153,15 +188,21 @@ export function useInterviewChat({
   useEffect(() => {
     // Only take the last message to add to history
     const lastMessage = messages[messages.length - 1];
-    if (lastMessage) {
+    if (lastMessage && lastMessage.sender !== "system") {
       const role = lastMessage.sender === "ai" ? "assistant" : "user";
 
       // Check if this message is already in the history to avoid duplicates
       const lastHistoryMessage =
-        conversationHistoryRef.current[
-          conversationHistoryRef.current.length - 1
-        ];
-      if (lastHistoryMessage?.content !== lastMessage.text) {
+        conversationHistoryRef.current.length > 0
+          ? conversationHistoryRef.current[
+              conversationHistoryRef.current.length - 1
+            ]
+          : null;
+
+      if (
+        !lastHistoryMessage ||
+        lastHistoryMessage.content !== lastMessage.text
+      ) {
         conversationHistoryRef.current.push({
           role,
           content: lastMessage.text,

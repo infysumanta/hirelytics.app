@@ -31,7 +31,7 @@ interface MonitoringImage {
 // Interface for interview chat messages
 interface InterviewMessage {
   text: string;
-  sender: "ai" | "user";
+  sender: "ai" | "user" | "system";
   timestamp: Date;
 }
 
@@ -132,7 +132,7 @@ const JobApplicationSchema = new Schema(
         text: String,
         sender: {
           type: String,
-          enum: ["ai", "user"],
+          enum: ["ai", "user", "system"],
         },
         timestamp: Date,
       },

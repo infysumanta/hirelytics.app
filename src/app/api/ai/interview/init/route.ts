@@ -74,20 +74,79 @@ export async function POST(req: NextRequest) {
       "gemini-2.0-flash-lite",
     );
 
-    // Save the initial greeting to the database as the first message
+    // Create a system message with job description and complete parsed resume data
+    const systemMessage = `
+# Interview for: ${job.title} at ${job.companyName}
+
+## Job Description:
+${job.description || "No detailed job description available."}
+
+## Required Skills:
+${job.skills?.join(", ") || "not specified"}.
+
+## Resume Data:
+${
+  application.parsedResume
+    ? `
+Skills: ${application.parsedResume.skills?.join(", ") || "Not specified"}
+
+Experience: ${application.parsedResume.experience?.years || "Unknown"} years
+${
+  application.parsedResume.experience?.companies?.length
+    ? `Companies: ${application.parsedResume.experience.companies.join(", ")}`
+    : "No company information available"
+}
+
+Education: ${
+        application.parsedResume.education
+          ?.map(
+            (edu: { degree?: string; institution?: string }) =>
+              `${edu.degree || "Degree"} - ${edu.institution || "Institution"}`,
+          )
+          .join("\n") || "No education information available"
+      }
+
+About: ${application.parsedResume.about || "No summary available"}
+`
+    : "Resume data not available."
+}
+    `.trim();
+
+    // Save both system message and initial AI greeting to the database
     await JobApplication.findByIdAndUpdate(
       applicationId,
       {
         $push: {
-          interviewChatHistory: {
-            text: initialGreeting,
-            sender: "ai",
-            timestamp: new Date(),
-          },
+          interviewChatHistory: [
+            {
+              text: systemMessage,
+              sender: "system",
+              timestamp: new Date(),
+            },
+            {
+              text: initialGreeting,
+              sender: "ai",
+              timestamp: new Date(),
+            },
+          ],
         },
       },
       { new: true },
     );
+
+    // Create the messages that will be returned as the initial chat history
+    const initialChatHistory = [
+      {
+        text: systemMessage,
+        sender: "system",
+        timestamp: new Date(),
+      },
+      {
+        text: initialGreeting,
+        sender: "ai",
+        timestamp: new Date(),
+      },
+    ];
 
     return NextResponse.json({
       greeting: initialGreeting,
@@ -95,7 +154,7 @@ export async function POST(req: NextRequest) {
       companyName: job.companyName,
       applicationId,
       hasExistingChat: false,
-      chatHistory: [],
+      chatHistory: initialChatHistory, // Return the newly created messages
     });
   } catch (error) {
     console.error("Error initializing interview:", error);
