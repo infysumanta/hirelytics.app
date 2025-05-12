@@ -69,7 +69,9 @@ export function InterviewSession({
   );
   const [showSettings, setShowSettings] = useState(false);
   const [isMonitoring, setIsMonitoring] = useState(cameraMonitoring);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [isTabFocused, setIsTabFocused] = useState(true);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [isWindowFocused, setIsWindowFocused] = useState(true);
   const [alerts, setAlerts] = useState<string[]>([]);
   const monitoringIntervalRef = useRef<NodeJS.Timeout | undefined>(undefined);
