@@ -71,3 +71,31 @@
   background-repeat: no-repeat;
   opacity: var(--ai-bg-pattern);
 }
+
+/* Chat container improvements */
+.chat-section {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+/* Fixed height message container with proper scrolling */
+.chat-section .flex-1 {
+  display: flex;
+  flex-direction: column;
+  height: calc(100% - 110px); /* Adjust based on header and input height */
+  min-height: 0; /* Important for Firefox */
+}
+
+/* Match video section height on desktop */
+@media (min-width: 768px) {
+  .interview-layout {
+    height: calc(100vh - 20rem);
+  }
+
+  .chat-section,
+  .video-section {
+    height: 100%;
+  }
+}

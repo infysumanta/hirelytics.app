@@ -112,7 +112,15 @@ export function InterviewSession({
 
   // Scroll to bottom of messages when new ones arrive
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    if (messagesEndRef.current) {
+      setTimeout(() => {
+        messagesEndRef.current?.scrollIntoView({
+          behavior: "smooth",
+          block: "end",
+          inline: "nearest",
+        });
+      }, 150);
+    }
   }, [messages]);
 
   // Function to capture and upload image
@@ -345,7 +353,7 @@ export function InterviewSession({
   // with a window.confirm in the dropdown menu onClick handler
 
   return (
-    <div className="w-full h-[calc(100vh-20rem)] flex flex-col md:flex-row interview-layout gap-4">
+    <div className="w-full min-h-[calc(100vh-20rem)] flex flex-col md:flex-row interview-layout gap-4">
       {/* Video Section - 70% on desktop, 100% on mobile */}
       <div className="video-section bg-muted rounded-lg overflow-hidden flex flex-col w-full md:w-[70%]">
         <div
@@ -474,7 +482,8 @@ export function InterviewSession({
       </div>
 
       {/* Chat Section - 30% on desktop, 100% on mobile */}
-      <div className="chat-section flex flex-col bg-muted rounded-lg overflow-hidden w-full md:w-[30%] min-w-[280px] h-[350px] md:h-auto mt-4 md:mt-0">
+      <div className="chat-section flex flex-col bg-muted rounded-lg overflow-hidden w-full md:w-[30%] min-w-[280px] h-[500px] md:h-full mt-4 md:mt-0">
+        {/* Chat Header - Fixed at top */}
         <div className="p-3 border-b bg-gradient-to-r from-muted/80 to-muted/50 flex items-center justify-between">
           <div className="flex items-center">
             <h3 className="font-semibold text-foreground/90">Interview Chat</h3>
@@ -515,67 +524,80 @@ export function InterviewSession({
             </DropdownMenu>
           </div>
 
-          {isInitializing && (
-            <div className="text-xs px-2 py-1 bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400 rounded-full">
-              Initializing...
-            </div>
-          )}
+          <div className="flex gap-1">
+            {isInitializing && (
+              <div className="text-xs px-2 py-1 bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400 rounded-full">
+                Initializing...
+              </div>
+            )}
 
-          {!isUserTurn && !isInitializing && (
-            <div className="text-xs px-2 py-1 bg-primary/10 text-primary rounded-full">
-              AI is responding...
-            </div>
-          )}
+            {!isUserTurn && !isInitializing && (
+              <div className="text-xs px-2 py-1 bg-primary/10 text-primary rounded-full">
+                AI is responding...
+              </div>
+            )}
 
-          {isUserTurn && messages.length > 0 && !isInitializing && (
-            <div className="text-xs px-2 py-1 bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400 rounded-full">
-              Your turn
-            </div>
-          )}
+            {isUserTurn && messages.length > 0 && !isInitializing && (
+              <div className="text-xs px-2 py-1 bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400 rounded-full whitespace-nowrap">
+                Your turn
+              </div>
+            )}
+          </div>
         </div>
 
-        <ScrollArea className="flex-1 px-3 py-4">
-          <div className="flex flex-col gap-4">
-            {messages.map((message) => (
-              <div
-                key={message.id}
-                className={`flex ${message.sender === "ai" ? "justify-start" : "justify-end"}`}
-              >
-                {message.sender === "ai" && (
-                  <div className="flex-shrink-0 mr-2 self-end mb-1">
-                    <div className="w-8 h-8 rounded-full bg-primary/10 border border-primary/20 overflow-hidden flex items-center justify-center">
-                      <AIInterviewerIcon size={28} />
-                    </div>
-                  </div>
-                )}
+        {/* Message Container with ScrollArea - Takes available space between header and input */}
+        <div className="flex-1 overflow-hidden">
+          <ScrollArea className="h-full w-full">
+            <div className="flex flex-col gap-4 px-3 py-4 min-h-full">
+              {messages.map((message) => (
                 <div
-                  className={`max-w-[75%] p-3 rounded-lg shadow-sm ${
-                    message.sender === "ai"
-                      ? "bg-muted-foreground/10 text-foreground border border-border/50"
-                      : "bg-primary/90 text-primary-foreground"
-                  } ${message.sender === "ai" ? "rounded-tl-none" : "rounded-tr-none"} transition-all hover:shadow-md`}
+                  key={message.id}
+                  className={`flex ${message.sender === "ai" ? "justify-start" : "justify-end"}`}
                 >
-                  <p className="text-sm whitespace-pre-wrap">{message.text}</p>
-                  <p className="text-xs opacity-70 mt-1 text-right">
-                    {message.timestamp.toLocaleTimeString([], {
-                      hour: "2-digit",
-                      minute: "2-digit",
-                    })}
-                  </p>
-                </div>
-                {message.sender === "user" && (
-                  <div className="flex-shrink-0 ml-2 self-end mb-1">
-                    <div className="w-8 h-8 rounded-full bg-primary/20 border border-primary/30 overflow-hidden flex items-center justify-center text-primary">
-                      <User className="h-5 w-5" />
+                  {message.sender === "ai" && (
+                    <div className="flex-shrink-0 mr-2 self-end mb-1">
+                      <div className="w-8 h-8 rounded-full bg-primary/10 border border-primary/20 overflow-hidden flex items-center justify-center">
+                        <AIInterviewerIcon size={28} />
+                      </div>
                     </div>
+                  )}
+                  <div
+                    className={`max-w-[75%] p-3 rounded-lg shadow-sm ${
+                      message.sender === "ai"
+                        ? "bg-muted-foreground/10 text-foreground border border-border/50"
+                        : "bg-primary/90 text-primary-foreground"
+                    } ${message.sender === "ai" ? "rounded-tl-none" : "rounded-tr-none"} transition-all hover:shadow-md`}
+                  >
+                    <p className="text-sm whitespace-pre-wrap">
+                      {message.text}
+                    </p>
+                    <p className="text-xs opacity-70 mt-1 text-right">
+                      {message.timestamp.toLocaleTimeString([], {
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      })}
+                    </p>
                   </div>
-                )}
-              </div>
-            ))}
-            <div ref={messagesEndRef} />
-          </div>
-        </ScrollArea>
+                  {message.sender === "user" && (
+                    <div className="flex-shrink-0 ml-2 self-end mb-1">
+                      <div className="w-8 h-8 rounded-full bg-primary/20 border border-primary/30 overflow-hidden flex items-center justify-center text-primary">
+                        <User className="h-5 w-5" />
+                      </div>
+                    </div>
+                  )}
+                </div>
+              ))}
+              <div ref={messagesEndRef} />
+              {messages.length === 0 && (
+                <div className="flex items-center justify-center h-32 text-muted-foreground text-sm italic">
+                  Messages will appear here
+                </div>
+              )}
+            </div>
+          </ScrollArea>
+        </div>
 
+        {/* Input Area - Fixed at bottom */}
         <div className="p-3 border-t bg-background/80 backdrop-blur-sm">
           <div className="flex gap-2 items-end">
             <Textarea
@@ -593,7 +615,7 @@ export function InterviewSession({
               className={`min-h-12 resize-none bg-background border-muted focus:border-primary/30 rounded-lg transition-all ${
                 !isUserTurn || isInitializing ? "opacity-50" : ""
               }`}
-              rows={2}
+              rows={1}
             />
             <Button
               size="icon"
@@ -604,7 +626,7 @@ export function InterviewSession({
                 isLoading ||
                 isInitializing
               }
-              className="mb-1 h-10 w-10 rounded-full bg-primary hover:bg-primary/90 transition-all"
+              className="flex-shrink-0 h-10 w-10 rounded-full bg-primary hover:bg-primary/90 transition-all"
             >
               {isLoading || isInitializing ? (
                 <Loader2 className="h-4 w-4 animate-spin" />
