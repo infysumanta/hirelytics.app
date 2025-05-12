@@ -47,7 +47,7 @@ export default async function InterviewPage(props: Props) {
   try {
     await connectToDatabase();
     const application = await JobApplication.findById(applicationId);
-
+    console.log(application);
     if (!application) {
       notFound();
     }
