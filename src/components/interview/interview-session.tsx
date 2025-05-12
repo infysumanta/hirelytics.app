@@ -38,19 +38,23 @@ import { MediaDeviceSelector } from "./media-device-selector";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { INTERVIEW_ALERTS } from "@/constants/interview-alerts";
 import { useInterviewChat } from "@/hooks/use-interview-chat";
+import { useInterviewState } from "@/hooks/use-interview-state";
+import { InterviewCompletion } from "./interview-completion";
 
 // Message interface is now imported from the useInterviewChat hook
 
 interface InterviewSessionProps {
   applicationId: string;
-  jobTitle?: string; // Made optional since we're not using it directly
-  companyName?: string; // Made optional since we're not using it directly
+  jobTitle?: string;
+  companyName?: string;
   cameraMonitoring?: boolean;
   monitoringInterval?: number;
 }
 
 export function InterviewSession({
   applicationId,
+  jobTitle = "Position",
+  companyName = "Company",
   cameraMonitoring = false,
   monitoringInterval = 30000, // Default 30 seconds
 }: InterviewSessionProps) {
@@ -69,6 +73,8 @@ export function InterviewSession({
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [isWindowFocused, setIsWindowFocused] = useState(true);
   const [alerts, setAlerts] = useState<string[]>([]);
+  // Track interview state
+  const { interviewState } = useInterviewState(applicationId);
   const monitoringIntervalRef = useRef<NodeJS.Timeout | undefined>(undefined);
   const intervalValueRef = useRef(monitoringInterval);
 
@@ -352,7 +358,15 @@ export function InterviewSession({
   // Remove the handleRestartInterview function since we're now directly using restartInterview
   // with a window.confirm in the dropdown menu onClick handler
 
-  return (
+  // Conditionally render the interview or completion screen
+  return interviewState.isCompleted ? (
+    <InterviewCompletion
+      applicationId={applicationId}
+      jobTitle={jobTitle}
+      companyName={companyName}
+      redirectUrl="/dashboard"
+    />
+  ) : (
     <div className="w-full min-h-[calc(100vh-20rem)] flex flex-col md:flex-row interview-layout gap-4">
       {/* Video Section - 70% on desktop, 100% on mobile */}
       <div className="video-section bg-muted rounded-lg overflow-hidden flex flex-col w-full md:w-[70%]">

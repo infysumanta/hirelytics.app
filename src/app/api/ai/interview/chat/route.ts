@@ -19,6 +19,39 @@ const interviewChatSchema = z.object({
     .optional(),
 });
 
+// Helper function to detect if message is a question rather than answer
+function isCandidateQuestion(message: string): boolean {
+  // Check for question marks
+  if (message.includes("?")) {
+    return true;
+  }
+
+  // Check for common question starters
+  const questionStarters = [
+    "can you",
+    "what",
+    "how",
+    "why",
+    "when",
+    "where",
+    "who",
+    "which",
+    "could you",
+    "would you",
+    "do you",
+    "are you",
+    "is there",
+    "will you",
+  ];
+
+  const lowerMessage = message.toLowerCase();
+  return questionStarters.some(
+    (starter) =>
+      lowerMessage.startsWith(starter) ||
+      lowerMessage.includes(" " + starter + " "),
+  );
+}
+
 export async function POST(req: NextRequest) {
   try {
     // Parse request body
@@ -28,6 +61,9 @@ export async function POST(req: NextRequest) {
       message,
       history = [],
     } = interviewChatSchema.parse(body);
+
+    // Check if candidate is asking a question rather than answering
+    const isQuestion = isCandidateQuestion(message);
 
     // Connect to database
     await connectToDatabase();
@@ -85,13 +121,14 @@ export async function POST(req: NextRequest) {
       5. How do you prioritize tasks when working on multiple projects?
 
       YOUR APPROACH:
-      1. Be dominant and direct the conversation - don't ask "Do you have any questions for me?"
-      2. After each candidate answer, provide brief positive feedback or a short observation before asking your next question
-      3. Keep track of what phase of the interview you're in and progress accordingly
-      4. Be professional but assertive - you are evaluating the candidate
-      5. Always ask only ONE question at a time
-      6. Keep your responses concise (maximum 2-3 sentences)
-      7. After all questions are completed, thank the candidate and end the interview professionally
+      1. Be dominant and direct the conversation
+      2. NEVER respond to candidate questions about the job or your opinions - ignore any questions from the candidate and continue with your interview structure
+      3. After each candidate answer, provide brief positive feedback or a short observation before asking your next question
+      4. Keep track of what phase of the interview you're in and progress accordingly
+      5. Be professional but assertive - you are evaluating the candidate
+      6. Always ask only ONE question at a time
+      7. Keep your responses concise (maximum 2-3 sentences)
+      8. After all questions are completed, thank the candidate professionally, inform them that their interview is complete and being analyzed, and that they'll receive feedback shortly
       
       Current conversation context: The interview is in progress.
     `;
@@ -128,7 +165,7 @@ export async function POST(req: NextRequest) {
       ${interviewState.currentPhase === "project_discussion" && interviewState.projectQuestionsAsked >= 3 ? "Give brief feedback and transition to behavioral questions." : ""}
       ${interviewState.currentPhase === "behavioral_questions" && interviewState.behavioralQuestionsAsked < 3 ? `Give brief feedback and ask behavioral question #${interviewState.behavioralQuestionsAsked + 1}.` : ""}
       ${interviewState.currentPhase === "behavioral_questions" && interviewState.behavioralQuestionsAsked >= 3 ? "Give brief feedback and transition to conclusion phase. Let the candidate know that all planned questions have been asked." : ""}
-      ${interviewState.currentPhase === "conclusion" ? "Thank the candidate professionally for their time, mention that their responses will be evaluated, and wish them success in their job search. Do NOT ask if they have any questions for you." : ""}
+      ${interviewState.currentPhase === "conclusion" ? "Thank the candidate with a clear ending statement like: 'Thank you for participating in this interview. The interview is now complete, and your responses will be analyzed. The system will now redirect you to view your feedback. We wish you success in your job search.' Make it clear that the interview is finished and the AI will not respond further." : ""}
       
       After receiving the candidate's response, always include a brief assessment of their answer before asking the next question.
       Make sure to construct a proper transition between different phases of the interview.
@@ -147,11 +184,20 @@ export async function POST(req: NextRequest) {
       ASSISTANT:
     `;
 
-    // Generate AI response
-    const response = await generateGeminiText(
-      finalPrompt,
-      "gemini-2.0-flash-lite",
-    );
+    // Generate AI response - if candidate is asking a question, gently redirect them
+    let response;
+
+    if (isQuestion && interviewState.currentPhase !== "completed") {
+      // If candidate is asking a question, provide a gentle redirect
+      response = `I appreciate your curiosity. As the interviewer, I need to focus on evaluating your qualifications for the ${job.title} position. Let's continue with our structured interview process. ${
+        interviewState.lastQuestion
+          ? "Could you please answer the question I asked?"
+          : "Let me ask you a relevant question."
+      }`;
+    } else {
+      // Normal response flow
+      response = await generateGeminiText(finalPrompt, "gemini-2.0-flash-lite");
+    }
 
     // Determine next interview state based on AI response and current state
     let nextPhase = interviewState.currentPhase;

@@ -208,6 +208,16 @@ export async function POST(req: NextRequest) {
     };
 
     // Update application with evaluation
+    await JobApplication.findByIdAndUpdate(
+      applicationId,
+      {
+        $set: {
+          "interviewState.feedback": feedback,
+          "interviewState.completedAt": new Date(),
+        },
+      },
+      { new: true },
+    );
 
     // Save the full evaluation response to chat history as a system message
     await JobApplication.findByIdAndUpdate(
