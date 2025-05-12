@@ -371,29 +371,44 @@ export async function POST(req: NextRequest) {
         : undefined;
 
     // Save user message and AI response to database with question tracking
+    // First verify the application still exists and get latest state
+    const currentApplication = await JobApplication.findById(applicationId);
+    if (!currentApplication) {
+      return NextResponse.json(
+        { error: "Application no longer exists" },
+        { status: 404 },
+      );
+    }
+
+    // Ensure we have the most current chat history
+    const currentChatHistory = currentApplication.interviewChatHistory || [];
+
+    // Create the new messages to add
+    const newMessages = [
+      {
+        text: message,
+        sender: "user",
+        timestamp: new Date(),
+        questionId: interviewState.lastQuestion || undefined,
+        questionCategory: currentQuestion?.category,
+      },
+      {
+        text: response,
+        sender: "ai",
+        timestamp: new Date(),
+        questionId: currentQuestion?.id,
+        questionCategory: currentQuestion?.category,
+        feedback: feedback,
+      },
+    ];
+
+    // Save user message and AI response to database with question tracking
     await JobApplication.findByIdAndUpdate(
       applicationId,
       {
-        $push: {
-          interviewChatHistory: [
-            {
-              text: message,
-              sender: "user",
-              timestamp: new Date(),
-              questionId: interviewState.lastQuestion || undefined,
-              questionCategory: currentQuestion?.category,
-            },
-            {
-              text: response,
-              sender: "ai",
-              timestamp: new Date(),
-              questionId: currentQuestion?.id,
-              questionCategory: currentQuestion?.category,
-              feedback: feedback,
-            },
-          ],
-        },
         $set: {
+          // Use the spread operator to create a completely new array with all messages
+          interviewChatHistory: [...currentChatHistory, ...newMessages],
           interviewState: {
             currentPhase: nextPhase,
             technicalQuestionsAsked,

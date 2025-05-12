@@ -8,13 +8,14 @@ import { generateGeminiText } from "@/lib/ai-utils";
 // Schema for validating request body
 const initInterviewSchema = z.object({
   applicationId: z.string(),
+  forceRestart: z.boolean().optional(),
 });
 
 export async function POST(req: NextRequest) {
   try {
     // Parse request body
     const body = await req.json();
-    const { applicationId } = initInterviewSchema.parse(body);
+    const { applicationId, forceRestart } = initInterviewSchema.parse(body);
 
     // Connect to database
     await connectToDatabase();
@@ -34,11 +35,15 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Job not found" }, { status: 404 });
     }
 
-    // Check if there's existing chat history
+    // Check if there's existing chat history and we're not forcing a restart
     const existingChatHistory = application.interviewChatHistory || [];
 
-    if (existingChatHistory.length > 0) {
-      // Return the existing chat history
+    if (existingChatHistory.length > 0 && !forceRestart) {
+      // Check if the interview is already completed
+      const interviewState = application.interviewState || {};
+      const isCompleted = interviewState.currentPhase === "completed";
+
+      // Return the existing chat history and preserve the current state
       return NextResponse.json({
         greeting: null, // No need for new greeting
         jobTitle: job.title,
@@ -46,6 +51,7 @@ export async function POST(req: NextRequest) {
         applicationId,
         hasExistingChat: true,
         chatHistory: existingChatHistory,
+        isCompleted: isCompleted,
       });
     }
 
@@ -120,36 +126,57 @@ About: ${application.parsedResume.about || "No summary available"}
 }
     `.trim();
 
-    // Save both system message and initial AI greeting to the database and initialize interview state
-    await JobApplication.findByIdAndUpdate(
-      applicationId,
-      {
-        $push: {
-          interviewChatHistory: [
-            {
-              text: systemMessage,
-              sender: "system",
-              timestamp: new Date(),
+    // Get the current application to ensure we have the most up-to-date state
+    const currentApplication = await JobApplication.findById(applicationId);
+    if (!currentApplication) {
+      return NextResponse.json(
+        { error: "Application no longer exists" },
+        { status: 404 },
+      );
+    }
+
+    // Initialize the chat history if it doesn't exist yet or if we're forcing a restart
+    if (
+      !currentApplication.interviewChatHistory ||
+      currentApplication.interviewChatHistory.length === 0 ||
+      forceRestart
+    ) {
+      // If we're forcing a restart, log it
+      if (forceRestart) {
+        console.log(
+          `[Interview Init] Forcing restart for application ${applicationId}`,
+        );
+      }
+
+      // Save both system message and initial AI greeting to the database and initialize interview state
+      await JobApplication.findByIdAndUpdate(
+        applicationId,
+        {
+          $set: {
+            interviewChatHistory: [
+              {
+                text: systemMessage,
+                sender: "system",
+                timestamp: new Date(),
+              },
+              {
+                text: initialGreeting,
+                sender: "ai",
+                timestamp: new Date(),
+              },
+            ],
+            interviewState: {
+              currentPhase: "introduction",
+              technicalQuestionsAsked: 0,
+              projectQuestionsAsked: 0,
+              behavioralQuestionsAsked: 0,
+              askedQuestions: [],
             },
-            {
-              text: initialGreeting,
-              sender: "ai",
-              timestamp: new Date(),
-            },
-          ],
-        },
-        $set: {
-          interviewState: {
-            currentPhase: "introduction",
-            technicalQuestionsAsked: 0,
-            projectQuestionsAsked: 0,
-            behavioralQuestionsAsked: 0,
-            askedQuestions: [],
           },
         },
-      },
-      { new: true },
-    );
+        { new: true },
+      );
+    }
 
     // Create the messages that will be returned as the initial chat history
     const initialChatHistory = [

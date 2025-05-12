@@ -42,8 +42,12 @@ export function useInterviewChat({
   const [isInitializing, setIsInitializing] = useState(true);
   const [isCompleted, setIsCompleted] = useState(false);
   const conversationHistoryRef = useRef<ConversationMessage[]>([]); // Initialize interview with job and resume context or load existing chat
+  const hasInitializedRef = useRef(false); // Track if initialization has been done
   useEffect(() => {
     const initializeInterview = async () => {
+      if (hasInitializedRef.current) return;
+      hasInitializedRef.current = true;
+
       setIsInitializing(true);
       setIsLoading(true);
 
@@ -84,10 +88,23 @@ export function useInterviewChat({
               text: msg.text,
               sender: msg.sender,
               timestamp: new Date(msg.timestamp),
+              isCompletionMessage:
+                msg.text.includes("interview is now complete") ||
+                msg.text.includes("Thank you for participating"),
             }),
           );
 
           setMessages(formattedMessages);
+
+          // Check if the interview is already completed
+          if (data.isCompleted) {
+            console.log("[Chat Hook] Loaded completed interview");
+            setIsCompleted(true);
+            setIsUserTurn(false);
+          } else {
+            // Set user turn to true only if the interview is not completed
+            setIsUserTurn(true);
+          }
 
           // Build conversation history for context - filter out system messages for AI context
           conversationHistoryRef.current = formattedMessages
@@ -154,10 +171,9 @@ export function useInterviewChat({
           }
 
           toast.success("Interview session initialized");
+          // After initialization, it's user's turn
+          setIsUserTurn(true);
         }
-
-        // After initialization, it's user's turn
-        setIsUserTurn(true);
       } catch (error) {
         console.error("Error initializing interview:", error);
         toast.error("Failed to initialize interview. Using fallback greeting.");
@@ -355,6 +371,8 @@ export function useInterviewChat({
     setIsLoading(true);
     setMessages([]);
     conversationHistoryRef.current = [];
+    setIsCompleted(false); // Reset completion state
+    hasInitializedRef.current = false; // Allow reinitialization
 
     toast.info("Restarting interview...");
 
@@ -381,6 +399,7 @@ export function useInterviewChat({
         },
         body: JSON.stringify({
           applicationId,
+          forceRestart: true, // Add flag to force restart
         }),
       });
 

@@ -69,10 +69,22 @@ export async function DELETE(req: NextRequest) {
     // Connect to database
     await connectToDatabase();
 
-    // Clear chat history for the application
+    // Clear chat history and reset interview state for the application
     const updatedApplication = await JobApplication.findByIdAndUpdate(
       applicationId,
-      { $set: { interviewChatHistory: [] } },
+      {
+        $set: {
+          interviewChatHistory: [],
+          // Reset the interview state when clearing history
+          interviewState: {
+            currentPhase: "introduction",
+            technicalQuestionsAsked: 0,
+            projectQuestionsAsked: 0,
+            behavioralQuestionsAsked: 0,
+            askedQuestions: [],
+          },
+        },
+      },
       { new: true },
     );
 
