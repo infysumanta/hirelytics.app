@@ -40,6 +40,14 @@ export function parseGeminiMatchResponse(response: string): {
   analysis: string;
   topMatches?: string[];
   missingSkills?: string[];
+  enhancedExperience?: {
+    years: number;
+    companies: string[];
+  };
+  enhancedEducation?: Array<{
+    degree: string;
+    institution: string;
+  }>;
 } {
   // Extract score (assuming format "Score: XX")
   const scoreMatch = response.match(/Score:\s*(\d+)/i);
@@ -89,10 +97,84 @@ export function parseGeminiMatchResponse(response: string): {
     missingSkills.push(...skills);
   }
 
+  // Extract enhanced experience information
+  const enhancedExperience: { years: number; companies: string[] } = {
+    years: 0,
+    companies: [],
+  };
+  const experienceSection = response.match(
+    /Experience:\s*([\s\S]+?)(?:\n\n|$)/i,
+  );
+  if (experienceSection && experienceSection[1]) {
+    // Try to extract years of experience
+    const yearsMatch = experienceSection[1].match(/(\d+)\s*(?:years?|yrs?)/i);
+    if (yearsMatch) {
+      enhancedExperience.years = parseInt(yearsMatch[1], 10);
+    }
+
+    // Try to extract company names
+    const companies = experienceSection[1]
+      .split(/[,;]|\n/)
+      .map((part) => {
+        // Look for company names that are capitalized and followed by common identifiers
+        const companyMatch = part.match(
+          /([A-Z][A-Za-z0-9\s\.\-&]+?)(?:\s+(?:as|at|where|from|until|to|\(|\)|-))/,
+        );
+        return companyMatch ? companyMatch[1].trim() : null;
+      })
+      .filter(
+        (company): company is string =>
+          company !== null &&
+          company.length > 2 &&
+          !company.match(
+            /^(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec|January|February|March|April|May|June|July|August|September|October|November|December|Experience|Education)$/i,
+          ),
+      );
+
+    enhancedExperience.companies = [...new Set(companies)]; // Remove duplicates
+  }
+
+  // Extract enhanced education information
+  const enhancedEducation: Array<{ degree: string; institution: string }> = [];
+  const educationSection = response.match(/Education:\s*([\s\S]+?)(?:\n\n|$)/i);
+  if (educationSection && educationSection[1]) {
+    const educationText = educationSection[1];
+
+    // Split by common delimiters and process each education entry
+    const entries = educationText.split(/[;]|\n/).filter(Boolean);
+    for (const entry of entries) {
+      // Look for patterns like "Degree from Institution" or "Institution - Degree"
+      const match1 = entry.match(
+        /([^,]+?)(?:from|at|in)\s+([A-Z][A-Za-z0-9\s\.\-&,]+)/i,
+      );
+      const match2 = entry.match(
+        /([A-Z][A-Za-z0-9\s\.\-&,]+?)[:\-]\s*([^,]+)/i,
+      );
+
+      if (match1) {
+        enhancedEducation.push({
+          degree: match1[1].trim(),
+          institution: match1[2].trim(),
+        });
+      } else if (match2) {
+        enhancedEducation.push({
+          institution: match2[1].trim(),
+          degree: match2[2].trim(),
+        });
+      }
+    }
+  }
+
   return {
     score,
     analysis,
     topMatches: topMatches.length > 0 ? topMatches : undefined,
     missingSkills: missingSkills.length > 0 ? missingSkills : undefined,
+    enhancedExperience:
+      enhancedExperience.years > 0 || enhancedExperience.companies.length > 0
+        ? enhancedExperience
+        : undefined,
+    enhancedEducation:
+      enhancedEducation.length > 0 ? enhancedEducation : undefined,
   };
 }

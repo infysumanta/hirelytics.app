@@ -2,6 +2,7 @@ import mongoose, { Document, Schema } from "mongoose";
 
 export interface ParsedResume {
   extractedText: string;
+  about: string;
   skills: string[];
   experience: {
     years: number;

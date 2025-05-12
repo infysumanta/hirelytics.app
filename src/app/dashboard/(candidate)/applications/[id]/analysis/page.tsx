@@ -1,4 +1,4 @@
-import { ResumeAnalysis } from "@/components/applications/resume-analysis";
+import { ResumeAnalysis } from "@/components/applications/resume-analysis-rows";
 
 interface Props {
   params: Promise<{ id: string }>;
