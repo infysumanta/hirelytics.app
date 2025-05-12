@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -51,7 +51,7 @@ interface InterviewSessionProps {
 
 export function InterviewSession({
   applicationId,
-  cameraMonitoring = true,
+  cameraMonitoring = false,
   monitoringInterval = 30000, // Default 30 seconds
 }: InterviewSessionProps) {
   const [videoEnabled, setVideoEnabled] = useState(true);
@@ -116,7 +116,7 @@ export function InterviewSession({
   }, [messages]);
 
   // Function to capture and upload image
-  const captureAndUploadImage = async () => {
+  const captureAndUploadImage = useCallback(async () => {
     if (!videoRef.current || !isMonitoring) return;
 
     const imageSrc = videoRef.current.getScreenshot();
@@ -146,7 +146,7 @@ export function InterviewSession({
     } catch (error) {
       console.error("Error uploading monitoring image:", error);
     }
-  };
+  }, [applicationId, isMonitoring]);
 
   // Handle camera monitoring setup and prop changes
   useEffect(() => {
