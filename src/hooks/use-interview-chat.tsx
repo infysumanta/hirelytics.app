@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useCallback, useRef, useEffect } from "react";
+import { toast } from "sonner";
 
 export interface Message {
   id: string;
@@ -16,7 +17,6 @@ interface ConversationMessage {
 
 interface UseInterviewChatProps {
   applicationId: string;
-  jobTitle: string;
 }
 
 interface UseInterviewChatReturn {
@@ -27,20 +27,18 @@ interface UseInterviewChatReturn {
   isLoading: boolean;
   isUserTurn: boolean;
   isInitializing: boolean;
+  restartInterview: () => Promise<void>;
 }
 
 export function useInterviewChat({
   applicationId,
-  jobTitle,
 }: UseInterviewChatProps): UseInterviewChatReturn {
   const [messages, setMessages] = useState<Message[]>([]);
   const [messageInput, setMessageInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [isUserTurn, setIsUserTurn] = useState(false);
   const [isInitializing, setIsInitializing] = useState(true);
-  const conversationHistoryRef = useRef<ConversationMessage[]>([]);
-
-  // Initialize interview with job and resume context
+  const conversationHistoryRef = useRef<ConversationMessage[]>([]); // Initialize interview with job and resume context or load existing chat
   useEffect(() => {
     const initializeInterview = async () => {
       setIsInitializing(true);
@@ -58,33 +56,73 @@ export function useInterviewChat({
         });
 
         if (!response.ok) {
-          throw new Error("Failed to initialize interview");
+          const errorData = await response.json().catch(() => ({}));
+          throw new Error(errorData.error || "Failed to initialize interview");
         }
 
         const data = await response.json();
 
-        // Set initial greeting from AI
-        const initialMessage: Message = {
-          id: Date.now().toString(),
-          text: data.greeting,
-          sender: "ai",
-          timestamp: new Date(),
-        };
+        if (
+          data.hasExistingChat &&
+          data.chatHistory &&
+          data.chatHistory.length > 0
+        ) {
+          // Load existing chat history
+          const formattedMessages: Message[] = data.chatHistory.map(
+            (
+              msg: { text: string; sender: "ai" | "user"; timestamp: string },
+              index: number,
+            ) => ({
+              id: `history-${index}`,
+              text: msg.text,
+              sender: msg.sender,
+              timestamp: new Date(msg.timestamp),
+            }),
+          );
 
-        setMessages([initialMessage]);
+          setMessages(formattedMessages);
 
-        // Add to conversation history
-        conversationHistoryRef.current = [
-          {
-            role: "assistant",
-            content: data.greeting,
-          },
-        ];
+          // Build conversation history for context
+          conversationHistoryRef.current = formattedMessages.map((msg) => ({
+            role: msg.sender === "ai" ? "assistant" : "user",
+            content: msg.text,
+          }));
 
-        // After initial greeting, it's user's turn
+          console.log(
+            "Loaded existing chat history:",
+            formattedMessages.length,
+            "messages",
+          );
+          toast.info(
+            `Continuing previous interview with ${formattedMessages.length} messages`,
+          );
+        } else {
+          // Start new chat with initial greeting
+          const initialMessage: Message = {
+            id: Date.now().toString(),
+            text: data.greeting,
+            sender: "ai",
+            timestamp: new Date(),
+          };
+
+          setMessages([initialMessage]);
+
+          // Add to conversation history
+          conversationHistoryRef.current = [
+            {
+              role: "assistant",
+              content: data.greeting,
+            },
+          ];
+
+          toast.success("Interview session initialized");
+        }
+
+        // After initialization, it's user's turn
         setIsUserTurn(true);
       } catch (error) {
         console.error("Error initializing interview:", error);
+        toast.error("Failed to initialize interview. Using fallback greeting.");
 
         // Fallback message if initialization fails
         const fallbackMessage: Message = {
@@ -146,6 +184,7 @@ export function useInterviewChat({
       timestamp: new Date(),
     };
 
+    const sentMessage = messageInput.trim();
     setMessages((prevMessages) => [...prevMessages, userMessage]);
     setMessageInput("");
 
@@ -158,13 +197,14 @@ export function useInterviewChat({
         },
         body: JSON.stringify({
           applicationId,
-          message: messageInput,
+          message: sentMessage,
           history: conversationHistoryRef.current,
         }),
       });
 
       if (!response.ok) {
-        throw new Error("Failed to get interview response");
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.error || "Failed to get interview response");
       }
 
       const data = await response.json();
@@ -183,6 +223,7 @@ export function useInterviewChat({
       setIsUserTurn(true);
     } catch (error) {
       console.error("Error in interview chat:", error);
+      toast.error("Failed to get AI response");
 
       // Add error message
       const errorMessage: Message = {
@@ -199,6 +240,94 @@ export function useInterviewChat({
     }
   }, [applicationId, messageInput, isUserTurn, isLoading]);
 
+  // Function to restart the interview
+  const restartInterview = useCallback(async () => {
+    setIsInitializing(true);
+    setIsLoading(true);
+    setMessages([]);
+    conversationHistoryRef.current = [];
+
+    toast.info("Restarting interview...");
+
+    try {
+      // Clear existing chat history from database
+      const clearResponse = await fetch(
+        `/api/ai/interview/history?applicationId=${applicationId}`,
+        {
+          method: "DELETE",
+        },
+      );
+
+      if (!clearResponse.ok) {
+        console.warn(
+          "Failed to clear interview history, continuing with restart",
+        );
+      }
+
+      // Re-initialize the interview
+      const response = await fetch("/api/ai/interview/init", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          applicationId,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to restart interview");
+      }
+
+      const data = await response.json();
+
+      // Start new chat with initial greeting
+      const initialMessage: Message = {
+        id: Date.now().toString(),
+        text: data.greeting,
+        sender: "ai",
+        timestamp: new Date(),
+      };
+
+      setMessages([initialMessage]);
+
+      // Add to conversation history
+      conversationHistoryRef.current = [
+        {
+          role: "assistant",
+          content: data.greeting,
+        },
+      ];
+
+      // After initialization, it's user's turn
+      setIsUserTurn(true);
+      toast.success("Interview restarted successfully!");
+    } catch (error) {
+      console.error("Error restarting interview:", error);
+      toast.error("Failed to restart interview. Using fallback greeting.");
+
+      // Fallback message if restart fails
+      const fallbackMessage: Message = {
+        id: Date.now().toString(),
+        text: `Let's restart our interview. Please introduce yourself briefly.`,
+        sender: "ai",
+        timestamp: new Date(),
+      };
+
+      setMessages([fallbackMessage]);
+      conversationHistoryRef.current = [
+        {
+          role: "assistant",
+          content: fallbackMessage.text,
+        },
+      ];
+      setIsUserTurn(true);
+    } finally {
+      setIsInitializing(false);
+      setIsLoading(false);
+    }
+  }, [applicationId]);
+
   return {
     messages,
     messageInput,
@@ -207,5 +336,6 @@ export function useInterviewChat({
     isLoading,
     isUserTurn,
     isInitializing,
+    restartInterview,
   };
 }

@@ -34,24 +34,59 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Job not found" }, { status: 404 });
     }
 
-    // Create system prompt for initialization
+    // Check if there's existing chat history
+    const existingChatHistory = application.interviewChatHistory || [];
+
+    if (existingChatHistory.length > 0) {
+      // Return the existing chat history
+      return NextResponse.json({
+        greeting: null, // No need for new greeting
+        jobTitle: job.title,
+        companyName: job.companyName,
+        applicationId,
+        hasExistingChat: true,
+        chatHistory: existingChatHistory,
+      });
+    }
+
+    // Create system prompt for initialization with job description and resume details
     const initPrompt = `
       You are an AI interviewer for ${job.companyName}. You're conducting an interview for the ${job.title} position.
-      The job requires the following skills: ${job.skills?.join(", ") || "not specified"}.
       
-      The candidate has submitted a resume with the following content:
+      JOB DESCRIPTION:
+      ${job.description || "No detailed job description available."}
+      
+      REQUIRED SKILLS:
+      ${job.skills?.join(", ") || "not specified"}.
+      
+      CANDIDATE'S RESUME:
       """
-      ${application.resume?.text || "No resume text available"}
+      ${application.parsedResume?.extractedText || "No resume text available"}
       """
       
-      Please provide a professional, friendly greeting and first interview question that's relevant to the job role.
+      Based on the job description and resume details above, provide a professional, friendly greeting and first interview question that's relevant to the job role.
       Keep your response concise (2-3 sentences maximum) and end with a specific question related to the candidate's background or the job requirements.
     `;
 
     // Generate initial greeting and question
     const initialGreeting = await generateGeminiText(
       initPrompt,
-      "gemini-1.5-pro",
+      "gemini-2.0-flash-lite",
+    );
+
+    // Save the initial greeting to the database as the first message
+    await JobApplication.findByIdAndUpdate(
+      applicationId,
+      {
+        $push: {
+          interviewChatHistory: {
+            text: initialGreeting,
+            sender: "ai",
+            timestamp: new Date(),
+          },
+        },
+      },
+      { new: true },
     );
 
     return NextResponse.json({
@@ -59,6 +94,8 @@ export async function POST(req: NextRequest) {
       jobTitle: job.title,
       companyName: job.companyName,
       applicationId,
+      hasExistingChat: false,
+      chatHistory: [],
     });
   } catch (error) {
     console.error("Error initializing interview:", error);

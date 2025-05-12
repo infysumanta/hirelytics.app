@@ -87,6 +87,28 @@ export async function POST(req: NextRequest) {
       "gemini-2.0-flash-lite",
     );
 
+    // Save user message to database
+    await JobApplication.findByIdAndUpdate(
+      applicationId,
+      {
+        $push: {
+          interviewChatHistory: [
+            {
+              text: message,
+              sender: "user",
+              timestamp: new Date(),
+            },
+            {
+              text: response,
+              sender: "ai",
+              timestamp: new Date(),
+            },
+          ],
+        },
+      },
+      { new: true },
+    );
+
     return NextResponse.json({
       response,
       applicationId,

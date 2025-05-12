@@ -28,6 +28,13 @@ interface MonitoringImage {
   timestamp: Date;
 }
 
+// Interface for interview chat messages
+interface InterviewMessage {
+  text: string;
+  sender: "ai" | "user";
+  timestamp: Date;
+}
+
 export interface IJobApplication extends Document {
   jobId: string;
   userId: string; // User ID reference
@@ -44,6 +51,7 @@ export interface IJobApplication extends Document {
   monitoringEnabled?: boolean; // Whether camera monitoring is enabled
   monitoringInterval?: number; // Interval in milliseconds between captures
   monitoringImages?: MonitoringImage[]; // Array of captured monitoring images
+  interviewChatHistory?: InterviewMessage[]; // Chat history from interview sessions
   createdAt: Date;
   updatedAt: Date;
 }
@@ -116,6 +124,16 @@ const JobApplicationSchema = new Schema(
     monitoringImages: [
       {
         s3Key: String,
+        timestamp: Date,
+      },
+    ],
+    interviewChatHistory: [
+      {
+        text: String,
+        sender: {
+          type: String,
+          enum: ["ai", "user"],
+        },
         timestamp: Date,
       },
     ],

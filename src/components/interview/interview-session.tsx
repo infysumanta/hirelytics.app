@@ -14,8 +14,16 @@ import {
   User,
   AlertTriangle,
   Loader2,
+  MoreVertical,
+  RefreshCcw,
 } from "lucide-react";
 import { TypingIndicator } from "./typing-indicator";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { useIsMobile } from "@/hooks/use-mobile";
 import Webcam from "react-webcam";
 import {
@@ -35,15 +43,14 @@ import { useInterviewChat } from "@/hooks/use-interview-chat";
 
 interface InterviewSessionProps {
   applicationId: string;
-  jobTitle: string;
-  companyName: string;
+  jobTitle?: string; // Made optional since we're not using it directly
+  companyName?: string; // Made optional since we're not using it directly
   cameraMonitoring?: boolean;
   monitoringInterval?: number;
 }
 
 export function InterviewSession({
   applicationId,
-  jobTitle,
   cameraMonitoring = true,
   monitoringInterval = 30000, // Default 30 seconds
 }: InterviewSessionProps) {
@@ -74,9 +81,9 @@ export function InterviewSession({
     isLoading,
     isUserTurn,
     isInitializing,
+    restartInterview,
   } = useInterviewChat({
     applicationId,
-    jobTitle,
   });
 
   const videoRef = useRef<Webcam>(null);
@@ -334,6 +341,9 @@ export function InterviewSession({
     }
   };
 
+  // Remove the handleRestartInterview function since we're now directly using restartInterview
+  // with a window.confirm in the dropdown menu onClick handler
+
   return (
     <div className="w-full h-[calc(100vh-20rem)] flex flex-col md:flex-row interview-layout gap-4">
       {/* Video Section - 70% on desktop, 100% on mobile */}
@@ -466,7 +476,44 @@ export function InterviewSession({
       {/* Chat Section - 30% on desktop, 100% on mobile */}
       <div className="chat-section flex flex-col bg-muted rounded-lg overflow-hidden w-full md:w-[30%] min-w-[280px] h-[350px] md:h-auto mt-4 md:mt-0">
         <div className="p-3 border-b bg-gradient-to-r from-muted/80 to-muted/50 flex items-center justify-between">
-          <h3 className="font-semibold text-foreground/90">Interview Chat</h3>
+          <div className="flex items-center">
+            <h3 className="font-semibold text-foreground/90">Interview Chat</h3>
+
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="icon" className="h-8 w-8 ml-1">
+                  <MoreVertical className="h-4 w-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="start">
+                <DropdownMenuItem
+                  onClick={async () => {
+                    if (
+                      window.confirm(
+                        "Are you sure you want to restart this interview? This will clear all current conversation history.",
+                      )
+                    ) {
+                      await restartInterview();
+                    }
+                  }}
+                  disabled={isInitializing}
+                  className="flex items-center gap-2 cursor-pointer"
+                >
+                  {isInitializing ? (
+                    <>
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                      <span>Restarting...</span>
+                    </>
+                  ) : (
+                    <>
+                      <RefreshCcw className="h-4 w-4" />
+                      <span>Restart Interview</span>
+                    </>
+                  )}
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
 
           {isInitializing && (
             <div className="text-xs px-2 py-1 bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400 rounded-full">
