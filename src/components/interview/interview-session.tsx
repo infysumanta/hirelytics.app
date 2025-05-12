@@ -12,6 +12,7 @@ import {
   Send,
   Settings,
   User,
+  AlertTriangle,
 } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
 import Webcam from "react-webcam";
@@ -24,6 +25,9 @@ import {
 import { AIInterviewBackground } from "./ai-interview-background";
 import { AIInterviewerIcon } from "./ai-interviewer-icon";
 import { MediaDeviceSelector } from "./media-device-selector";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { INTERVIEW_ALERTS } from "@/constants/interview-alerts";
+
 interface Message {
   id: string;
   text: string;
@@ -65,6 +69,9 @@ export function InterviewSession({
   );
   const [showSettings, setShowSettings] = useState(false);
   const [isMonitoring, setIsMonitoring] = useState(cameraMonitoring);
+  const [isTabFocused, setIsTabFocused] = useState(true);
+  const [isWindowFocused, setIsWindowFocused] = useState(true);
+  const [alerts, setAlerts] = useState<string[]>([]);
   const monitoringIntervalRef = useRef<NodeJS.Timeout | undefined>(undefined);
   const intervalValueRef = useRef(monitoringInterval);
 
@@ -195,6 +202,85 @@ export function InterviewSession({
       clearInterval(monitoringIntervalRef.current);
     }
   }, [videoEnabled]);
+
+  // Handle tab visibility change
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      const isHidden = document.hidden;
+      setIsTabFocused(!isHidden);
+      if (isHidden) {
+        setAlerts((prev) =>
+          prev.includes(INTERVIEW_ALERTS.TAB_SWITCH)
+            ? prev
+            : [...prev, INTERVIEW_ALERTS.TAB_SWITCH],
+        );
+      } else {
+        setAlerts((prev) =>
+          prev.filter((alert) => alert !== INTERVIEW_ALERTS.TAB_SWITCH),
+        );
+      }
+    };
+
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+    return () => {
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+    };
+  }, []);
+
+  // Handle window focus
+  useEffect(() => {
+    const handleFocus = () => {
+      setIsWindowFocused(true);
+      setAlerts((prev) =>
+        prev.filter((alert) => alert !== INTERVIEW_ALERTS.WINDOW_SWITCH),
+      );
+    };
+
+    const handleBlur = () => {
+      setIsWindowFocused(false);
+      setAlerts((prev) =>
+        prev.includes(INTERVIEW_ALERTS.WINDOW_SWITCH)
+          ? prev
+          : [...prev, INTERVIEW_ALERTS.WINDOW_SWITCH],
+      );
+    };
+
+    window.addEventListener("focus", handleFocus);
+    window.addEventListener("blur", handleBlur);
+    return () => {
+      window.removeEventListener("focus", handleFocus);
+      window.removeEventListener("blur", handleBlur);
+    };
+  }, []);
+
+  // Watch for camera and microphone state changes
+  useEffect(() => {
+    if (!videoEnabled) {
+      setAlerts((prev) =>
+        prev.includes(INTERVIEW_ALERTS.CAMERA_OFF)
+          ? prev
+          : [...prev, INTERVIEW_ALERTS.CAMERA_OFF],
+      );
+    } else {
+      setAlerts((prev) =>
+        prev.filter((alert) => alert !== INTERVIEW_ALERTS.CAMERA_OFF),
+      );
+    }
+  }, [videoEnabled]);
+
+  useEffect(() => {
+    if (!micEnabled) {
+      setAlerts((prev) =>
+        prev.includes(INTERVIEW_ALERTS.MICROPHONE_OFF)
+          ? prev
+          : [...prev, INTERVIEW_ALERTS.MICROPHONE_OFF],
+      );
+    } else {
+      setAlerts((prev) =>
+        prev.filter((alert) => alert !== INTERVIEW_ALERTS.MICROPHONE_OFF),
+      );
+    }
+  }, [micEnabled]);
 
   const toggleVideo = () => {
     if (videoRef.current && videoRef.current.video) {
@@ -464,6 +550,18 @@ export function InterviewSession({
           </div>
         </div>
       </div>
+
+      {/* Alerts Section */}
+      {alerts.length > 0 && (
+        <div className="absolute top-4 left-4 z-50 flex flex-col gap-2">
+          {alerts.map((alert, index) => (
+            <Alert key={index} variant="destructive">
+              <AlertTriangle className="h-4 w-4" />
+              <AlertDescription>{alert}</AlertDescription>
+            </Alert>
+          ))}
+        </div>
+      )}
     </div>
   );
 }
