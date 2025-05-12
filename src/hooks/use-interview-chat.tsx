@@ -8,6 +8,7 @@ export interface Message {
   text: string;
   sender: "ai" | "user" | "system";
   timestamp: Date;
+  isCompletionMessage?: boolean;
 }
 
 interface ConversationMessage {
@@ -28,6 +29,7 @@ interface UseInterviewChatReturn {
   isUserTurn: boolean;
   isInitializing: boolean;
   restartInterview: () => Promise<void>;
+  isCompleted: boolean;
 }
 
 export function useInterviewChat({
@@ -38,6 +40,7 @@ export function useInterviewChat({
   const [isLoading, setIsLoading] = useState(false);
   const [isUserTurn, setIsUserTurn] = useState(false);
   const [isInitializing, setIsInitializing] = useState(true);
+  const [isCompleted, setIsCompleted] = useState(false);
   const conversationHistoryRef = useRef<ConversationMessage[]>([]); // Initialize interview with job and resume context or load existing chat
   useEffect(() => {
     const initializeInterview = async () => {
@@ -230,7 +233,46 @@ export function useInterviewChat({
     setMessageInput("");
 
     try {
-      // API call to get AI response
+      // Debug: Check for special command to force completion
+      if (
+        sentMessage.toLowerCase() === "/complete" ||
+        sentMessage.toLowerCase() === "/end"
+      ) {
+        console.log(
+          "[Chat Hook Debug] Forcing interview completion via",
+          sentMessage,
+        );
+
+        // Mock a completion response
+        const mockCompletionMessage =
+          "Your interview has been successfully completed! Your responses have been recorded and will be analyzed. Thank you for participating in this interview process with us.";
+
+        const aiMessage: Message = {
+          id: (Date.now() + 1).toString(),
+          text: "That concludes the interview. Thank you for your time and participation. Your responses will be analyzed, and you'll receive feedback shortly.",
+          sender: "ai",
+          timestamp: new Date(),
+          isCompletionMessage: true,
+        };
+
+        const systemMessage: Message = {
+          id: (Date.now() + 2).toString(),
+          text: mockCompletionMessage,
+          sender: "system",
+          timestamp: new Date(),
+          isCompletionMessage: true,
+        };
+
+        setMessages((prevMessages) => [
+          ...prevMessages,
+          aiMessage,
+          systemMessage,
+        ]);
+        setIsCompleted(true);
+        return;
+      }
+
+      // Regular API call
       const response = await fetch("/api/ai/interview/chat", {
         method: "POST",
         headers: {
@@ -256,12 +298,38 @@ export function useInterviewChat({
         text: data.response,
         sender: "ai",
         timestamp: new Date(),
+        isCompletionMessage: !!data.isCompleted,
       };
 
-      setMessages((prevMessages) => [...prevMessages, aiMessage]);
+      if (data.isCompleted && data.completionMessage) {
+        console.log(
+          "[Chat Hook] Received completion message:",
+          data.completionMessage,
+        );
 
-      // After AI responds, it's user's turn again
-      setIsUserTurn(true);
+        // If this is the final response, add a system completion message too
+        setMessages((prevMessages) => [
+          ...prevMessages,
+          aiMessage,
+          {
+            id: (Date.now() + 2).toString(),
+            text: data.completionMessage,
+            sender: "system",
+            timestamp: new Date(),
+            isCompletionMessage: true,
+          },
+        ]);
+
+        // Set the interview as completed
+        console.log("[Chat Hook] Setting isCompleted to true");
+        setIsCompleted(true);
+
+        // Don't set user turn to true since interview is completed
+      } else {
+        setMessages((prevMessages) => [...prevMessages, aiMessage]);
+        // After AI responds, it's user's turn again
+        setIsUserTurn(true);
+      }
     } catch (error) {
       console.error("Error in interview chat:", error);
       toast.error("Failed to get AI response");
@@ -378,5 +446,6 @@ export function useInterviewChat({
     isUserTurn,
     isInitializing,
     restartInterview,
+    isCompleted,
   };
 }

@@ -186,8 +186,21 @@ export async function POST(req: NextRequest) {
 
     // Generate AI response - if candidate is asking a question, gently redirect them
     let response;
+    let nextPhase = interviewState.currentPhase;
 
-    if (isQuestion && interviewState.currentPhase !== "completed") {
+    // Special case: Force interview completion with debug commands "/complete" or "/end"
+    if (
+      message.toLowerCase().trim() === "/complete" ||
+      message.toLowerCase().trim() === "/end"
+    ) {
+      console.log(
+        "[API Debug] Forcing interview completion via debug command:",
+        message,
+      );
+      nextPhase = "completed";
+      response =
+        "That concludes the interview. Thank you for your time and participation. Your responses are being analyzed, and you'll receive feedback shortly.";
+    } else if (isQuestion && interviewState.currentPhase !== "completed") {
       // If candidate is asking a question, provide a gentle redirect
       response = `I appreciate your curiosity. As the interviewer, I need to focus on evaluating your qualifications for the ${job.title} position. Let's continue with our structured interview process. ${
         interviewState.lastQuestion
@@ -200,7 +213,7 @@ export async function POST(req: NextRequest) {
     }
 
     // Determine next interview state based on AI response and current state
-    let nextPhase = interviewState.currentPhase;
+
     let technicalQuestionsAsked = interviewState.technicalQuestionsAsked;
     let projectQuestionsAsked = interviewState.projectQuestionsAsked;
     let behavioralQuestionsAsked = interviewState.behavioralQuestionsAsked;
@@ -374,10 +387,21 @@ export async function POST(req: NextRequest) {
       { new: true },
     );
 
-    return NextResponse.json({
-      response,
-      applicationId,
-    });
+    // Add special completion flag if interview is completed
+    if (nextPhase === "completed") {
+      return NextResponse.json({
+        response,
+        applicationId,
+        isCompleted: true,
+        completionMessage:
+          "Your interview has been successfully completed! Your responses have been recorded and will be analyzed. Thank you for participating in this interview process with us.",
+      });
+    } else {
+      return NextResponse.json({
+        response,
+        applicationId,
+      });
+    }
   } catch (error) {
     console.error("Error in interview chat:", error);
     return NextResponse.json(

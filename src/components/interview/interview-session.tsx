@@ -60,6 +60,7 @@ export function InterviewSession({
 }: InterviewSessionProps) {
   const [videoEnabled, setVideoEnabled] = useState(true);
   const [micEnabled, setMicEnabled] = useState(true);
+  const [showCompletionUI, setShowCompletionUI] = useState(false);
   const [selectedVideoDevice, setSelectedVideoDevice] = useState<string | null>(
     null,
   );
@@ -88,6 +89,7 @@ export function InterviewSession({
     isUserTurn,
     isInitializing,
     restartInterview,
+    isCompleted,
   } = useInterviewChat({
     applicationId,
   });
@@ -278,6 +280,41 @@ export function InterviewSession({
     };
   }, []);
 
+  // Show completion UI when interview is completed
+  useEffect(() => {
+    console.log("[Completion Debug] isCompleted:", isCompleted);
+    console.log("[Completion Debug] interviewState:", interviewState);
+
+    // Check for completed messages in the current messages array
+    const hasCompletionMessage = messages.some(
+      (msg) => msg.isCompletionMessage,
+    );
+    console.log(
+      "[Completion Debug] Has completion message:",
+      hasCompletionMessage,
+    );
+
+    // Check if the interview is completed from the interviewState
+    console.log(
+      "[Completion Debug] Interview state completed:",
+      interviewState.isCompleted,
+    );
+
+    // Determine if we should show the completion UI
+    if (isCompleted || hasCompletionMessage || interviewState.isCompleted) {
+      console.log(
+        "[Completion Debug] Interview completed, showing UI in 2 seconds",
+      );
+      // Wait a moment to let the user read the final message before showing completion UI
+      const timer = setTimeout(() => {
+        console.log("[Completion Debug] Setting showCompletionUI to true");
+        setShowCompletionUI(true);
+      }, 2000);
+
+      return () => clearTimeout(timer);
+    }
+  }, [isCompleted, interviewState, messages]);
+
   // Watch for camera and microphone state changes
   useEffect(() => {
     if (!videoEnabled) {
@@ -358,8 +395,26 @@ export function InterviewSession({
   // Remove the handleRestartInterview function since we're now directly using restartInterview
   // with a window.confirm in the dropdown menu onClick handler
 
+  // Debug: Check for completion messages in state
+  const hasCompletionMessage = messages.some((msg) => msg.isCompletionMessage);
+
+  // Check if the interview should be considered completed from any source
+  const isInterviewCompleted =
+    interviewState.isCompleted || isCompleted || hasCompletionMessage;
+  console.log("[Render Debug] Final completion state:", {
+    isInterviewCompleted,
+    showCompletionUI,
+    stateCompleted: interviewState.isCompleted,
+    hookCompleted: isCompleted,
+    hasCompletionMsg: hasCompletionMessage,
+  });
+
   // Conditionally render the interview or completion screen
-  return interviewState.isCompleted ? (
+  // Show completion UI if either:
+  // 1. The interview state from backend shows it's completed
+  // 2. The chat hook detected a completion message from the API
+  // 3. We've explicitly set the showCompletionUI flag
+  return isInterviewCompleted && showCompletionUI ? (
     <InterviewCompletion
       applicationId={applicationId}
       jobTitle={jobTitle}

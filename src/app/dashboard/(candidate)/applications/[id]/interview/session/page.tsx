@@ -5,6 +5,7 @@ import { getJobById } from "@/actions/jobs";
 import { notFound } from "next/navigation";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { InterviewSession } from "@/components/interview/interview-session";
+import { InterviewCompletion } from "@/components/interview/interview-completion";
 import { AIInterviewBackground } from "@/components/interview/ai-interview-background";
 
 type Props = {
@@ -56,6 +57,40 @@ export default async function InterviewSessionPage(props: Props) {
 
     if (!job) {
       notFound();
+    }
+
+    // Check if interview is already completed
+    const interviewState = application.interviewState;
+    if (interviewState?.currentPhase === "completed") {
+      // Redirect to feedback page
+      return (
+        <div className="container px-4 py-4 mx-auto relative">
+          <div className="absolute inset-0 -z-10">
+            <AIInterviewBackground className="opacity-30" />
+          </div>
+
+          <div className="mx-auto relative z-10">
+            <Card className="mb-2 border-border/60 shadow-lg">
+              <CardHeader className="py-3">
+                <h1 className="text-xl font-bold">
+                  {job.title} - Interview Complete
+                </h1>
+                <p className="text-sm text-muted-foreground">
+                  Your interview is already completed
+                </p>
+              </CardHeader>
+              <CardContent className="p-4">
+                <InterviewCompletion
+                  applicationId={applicationId}
+                  jobTitle={job.title}
+                  companyName={job.companyName}
+                  redirectUrl={`/dashboard/applications/${applicationId}/feedback`}
+                />
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+      );
     }
 
     return (
