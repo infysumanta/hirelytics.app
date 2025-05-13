@@ -5,6 +5,82 @@ import { getJobById } from "@/actions/jobs";
 import { generateGeminiText } from "@/lib/ai-utils";
 
 /**
+ * Helper function to parse evaluation responses from AI into structured feedback data
+ */
+function parseEvaluationResponse(evaluationResponse: string) {
+  // Parse the response to extract ratings and feedback
+  const technicalMatch = evaluationResponse.match(/TECHNICAL_SKILLS:\s*(\d+)/);
+  const communicationMatch = evaluationResponse.match(
+    /COMMUNICATION_SKILLS:\s*(\d+)/,
+  );
+  const problemSolvingMatch = evaluationResponse.match(
+    /PROBLEM_SOLVING:\s*(\d+)/,
+  );
+  const cultureFitMatch = evaluationResponse.match(/CULTURAL_FIT:\s*(\d+)/);
+
+  const strengthsMatch = evaluationResponse.match(
+    /STRENGTHS:([\s\S]*?)(?=AREAS_OF_IMPROVEMENT:|$)/,
+  );
+  const areasMatch = evaluationResponse.match(
+    /AREAS_OF_IMPROVEMENT:([\s\S]*?)(?=OVERALL_IMPRESSION:|$)/,
+  );
+  const overallMatch = evaluationResponse.match(
+    /OVERALL_IMPRESSION:([\s\S]*?)$/,
+  );
+
+  // Extract strengths as array
+  const strengths: string[] = [];
+  if (strengthsMatch && strengthsMatch[1]) {
+    const strengthsText = strengthsMatch[1].trim();
+    const strengthLines = strengthsText
+      .split("\n")
+      .filter((line) => line.trim().startsWith("-"));
+    strengthLines.forEach((line) => {
+      const strength = line.replace("-", "").trim();
+      if (strength) strengths.push(strength);
+    });
+  }
+
+  // Extract areas of improvement as array
+  const areasOfImprovement: string[] = [];
+  if (areasMatch && areasMatch[1]) {
+    const areasText = areasMatch[1].trim();
+    const areaLines = areasText
+      .split("\n")
+      .filter((line) => line.trim().startsWith("-"));
+    areaLines.forEach((line) => {
+      const area = line.replace("-", "").trim();
+      if (area) areasOfImprovement.push(area);
+    });
+  }
+
+  // Extract overall impression
+  let overallImpression = "";
+  if (overallMatch && overallMatch[1]) {
+    overallImpression = overallMatch[1].trim();
+  }
+
+  // Prepare feedback object
+  return {
+    technicalSkills: technicalMatch ? parseInt(technicalMatch[1], 10) : 3,
+    communicationSkills: communicationMatch
+      ? parseInt(communicationMatch[1], 10)
+      : 3,
+    problemSolving: problemSolvingMatch
+      ? parseInt(problemSolvingMatch[1], 10)
+      : 3,
+    cultureFit: cultureFitMatch ? parseInt(cultureFitMatch[1], 10) : 3,
+    overallImpression: overallImpression || "Interview evaluation pending.",
+    strengths:
+      strengths.length > 0 ? strengths : ["Strengths analysis pending."],
+    areasOfImprovement:
+      areasOfImprovement.length > 0
+        ? areasOfImprovement
+        : ["Areas of improvement analysis pending."],
+  };
+}
+
+/**
  * This route automatically evaluates an interview when the feedback page is loaded.
  * It checks if the interview is completed but doesn't have feedback yet.
  * If so, it generates the feedback and updates the database.
@@ -57,16 +133,80 @@ export async function GET(req: NextRequest) {
       });
     }
 
-    // Check if feedback already exists
+    // Check if a force refresh was requested
+    const forceRefresh = url.searchParams.get("refresh") === "true";
+
+    // Check if feedback already exists - do a thorough check to make sure we have complete feedback
     if (
+      !forceRefresh &&
       interviewState.feedback &&
       interviewState.feedback.technicalSkills &&
-      interviewState.feedback.communicationSkills
+      interviewState.feedback.communicationSkills &&
+      interviewState.feedback.problemSolving &&
+      interviewState.feedback.cultureFit &&
+      interviewState.feedback.overallImpression &&
+      Array.isArray(interviewState.feedback.strengths) &&
+      interviewState.feedback.strengths.length > 0 &&
+      Array.isArray(interviewState.feedback.areasOfImprovement) &&
+      interviewState.feedback.areasOfImprovement.length > 0
     ) {
+      console.log(
+        `[Interview Feedback] Using existing feedback for application ${applicationId}`,
+      );
+
       // Feedback already exists, return it
       return NextResponse.json({
         status: "existing_feedback",
         feedback: interviewState.feedback,
+        timestamp:
+          interviewState.feedbackGeneratedAt || interviewState.completedAt,
+      });
+    }
+
+    // If force refresh was requested, log it
+    if (forceRefresh) {
+      console.log(
+        `[Interview Feedback] Force refresh requested for application ${applicationId}`,
+      );
+    }
+
+    // Check if we already have a saved evaluation in the chat history
+    const existingEvaluation = application.interviewChatHistory?.find(
+      (msg: { sender: string; text: string }) =>
+        msg.sender === "system" && msg.text.includes("Interview Evaluation"),
+    );
+
+    if (existingEvaluation) {
+      console.log(
+        `[Interview Feedback] Found existing evaluation in chat history for application ${applicationId}`,
+      );
+      // Parse the existing evaluation and update the feedback
+      const evaluationResponse = existingEvaluation.text.replace(
+        "## Interview Evaluation Generated\n\n",
+        "",
+      );
+
+      // Extract the data using the same parsing logic we use for fresh evaluations
+      const parsedFeedback = parseEvaluationResponse(evaluationResponse);
+
+      // Update the application with the parsed feedback
+      const updatedApplication = await JobApplication.findByIdAndUpdate(
+        applicationId,
+        {
+          $set: {
+            "interviewState.feedback": parsedFeedback,
+            "interviewState.completedAt":
+              interviewState.completedAt || new Date(),
+          },
+        },
+        { new: true },
+      );
+
+      return NextResponse.json({
+        status: "restored_feedback",
+        feedback: updatedApplication.interviewState.feedback,
+        timestamp: new Date(),
+        message: "Successfully restored feedback from backup",
       });
     }
 
@@ -188,86 +328,29 @@ export async function GET(req: NextRequest) {
       [Brief overall recommendation, 2-4 sentences with specifics about the candidate's fit for this exact role]
     `;
 
+    // Log that we're generating a new evaluation
+    console.log(
+      `[Interview Feedback] Generating new AI evaluation for application ${applicationId}`,
+    );
+
     // Generate evaluation
     const evaluationResponse = await generateGeminiText(
       evaluationPrompt,
       "gemini-2.0-flash-lite",
     );
 
+    console.log(
+      `[Interview Feedback] Successfully received AI evaluation, now parsing response`,
+    );
+
     // Parse the response to extract ratings and feedback
-    const technicalMatch = evaluationResponse.match(
-      /TECHNICAL_SKILLS:\s*(\d+)/,
-    );
-    const communicationMatch = evaluationResponse.match(
-      /COMMUNICATION_SKILLS:\s*(\d+)/,
-    );
-    const problemSolvingMatch = evaluationResponse.match(
-      /PROBLEM_SOLVING:\s*(\d+)/,
-    );
-    const cultureFitMatch = evaluationResponse.match(/CULTURAL_FIT:\s*(\d+)/);
+    const feedback = parseEvaluationResponse(evaluationResponse);
 
-    const strengthsMatch = evaluationResponse.match(
-      /STRENGTHS:([\s\S]*?)(?=AREAS_OF_IMPROVEMENT:|$)/,
-    );
-    const areasMatch = evaluationResponse.match(
-      /AREAS_OF_IMPROVEMENT:([\s\S]*?)(?=OVERALL_IMPRESSION:|$)/,
-    );
-    const overallMatch = evaluationResponse.match(
-      /OVERALL_IMPRESSION:([\s\S]*?)$/,
+    // Update application with evaluation - this is our primary storage of feedback
+    console.log(
+      `[Interview Feedback] Saving feedback to database for application ${applicationId}`,
     );
 
-    // Extract strengths as array
-    const strengths: string[] = [];
-    if (strengthsMatch && strengthsMatch[1]) {
-      const strengthsText = strengthsMatch[1].trim();
-      const strengthLines = strengthsText
-        .split("\n")
-        .filter((line) => line.trim().startsWith("-"));
-      strengthLines.forEach((line) => {
-        const strength = line.replace("-", "").trim();
-        if (strength) strengths.push(strength);
-      });
-    }
-
-    // Extract areas of improvement as array
-    const areasOfImprovement: string[] = [];
-    if (areasMatch && areasMatch[1]) {
-      const areasText = areasMatch[1].trim();
-      const areaLines = areasText
-        .split("\n")
-        .filter((line) => line.trim().startsWith("-"));
-      areaLines.forEach((line) => {
-        const area = line.replace("-", "").trim();
-        if (area) areasOfImprovement.push(area);
-      });
-    }
-
-    // Extract overall impression
-    let overallImpression = "";
-    if (overallMatch && overallMatch[1]) {
-      overallImpression = overallMatch[1].trim();
-    }
-
-    // Prepare feedback object
-    const feedback = {
-      technicalSkills: technicalMatch ? parseInt(technicalMatch[1], 10) : 3,
-      communicationSkills: communicationMatch
-        ? parseInt(communicationMatch[1], 10)
-        : 3,
-      problemSolving: problemSolvingMatch
-        ? parseInt(problemSolvingMatch[1], 10)
-        : 3,
-      cultureFit: cultureFitMatch ? parseInt(cultureFitMatch[1], 10) : 3,
-      overallImpression: overallImpression || "Interview evaluation pending.",
-      strengths:
-        strengths.length > 0 ? strengths : ["Strengths analysis pending."],
-      areasOfImprovement:
-        areasOfImprovement.length > 0
-          ? areasOfImprovement
-          : ["Areas of improvement analysis pending."],
-    };
-
-    // Update application with evaluation
     const updatedApplication = await JobApplication.findByIdAndUpdate(
       applicationId,
       {
@@ -275,12 +358,18 @@ export async function GET(req: NextRequest) {
           "interviewState.feedback": feedback,
           "interviewState.completedAt":
             interviewState.completedAt || new Date(),
+          "interviewState.feedbackGeneratedAt": new Date(), // Add timestamp for when feedback was generated
         },
       },
       { new: true },
     );
 
     // Save the full evaluation response to chat history as a system message
+    // This serves as a backup in case we need to restore the feedback later
+    console.log(
+      `[Interview Feedback] Saving full evaluation to chat history for application ${applicationId}`,
+    );
+
     await JobApplication.findByIdAndUpdate(applicationId, {
       $push: {
         interviewChatHistory: {
@@ -294,6 +383,8 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({
       status: "generated_feedback",
       feedback: updatedApplication.interviewState.feedback,
+      timestamp: new Date(),
+      message: "Successfully generated new feedback",
     });
   } catch (error) {
     console.error("Error generating interview feedback:", error);

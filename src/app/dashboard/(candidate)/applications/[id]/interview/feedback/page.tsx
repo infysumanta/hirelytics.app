@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { AIInterviewBackground } from "@/components/interview/ai-interview-background";
 import { CircleCheck } from "lucide-react";
-import { AutoGenerateFeedback } from "@/components/interview/auto-generate-feedback";
+import { AutoGenerateFeedbackEnhanced } from "@/components/interview/auto-generate-feedback-enhanced";
 import { FeedbackContent } from "@/components/interview/feedback-content";
 
 type Props = {
@@ -76,7 +76,7 @@ export default async function InterviewFeedbackPage(props: Props) {
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                <AutoGenerateFeedback applicationId={applicationId} />
+                <AutoGenerateFeedbackEnhanced applicationId={applicationId} />
                 <div className="flex justify-center">
                   <Link href="/dashboard">
                     <Button>Return to Dashboard</Button>
@@ -130,6 +130,21 @@ export default async function InterviewFeedbackPage(props: Props) {
               </p>
             </CardHeader>
             <CardContent>
+              {/* Add timestamp for when feedback was generated */}
+              {interviewState.feedbackGeneratedAt && (
+                <p className="text-xs text-muted-foreground mb-4 text-center">
+                  Feedback generated:{" "}
+                  {new Date(
+                    interviewState.feedbackGeneratedAt,
+                  ).toLocaleString()}
+                </p>
+              )}
+
+              {/* Add refresh capability even when feedback exists */}
+              <div className="flex justify-end mb-4">
+                <AutoGenerateFeedbackEnhanced applicationId={applicationId} />
+              </div>
+
               <FeedbackContent
                 initialFeedback={serializedFeedback}
                 applicationId={applicationId.toString()}
