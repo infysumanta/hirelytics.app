@@ -23,10 +23,10 @@ declare global {
   var mongoose: CachedMongoose | undefined;
 }
 
-let cached: CachedMongoose = global.mongoose || { conn: null, promise: null };
+const cached: CachedMongoose = global.mongoose || { conn: null, promise: null };
 
-if (!cached) {
-  cached = global.mongoose = { conn: null, promise: null };
+if (!global.mongoose) {
+  global.mongoose = cached;
 }
 
 export async function connectToDatabase() {
@@ -36,7 +36,7 @@ export async function connectToDatabase() {
   }
 
   if (!cached.promise) {
-    console.log("[MongoDB] Creating new database connection");
+    console.log("[MongoDB] Creating new database connection to:", MONGODB_URI);
     const opts = {
       bufferCommands: false,
     };
@@ -58,4 +58,17 @@ export async function connectToDatabase() {
   }
 
   return cached.conn;
+}
+
+// Helper function to check MongoDB connection status
+export function getMongoConnectionStatus() {
+  return {
+    isConnected: mongoose.connection.readyState === 1,
+    readyState: mongoose.connection.readyState,
+    // 0 = disconnected, 1 = connected, 2 = connecting, 3 = disconnecting
+    status:
+      ["disconnected", "connected", "connecting", "disconnecting"][
+        mongoose.connection.readyState
+      ] || "unknown",
+  };
 }

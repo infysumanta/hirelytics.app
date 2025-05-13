@@ -3,7 +3,11 @@ import { z } from "zod";
 import { generateGeminiText } from "@/lib/ai-utils";
 import { JobApplication } from "@/models/job-application";
 import { getJobById } from "@/actions/jobs";
-import { connectToDatabase } from "@/lib/mongodb";
+import {
+  connectToDatabase,
+  getMongoConnectionStatus,
+} from "@/lib/mongodb-debug";
+import { safeMongoUpdate } from "@/lib/mongo-utils";
 
 // Schema for validating the request body
 const interviewChatSchema = z.object({
@@ -65,10 +69,22 @@ export async function POST(req: NextRequest) {
     // Check if candidate is asking a question rather than answering
     const isQuestion = isCandidateQuestion(message);
 
-    // Connect to database
-    await connectToDatabase();
+    // Connect to database with detailed logging
+    try {
+      console.log("[Chat API] Connecting to MongoDB database...");
+      await connectToDatabase();
+      const connectionStatus = getMongoConnectionStatus();
+      console.log("[Chat API] MongoDB connection status:", connectionStatus);
+    } catch (dbError) {
+      console.error("[Chat API] MongoDB connection error:", dbError);
+      return NextResponse.json(
+        { error: "Database connection failed" },
+        { status: 500 },
+      );
+    }
 
     // Get application details
+    console.log("[Chat API] Fetching application with ID:", applicationId);
     const application = await JobApplication.findById(applicationId);
     if (!application) {
       return NextResponse.json(
@@ -403,9 +419,28 @@ export async function POST(req: NextRequest) {
     ];
 
     // Save user message and AI response to database with question tracking
-    await JobApplication.findByIdAndUpdate(
-      applicationId,
-      {
+    let updatedApplication;
+    try {
+      console.log(
+        "[Chat API] About to update JobApplication with new messages",
+        {
+          applicationId,
+          currentChatHistoryLength: currentChatHistory.length,
+          newMessagesCount: newMessages.length,
+          currentPhase: interviewState.currentPhase,
+          nextPhase,
+        },
+      );
+
+      // Debug: Check connection status again before making the update
+      const connectionBeforeUpdate = getMongoConnectionStatus();
+      console.log(
+        "[Chat API] MongoDB status before update:",
+        connectionBeforeUpdate,
+      );
+
+      // Create the update object
+      const updateObject = {
         $set: {
           // Use the spread operator to create a completely new array with all messages
           interviewChatHistory: [...currentChatHistory, ...newMessages],
@@ -419,9 +454,98 @@ export async function POST(req: NextRequest) {
             completedAt: nextPhase === "completed" ? new Date() : undefined,
           },
         },
-      },
-      { new: true },
-    );
+      };
+
+      // Debug: Log the exact update we're making
+      console.log(
+        "[Chat API] Update object structure:",
+        JSON.stringify(updateObject, null, 2),
+      );
+
+      // Use our enhanced safe MongoDB update function with retries
+      updatedApplication = await safeMongoUpdate(applicationId, updateObject, {
+        retries: 2,
+        logPrefix: "[Chat API]",
+      });
+
+      if (!updatedApplication) {
+        console.error(
+          "[Chat API] Failed to update JobApplication for chat history",
+          {
+            applicationId,
+            currentChatHistoryLength: currentChatHistory.length,
+            newMessages,
+          },
+        );
+      } else {
+        console.log("[Chat API] Successfully updated chat history", {
+          applicationId,
+          totalMessages: updatedApplication.interviewChatHistory?.length,
+          updatedState: updatedApplication.interviewState,
+          chatHistoryExists: !!updatedApplication.interviewChatHistory,
+        });
+
+        // Double-check that the data was actually persisted by doing a fresh fetch
+        try {
+          console.log(
+            "[Chat API] Verifying data persistence with fresh fetch...",
+          );
+          const verifyApplication =
+            await JobApplication.findById(applicationId);
+          if (verifyApplication) {
+            console.log("[Chat API] Verification fetch result:", {
+              persistedChatHistory:
+                verifyApplication.interviewChatHistory?.length,
+              expectedLength: currentChatHistory.length + newMessages.length,
+              match:
+                verifyApplication.interviewChatHistory?.length ===
+                currentChatHistory.length + newMessages.length,
+            });
+          } else {
+            console.error(
+              "[Chat API] Verification failed: Could not find application",
+            );
+          }
+        } catch (verifyError) {
+          console.error("[Chat API] Verification fetch error:", verifyError);
+        }
+      }
+    } catch (error) {
+      const err = error as Error;
+      console.error(
+        "[Chat API] Error updating JobApplication for chat history",
+        {
+          applicationId,
+          errorName: err.name,
+          errorMessage: err.message,
+          errorStack: err.stack,
+          currentChatHistoryLength: currentChatHistory.length,
+          newMessagesCount: newMessages.length,
+        },
+      );
+
+      // Check MongoDB connection state after error
+      try {
+        const connectionAfterError = getMongoConnectionStatus();
+        console.error(
+          "[Chat API] MongoDB connection status after error:",
+          connectionAfterError,
+        );
+
+        // Try a simple find operation to test DB connection
+        const testFind =
+          await JobApplication.findById(applicationId).select("_id");
+        console.log(
+          "[Chat API] DB connection test after error:",
+          testFind ? "Success" : "Failed",
+        );
+      } catch (connErr) {
+        console.error(
+          "[Chat API] Failed to check connection after error:",
+          connErr,
+        );
+      }
+    }
 
     // Add special completion flag if interview is completed
     if (nextPhase === "completed") {
@@ -431,11 +555,31 @@ export async function POST(req: NextRequest) {
         isCompleted: true,
         completionMessage:
           "Your interview has been successfully completed! Your responses have been recorded and will be analyzed. Thank you for participating in this interview process with us.",
+        updatedChatHistory: updatedApplication?.interviewChatHistory || null,
+        debug: {
+          dbUpdateSuccess: !!updatedApplication,
+          currentChatHistoryLength: currentChatHistory.length,
+          newMessagesCount: newMessages.length,
+          expectedTotalLength: currentChatHistory.length + newMessages.length,
+          actualTotalLength:
+            updatedApplication?.interviewChatHistory?.length || 0,
+          mongoConnectionState: getMongoConnectionStatus(),
+        },
       });
     } else {
       return NextResponse.json({
         response,
         applicationId,
+        updatedChatHistory: updatedApplication?.interviewChatHistory || null,
+        debug: {
+          dbUpdateSuccess: !!updatedApplication,
+          currentChatHistoryLength: currentChatHistory.length,
+          newMessagesCount: newMessages.length,
+          expectedTotalLength: currentChatHistory.length + newMessages.length,
+          actualTotalLength:
+            updatedApplication?.interviewChatHistory?.length || 0,
+          mongoConnectionState: getMongoConnectionStatus(),
+        },
       });
     }
   } catch (error) {
