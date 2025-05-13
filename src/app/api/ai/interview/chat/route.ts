@@ -361,6 +361,12 @@ export async function POST(req: NextRequest) {
 
         if (!evaluateResponse.ok) {
           console.error("Failed to automatically evaluate interview");
+        } else {
+          const evalData = await evaluateResponse.json();
+          console.log(
+            "Interview evaluation triggered successfully:",
+            evalData.status,
+          );
         }
       } catch (evalError) {
         console.error(

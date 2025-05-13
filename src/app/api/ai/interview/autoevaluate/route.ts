@@ -1,20 +1,26 @@
 import { NextRequest, NextResponse } from "next/server";
-import { z } from "zod";
 import { connectToDatabase } from "@/lib/mongodb";
 import { JobApplication } from "@/models/job-application";
 import { getJobById } from "@/actions/jobs";
 import { generateGeminiText } from "@/lib/ai-utils";
 
-// Schema for validating the request body
-const evaluateInterviewSchema = z.object({
-  applicationId: z.string(),
-});
-
-export async function POST(req: NextRequest) {
+/**
+ * This route automatically evaluates an interview when the feedback page is loaded.
+ * It checks if the interview is completed but doesn't have feedback yet.
+ * If so, it generates the feedback and updates the database.
+ */
+export async function GET(req: NextRequest) {
   try {
-    // Parse request body
-    const body = await req.json();
-    const { applicationId } = evaluateInterviewSchema.parse(body);
+    // Get application ID from query parameters
+    const url = new URL(req.url);
+    const applicationId = url.searchParams.get("applicationId");
+
+    if (!applicationId) {
+      return NextResponse.json(
+        { error: "Application ID is required" },
+        { status: 400 },
+      );
+    }
 
     // Connect to database
     await connectToDatabase();
@@ -34,17 +40,43 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Job not found" }, { status: 404 });
     }
 
-    // Check if interview is completed
+    // Check if interview is completed and doesn't have feedback yet
     const interviewState = application.interviewState;
-    if (!interviewState || interviewState.currentPhase !== "completed") {
+    if (!interviewState) {
       return NextResponse.json(
-        { error: "Interview not completed" },
+        { error: "Interview state not found" },
         { status: 400 },
       );
     }
 
+    // If it's not completed, return early
+    if (interviewState.currentPhase !== "completed") {
+      return NextResponse.json({
+        status: "not_completed",
+        message: "Interview is not completed yet",
+      });
+    }
+
+    // Check if feedback already exists
+    if (
+      interviewState.feedback &&
+      interviewState.feedback.technicalSkills &&
+      interviewState.feedback.communicationSkills
+    ) {
+      // Feedback already exists, return it
+      return NextResponse.json({
+        status: "existing_feedback",
+        feedback: interviewState.feedback,
+      });
+    }
+
+    // If we got here, we need to generate feedback
     // Compile all interview chat messages for evaluation
     const interviewChat = application.interviewChatHistory || [];
+
+    // Get candidate resume
+    const resumeText =
+      application.parsedResume?.extractedText || "No resume available";
 
     // Extract only user messages (candidate responses) and AI questions
     const candidateResponses = interviewChat.filter(
@@ -68,7 +100,7 @@ export async function POST(req: NextRequest) {
     // Create evaluation prompt
     const evaluationPrompt = `
       You are an AI evaluator reviewing an interview for the ${job.title} position at ${job.companyName}.
-      Below is the transcript of the interview questions and candidate responses.
+      Below is the transcript of the interview questions and candidate responses, along with their resume information.
       Your task is to provide a fair, balanced, and constructive evaluation of the candidate.
       
       JOB DESCRIPTION:
@@ -76,11 +108,14 @@ export async function POST(req: NextRequest) {
       
       REQUIRED SKILLS:
       ${job.skills?.join(", ") || "not specified"}.
+
+      CANDIDATE RESUME:
+      ${resumeText}
       
       INTERVIEW TRANSCRIPT:
       ${formattedChat}
       
-      Based on the interview transcript and job requirements, please evaluate the candidate on:
+      Based on the interview transcript, resume, and job requirements, please evaluate the candidate on:
       
       1. Technical Skills (Rate 1-5):
          - Assess the candidate's technical knowledge related to the job requirements
@@ -215,57 +250,53 @@ export async function POST(req: NextRequest) {
 
     // Prepare feedback object
     const feedback = {
-      technicalSkills: technicalMatch
-        ? parseInt(technicalMatch[1], 10)
-        : undefined,
+      technicalSkills: technicalMatch ? parseInt(technicalMatch[1], 10) : 3,
       communicationSkills: communicationMatch
         ? parseInt(communicationMatch[1], 10)
-        : undefined,
+        : 3,
       problemSolving: problemSolvingMatch
         ? parseInt(problemSolvingMatch[1], 10)
-        : undefined,
-      cultureFit: cultureFitMatch
-        ? parseInt(cultureFitMatch[1], 10)
-        : undefined,
-      overallImpression,
-      strengths,
-      areasOfImprovement,
+        : 3,
+      cultureFit: cultureFitMatch ? parseInt(cultureFitMatch[1], 10) : 3,
+      overallImpression: overallImpression || "Interview evaluation pending.",
+      strengths:
+        strengths.length > 0 ? strengths : ["Strengths analysis pending."],
+      areasOfImprovement:
+        areasOfImprovement.length > 0
+          ? areasOfImprovement
+          : ["Areas of improvement analysis pending."],
     };
 
     // Update application with evaluation
-    await JobApplication.findByIdAndUpdate(
+    const updatedApplication = await JobApplication.findByIdAndUpdate(
       applicationId,
       {
         $set: {
           "interviewState.feedback": feedback,
-          "interviewState.completedAt": new Date(),
+          "interviewState.completedAt":
+            interviewState.completedAt || new Date(),
         },
       },
       { new: true },
     );
 
     // Save the full evaluation response to chat history as a system message
-    await JobApplication.findByIdAndUpdate(
-      applicationId,
-      {
-        $push: {
-          interviewChatHistory: {
-            text: `## Interview Evaluation\n\n${evaluationResponse}`,
-            sender: "system",
-            timestamp: new Date(),
-          },
+    await JobApplication.findByIdAndUpdate(applicationId, {
+      $push: {
+        interviewChatHistory: {
+          text: `## Interview Evaluation Generated\n\n${evaluationResponse}`,
+          sender: "system",
+          timestamp: new Date(),
         },
       },
-      { new: true },
-    );
+    });
 
     return NextResponse.json({
-      success: true,
-      feedback,
-      evaluationText: evaluationResponse,
+      status: "generated_feedback",
+      feedback: updatedApplication.interviewState.feedback,
     });
   } catch (error) {
-    console.error("Error evaluating interview:", error);
+    console.error("Error generating interview feedback:", error);
     return NextResponse.json(
       { error: error instanceof Error ? error.message : "An error occurred" },
       { status: 500 },

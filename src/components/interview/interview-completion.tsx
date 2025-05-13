@@ -120,9 +120,14 @@ export function InterviewCompletion({
               Continue to Feedback
             </Button>
           ) : (
-            <div className="flex items-center justify-center text-sm text-muted-foreground">
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              <span>Preparing feedback...</span>
+            <div className="flex flex-col items-center gap-2">
+              <div className="flex items-center justify-center text-sm text-muted-foreground">
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                <span>Analyzing your interview responses...</span>
+              </div>
+              <p className="text-xs text-muted-foreground">
+                This may take a moment to process
+              </p>
             </div>
           )}
         </CardFooter>
