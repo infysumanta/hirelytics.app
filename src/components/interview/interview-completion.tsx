@@ -9,7 +9,6 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { CircleCheck, Loader2 } from "lucide-react";
-import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { useRouter } from "next/navigation";
 
@@ -71,7 +70,7 @@ export function InterviewCompletion({
 
   // Handle redirect to feedback page
   const handleViewFeedback = () => {
-    router.push(`/dashboard/applications/${applicationId}/feedback`);
+    router.push(`/dashboard/applications/${applicationId}/interview/feedback`);
   };
 
   return (
@@ -115,25 +114,16 @@ export function InterviewCompletion({
           )}
         </CardContent>
 
-        <CardFooter className="flex flex-col sm:flex-row gap-4 justify-center">
+        <CardFooter className="flex justify-center">
           {isChatClosed ? (
-            <>
-              <Button onClick={handleViewFeedback} className="w-full sm:w-auto">
-                Continue to Feedback
-              </Button>
-              <Link
-                href={`/dashboard/applications/${applicationId}`}
-                className="w-full sm:w-auto"
-              >
-                <Button variant="outline" className="w-full">
-                  View Application Status
-                </Button>
-              </Link>
-            </>
+            <Button onClick={handleViewFeedback} className="w-full sm:w-auto">
+              Continue to Feedback
+            </Button>
           ) : (
-            <Link href={`/dashboard/applications/${applicationId}`}>
-              <Button variant="outline">View Application Status</Button>
-            </Link>
+            <div className="flex items-center justify-center text-sm text-muted-foreground">
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              <span>Preparing feedback...</span>
+            </div>
           )}
         </CardFooter>
       </Card>
