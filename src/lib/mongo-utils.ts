@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { JobApplication } from "@/models/job-application";
-import { getMongoConnectionStatus } from "./mongodb-debug";
 
 /**
  * Helper to safely update MongoDB document with retry mechanism
@@ -15,11 +14,6 @@ export async function safeMongoUpdate(
   options = { retries: 1, logPrefix: "[MongoDB]" },
 ): Promise<any> {
   try {
-    console.log(
-      `${options.logPrefix} Attempting MongoDB update with retries:`,
-      options.retries,
-    );
-
     const result = await JobApplication.findByIdAndUpdate(
       applicationId,
       updateObj,
@@ -27,30 +21,20 @@ export async function safeMongoUpdate(
     );
 
     if (!result) {
-      console.error(`${options.logPrefix} Update returned null result`, {
+      console.error(`${options.logPrefix} Update failed for application`, {
         applicationId,
       });
       return null;
     }
 
-    // Verify the update by checking connection status and result
-    const connectionStatus = getMongoConnectionStatus();
-    console.log(
-      `${options.logPrefix} Connection status after update:`,
-      connectionStatus,
-    );
-    console.log(`${options.logPrefix} Update successful, document returned`);
-
     return result;
   } catch (error: any) {
     console.error(`${options.logPrefix} Error during MongoDB update:`, {
-      errorName: error.name,
-      errorMessage: error.message,
+      error: error.message,
       applicationId,
     });
 
     if (options.retries > 0) {
-      console.log(`${options.logPrefix} Retrying update...`);
       // Wait a bit before retrying
       await new Promise((resolve) => setTimeout(resolve, 500));
       return safeMongoUpdate(applicationId, updateObj, {

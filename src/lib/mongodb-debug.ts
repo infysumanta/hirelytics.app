@@ -31,26 +31,21 @@ if (!global.mongoose) {
 
 export async function connectToDatabase() {
   if (cached.conn) {
-    console.log("[MongoDB] Using cached database connection");
     return cached.conn;
   }
 
   if (!cached.promise) {
-    console.log("[MongoDB] Creating new database connection to:", MONGODB_URI);
     const opts = {
       bufferCommands: false,
     };
 
     cached.promise = mongoose.connect(MONGODB_URI!, opts).then((mongoose) => {
-      console.log("[MongoDB] Connection established successfully");
       return mongoose;
     });
   }
 
   try {
-    console.log("[MongoDB] Waiting for database connection...");
     cached.conn = await cached.promise;
-    console.log("[MongoDB] Connection ready");
   } catch (e) {
     console.error("[MongoDB] Connection failed:", e);
     cached.promise = null;

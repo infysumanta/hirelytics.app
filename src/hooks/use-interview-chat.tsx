@@ -114,11 +114,7 @@ export function useInterviewChat({
               content: msg.text,
             }));
 
-          console.log(
-            "Loaded existing chat history:",
-            formattedMessages.length,
-            "messages",
-          );
+          // Chat history has been loaded
           toast.info(
             `Continuing previous interview with ${formattedMessages.length} messages`,
           );
@@ -249,16 +245,11 @@ export function useInterviewChat({
     setMessageInput("");
 
     try {
-      // Debug: Check for special command to force completion
+      // Check for special command to force completion
       if (
         sentMessage.toLowerCase() === "/complete" ||
         sentMessage.toLowerCase() === "/end"
       ) {
-        console.log(
-          "[Chat Hook Debug] Forcing interview completion via",
-          sentMessage,
-        );
-
         // Mock a completion response
         const mockCompletionMessage =
           "Your interview has been successfully completed! Your responses have been recorded and will be analyzed. Thank you for participating in this interview process with us.";
@@ -308,71 +299,37 @@ export function useInterviewChat({
 
       const data = await response.json();
 
-      // Log debug information from server response
-      if (data.debug) {
-        console.log("[Chat Hook] Server debug info:", data.debug);
-      }
+      // Add AI response
+      const aiMessage: Message = {
+        id: (Date.now() + 1).toString(),
+        text: data.response,
+        sender: "ai",
+        timestamp: new Date(),
+        isCompletionMessage: !!data.isCompleted,
+      };
 
-      // If server returns updated chat history, use it to sync our state
-      if (data.updatedChatHistory && Array.isArray(data.updatedChatHistory)) {
-        console.log(
-          "[Chat Hook] Received updated chat history from server:",
-          data.updatedChatHistory.length,
-          "messages",
-        );
+      if (data.isCompleted && data.completionMessage) {
+        // If this is the final response, add a system completion message too
+        setMessages((prevMessages) => [
+          ...prevMessages,
+          aiMessage,
+          {
+            id: (Date.now() + 2).toString(),
+            text: data.completionMessage,
+            sender: "system",
+            timestamp: new Date(),
+            isCompletionMessage: true,
+          },
+        ]);
 
-        // Log debug information from server response
-        if (data.debug) {
-          console.log("[Chat Hook] Server debug info:", data.debug);
-        }
+        // Set the interview as completed
+        setIsCompleted(true);
 
-        // If server returns updated chat history, use it to sync our state
-        if (data.updatedChatHistory && Array.isArray(data.updatedChatHistory)) {
-          console.log(
-            "[Chat Hook] Received updated chat history from server:",
-            data.updatedChatHistory.length,
-            "messages",
-          );
-        }
-
-        // Add AI response
-        const aiMessage: Message = {
-          id: (Date.now() + 1).toString(),
-          text: data.response,
-          sender: "ai",
-          timestamp: new Date(),
-          isCompletionMessage: !!data.isCompleted,
-        };
-
-        if (data.isCompleted && data.completionMessage) {
-          console.log(
-            "[Chat Hook] Received completion message:",
-            data.completionMessage,
-          );
-
-          // If this is the final response, add a system completion message too
-          setMessages((prevMessages) => [
-            ...prevMessages,
-            aiMessage,
-            {
-              id: (Date.now() + 2).toString(),
-              text: data.completionMessage,
-              sender: "system",
-              timestamp: new Date(),
-              isCompletionMessage: true,
-            },
-          ]);
-
-          // Set the interview as completed
-          console.log("[Chat Hook] Setting isCompleted to true");
-          setIsCompleted(true);
-
-          // Don't set user turn to true since interview is completed
-        } else {
-          setMessages((prevMessages) => [...prevMessages, aiMessage]);
-          // After AI responds, it's user's turn again
-          setIsUserTurn(true);
-        }
+        // Don't set user turn to true since interview is completed
+      } else {
+        setMessages((prevMessages) => [...prevMessages, aiMessage]);
+        // After AI responds, it's user's turn again
+        setIsUserTurn(true);
       }
     } catch (error) {
       console.error("Error in interview chat:", error);
