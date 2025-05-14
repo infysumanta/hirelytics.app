@@ -79,9 +79,7 @@ export async function getJobById(id: string) {
   try {
     await connectToDatabase();
 
-    const job = await Job.findOne({ _id: id, isActive: true })
-      .populate("recruiter", "name email")
-      .lean();
+    const job = await Job.findOne({ urlId: id, isActive: true }).lean();
 
     if (!job) {
       throw new Error("Job not found");
