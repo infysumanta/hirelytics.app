@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { connectToDatabase } from "@/lib/mongodb";
 import { JobApplication } from "@/models/job-application";
 import { auth } from "@/auth";
+import Job from "@/models/job";
 
 export async function GET(
   req: NextRequest,
@@ -26,6 +27,7 @@ export async function GET(
 
     // Fetch application by ID
     const application = await JobApplication.findById(id);
+    const job = await Job.findById(application.jobId);
 
     if (!application) {
       return NextResponse.json(
@@ -45,6 +47,7 @@ export async function GET(
         ...application.toJSON(),
         // Only include base64 data if specifically requested
         ...(includeBase64 ? {} : { resumeBase64: "**base64 data stored**" }),
+        job: job,
       },
     };
 

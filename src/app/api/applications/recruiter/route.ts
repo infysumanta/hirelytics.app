@@ -70,14 +70,44 @@ export async function GET(req: NextRequest) {
     // Fetch job details for each application
     const enhancedApplications = await Promise.all(
       applications.map(async (app) => {
-        const job = await Job.findById(app.jobId)
-          .select("title companyName")
-          .lean();
-        return {
-          ...app,
-          job: job || { title: "Unknown Job", companyName: "Unknown Company" },
-          _id: typeof app._id === "string" ? app._id : "",
-        };
+        try {
+          // Ensure we have a valid jobId to look up
+          if (!app.jobId) {
+            return {
+              ...app,
+              job: { title: "Unknown Job", companyName: "Unknown Company" },
+            };
+          }
+
+          const job = await Job.findById(app.jobId)
+            .select("title companyName")
+            .lean();
+
+          // Check if job was found and has required fields
+          if (!job || !job.title || !job.companyName) {
+            return {
+              ...app,
+              job: { title: "Unknown Job", companyName: "Unknown Company" },
+            };
+          }
+
+          return {
+            ...app,
+            job: {
+              title: job.title,
+              companyName: job.companyName,
+            },
+          };
+        } catch (error) {
+          console.error(
+            `Error fetching job details for application ${app._id}:`,
+            error,
+          );
+          return {
+            ...app,
+            job: { title: "Error Loading Job", companyName: "Error" },
+          };
+        }
       }),
     );
 
