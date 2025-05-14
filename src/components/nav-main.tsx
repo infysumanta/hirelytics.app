@@ -47,6 +47,11 @@ export function NavMain() {
       url: "/dashboard/job-listing",
       icon: BriefcaseIcon,
     },
+    {
+      title: "Job Applications",
+      url: "/dashboard/job-applications",
+      icon: UserIcon,
+    },
   ];
 
   const userMenu = [
