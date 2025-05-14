@@ -16,6 +16,7 @@ import { ColumnDef } from "@tanstack/react-table";
 import { format } from "date-fns";
 import { ArrowRight } from "lucide-react";
 import { DataTable } from "@/components/ui/data-table";
+import JobFilter from "@/components/job-applications/job-filter";
 
 // Define JobApplication type
 interface JobApplication {
@@ -56,6 +57,37 @@ interface JobApplication {
   updatedAt: string;
 }
 
+// JobFilterWithData component that fetches job data
+function JobFilterWithData({
+  selectedJobId,
+  onChange,
+}: {
+  selectedJobId: string;
+  onChange: (id: string) => void;
+}) {
+  // Fetch jobs from the API
+  const { data, isLoading } = useQuery({
+    queryKey: ["recruiter-jobs"],
+    queryFn: async () => {
+      const response = await fetch("/api/jobs/recruiter/list");
+      if (!response.ok) throw new Error("Failed to fetch jobs");
+      return response.json();
+    },
+  });
+
+  if (isLoading) {
+    return <div className="text-sm text-muted-foreground">Loading jobs...</div>;
+  }
+
+  return (
+    <JobFilter
+      jobs={data?.jobs || []}
+      selectedJobId={selectedJobId}
+      onChange={onChange}
+    />
+  );
+}
+
 export default function RecruiterJobApplicationsPage() {
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -63,6 +95,25 @@ export default function RecruiterJobApplicationsPage() {
 
   const [page, setPage] = useState(0);
   const [pageSize, setPageSize] = useState(10);
+
+  // Function to handle job filter changes
+  const handleJobFilterChange = (selectedJobId: string) => {
+    // Reset the page when changing filter
+    setPage(0);
+
+    // Create new URL with updated parameters
+    const params = new URLSearchParams(searchParams.toString());
+
+    if (selectedJobId) {
+      params.set("job", selectedJobId);
+    } else {
+      params.delete("job");
+    }
+
+    // Navigate to new URL with updated params
+    const newPath = `/dashboard/job-applications?${params.toString()}`;
+    router.push(newPath);
+  };
 
   // Define table columns
   const columns: ColumnDef<JobApplication>[] = [
@@ -223,7 +274,12 @@ export default function RecruiterJobApplicationsPage() {
             Select a job to see related applications
           </CardDescription>
         </CardHeader>
-        <CardContent>{/* add job filter */}</CardContent>
+        <CardContent>
+          <JobFilterWithData
+            selectedJobId={jobId}
+            onChange={handleJobFilterChange}
+          />
+        </CardContent>
       </Card>
 
       {/* Applications Table */}
