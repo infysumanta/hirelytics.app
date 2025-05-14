@@ -1,5 +1,5 @@
 import { Metadata } from "next";
-import { getJobById } from "@/actions/jobs";
+import { getJobByUrlId } from "@/actions/jobs";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import {
@@ -26,7 +26,7 @@ export async function generateMetadata(props: Props): Promise<Metadata> {
   const id = params.id;
 
   try {
-    const job = await getJobById(id);
+    const job = await getJobByUrlId(id);
     return {
       title: `${job.title} at ${job.companyName} | Candidate Dashboard | Hirelytics`,
       description: job.description?.slice(0, 160),
@@ -46,7 +46,7 @@ export default async function CandidateJobDetailsPage(props: Props) {
 
   let job;
   try {
-    job = await getJobById(id);
+    job = await getJobByUrlId(id);
   } catch {
     notFound();
   }

@@ -78,8 +78,30 @@ export async function getJobs({
 export async function getJobById(id: string) {
   try {
     await connectToDatabase();
+    console.log("Fetching job with ID:", id);
 
-    const job = await Job.findOne({ urlId: id, isActive: true }).lean();
+    const job = await Job.findOne({ _id: id }).lean();
+
+    if (!job) {
+      throw new Error("Job not found");
+    }
+
+    // Serialize MongoDB document for passing to client components
+    return JSON.parse(JSON.stringify(job));
+  } catch (error: unknown) {
+    console.error("Error fetching job:", error);
+    throw new Error(
+      `Failed to fetch job: ${error instanceof Error ? error.message : String(error)}`,
+    );
+  }
+}
+
+export async function getJobByUrlId(id: string) {
+  try {
+    await connectToDatabase();
+    console.log("Fetching job with ID:", id);
+
+    const job = await Job.findOne({ urlId: id }).lean();
 
     if (!job) {
       throw new Error("Job not found");

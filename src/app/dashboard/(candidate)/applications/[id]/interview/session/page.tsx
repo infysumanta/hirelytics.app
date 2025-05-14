@@ -53,6 +53,8 @@ export default async function InterviewSessionPage(props: Props) {
       notFound();
     }
 
+    console.log(application.jobId);
+
     const job = await getJobById(application.jobId);
 
     if (!job) {

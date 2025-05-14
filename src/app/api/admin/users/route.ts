@@ -15,7 +15,7 @@ export async function GET(req: NextRequest) {
     if (!(await isAdmin())) {
       return NextResponse.json(
         { error: "Unauthorized. Admin access required." },
-        { status: 403 }
+        { status: 403 },
       );
     }
 
@@ -30,13 +30,14 @@ export async function GET(req: NextRequest) {
     const search = searchParams.get("search") || "";
 
     // Build query
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const query: any = {};
-    
+
     // Filter by role if provided
     if (role && ["admin", "recruiter", "candidate"].includes(role)) {
       query.role = role;
     }
-    
+
     // Search by name or email
     if (search) {
       query.$or = [
@@ -79,7 +80,7 @@ export async function GET(req: NextRequest) {
     console.error("Error fetching users:", error);
     return NextResponse.json(
       { error: "Failed to fetch users" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
