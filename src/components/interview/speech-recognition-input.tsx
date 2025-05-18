@@ -1,10 +1,17 @@
 "use client";
 
 import { useState, useEffect, useRef, useCallback } from "react";
-import { Mic, MicOff } from "lucide-react";
+import { Mic, MicOff, Volume2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
+import { VoiceIndicator } from "./voice-indicator";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import {
   SPEECH_RECOGNITION_LANGUAGE,
   SPEECH_RECOGNITION_MAX_ALTERNATIVES,
@@ -24,6 +31,8 @@ interface SpeechRecognitionInputProps {
   rows?: number;
   /** For external control of the listening state */
   forceMicOff?: boolean;
+  /** Hide internal buttons to use external controls */
+  hideButtons?: boolean;
 }
 
 // TypeScript interface for SpeechRecognition
@@ -93,6 +102,7 @@ export function SpeechRecognitionInput({
   disabled = false,
   rows = 1,
   forceMicOff = false,
+  hideButtons = false,
 }: SpeechRecognitionInputProps) {
   const [isSpeechEnabled, setIsSpeechEnabled] = useState<boolean>(false);
   const [isListening, setIsListening] = useState<boolean>(false);
@@ -332,6 +342,36 @@ export function SpeechRecognitionInput({
     }
   }, [forceMicOff, isListening, stopListening]);
 
+  // Add event listener for external microphone toggle when hideButtons=true
+  useEffect(() => {
+    const handleToggleSpeechRecognition = () => {
+      toggleListening();
+    };
+
+    document.addEventListener(
+      "toggle-speech-recognition",
+      handleToggleSpeechRecognition,
+    );
+
+    return () => {
+      document.removeEventListener(
+        "toggle-speech-recognition",
+        handleToggleSpeechRecognition,
+      );
+    };
+  }, [toggleListening]);
+
+  // Emit speech recognition status for external components when the listening state changes
+  useEffect(() => {
+    if (hideButtons) {
+      document.dispatchEvent(
+        new CustomEvent("speech-recognition-status", {
+          detail: { isListening },
+        }),
+      );
+    }
+  }, [isListening, hideButtons]);
+
   // Cleanup on unmount
   useEffect(() => {
     return () => {
@@ -361,50 +401,128 @@ export function SpeechRecognitionInput({
   return (
     <div className="flex flex-col w-full">
       <div className="flex gap-2 items-end">
-        <Textarea
-          placeholder={placeholder}
-          value={value}
-          onChange={(e) => onChange(e.target.value)}
-          onKeyDown={handleKeyPress}
-          disabled={disabled}
-          className={cn(
-            "min-h-12 resize-none rounded-lg transition-all w-full",
-            isListening && "border-primary border-2",
-            className,
-          )}
-          rows={rows}
-        />
-
-        {isSpeechEnabled && (
-          <Button
-            type="button"
-            size="icon"
-            variant={isListening ? "default" : "outline"}
-            className={cn(
-              "flex-shrink-0 h-10 w-10 rounded-full transition-all",
-              isListening && "bg-primary text-primary-foreground animate-pulse",
-            )}
-            onClick={toggleListening}
+        <div className="flex-1 relative">
+          <Textarea
+            placeholder={placeholder}
+            value={value}
+            onChange={(e) => onChange(e.target.value)}
+            onKeyDown={handleKeyPress}
             disabled={disabled}
-            title={isListening ? "Stop listening" : "Start listening"}
-          >
-            {isListening ? (
-              <Mic className="h-4 w-4" />
-            ) : (
-              <MicOff className="h-4 w-4" />
+            readOnly
+            className={cn(
+              "min-h-12 resize-none rounded-lg transition-all w-full",
+              isListening &&
+                "border-primary border-2 shadow-[0_0_15px_rgba(136,58,234,0.3)]",
+              disabled && "opacity-70 cursor-not-allowed",
+              className,
             )}
-          </Button>
+            rows={rows}
+          />
+          {isListening && (
+            <div className="absolute top-2 right-2">
+              <div className="h-2 w-2 rounded-full bg-primary animate-ping"></div>
+            </div>
+          )}
+
+          {/* Voice visualizer above the textarea when listening */}
+          {isListening && (
+            <div className="absolute -top-16 left-0 right-0 flex justify-center">
+              <div className="bg-background/90 backdrop-blur-sm rounded-xl px-5 py-3 flex items-center gap-3 shadow-lg border border-primary/30">
+                <div className="bg-primary/10 p-2 rounded-full">
+                  <Volume2 className="h-4 w-4 text-primary" />
+                </div>
+                <div className="flex flex-col">
+                  <span className="text-xs font-medium text-primary">
+                    Listening to your voice
+                  </span>
+                  <VoiceIndicator
+                    isActive={true}
+                    variant="wave"
+                    className="h-4 mt-1"
+                  />
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Only show internal mic button if hideButtons is false */}
+        {isSpeechEnabled && !hideButtons && (
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  type="button"
+                  size="icon"
+                  variant="outline"
+                  className={cn(
+                    "flex-shrink-0 h-10 w-10 rounded-full transition-all relative overflow-hidden",
+                    isListening && "border-primary",
+                  )}
+                  onClick={toggleListening}
+                  disabled={disabled}
+                >
+                  <div
+                    className={cn(
+                      "absolute inset-0 transition-all duration-300",
+                      isListening ? "opacity-100" : "opacity-0",
+                    )}
+                  >
+                    <div className="absolute inset-0 bg-gradient-to-br from-primary via-secondary to-primary animate-gradient"></div>
+                    <div className="absolute inset-0 bg-primary/20 animate-ping"></div>
+                  </div>
+
+                  <div
+                    className={cn(
+                      "relative z-10 transition-transform duration-300",
+                      isListening && "scale-110",
+                    )}
+                  >
+                    {isListening ? (
+                      <Mic
+                        className={cn(
+                          "h-4 w-4 text-primary-foreground transition-all",
+                          isListening && "text-white",
+                        )}
+                      />
+                    ) : (
+                      <MicOff className="h-4 w-4" />
+                    )}
+                  </div>
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent side="top">
+                {isListening ? "Stop listening" : "Start voice recognition"}
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
         )}
       </div>
 
-      {/* Voice status indicator */}
+      {/* Voice status guidance text */}
       {isListening && (
-        <div className="text-xs mt-1 text-muted-foreground flex items-center">
-          <div className="h-2 w-2 rounded-full bg-primary animate-pulse mr-1"></div>
-          Listening... •{" "}
-          {AUTO_STOP_ENABLED
-            ? `Speech will auto-stop after ${Math.round(DEFAULT_SILENCE_TIMEOUT / 1000)}s of silence`
-            : "Speak clearly and click the mic button when done"}
+        <div className="mt-3 relative">
+          <div className="absolute -left-1 -right-1 top-0 h-1 bg-gradient-to-r from-transparent via-primary/30 to-transparent"></div>
+          <div className="text-xs p-3 text-center bg-gradient-to-r from-primary/5 via-secondary/10 to-primary/5 rounded-lg backdrop-blur-sm border border-primary/10 shadow-inner">
+            <div className="font-medium text-primary mb-1.5 flex items-center justify-center gap-2">
+              <VoiceIndicator isActive={true} variant="pulse" className="h-4" />
+              <span>Voice Recognition System</span>
+              <VoiceIndicator isActive={true} variant="pulse" className="h-4" />
+            </div>
+            <div className="text-muted-foreground max-w-sm mx-auto">
+              {AUTO_STOP_ENABLED
+                ? `I'll automatically stop listening after ${Math.round(DEFAULT_SILENCE_TIMEOUT / 1000)} seconds of silence`
+                : "I'm capturing your voice now. Please speak clearly and tap the microphone icon when you've finished speaking"}
+            </div>
+
+            <div className="mt-3 pt-2 border-t border-primary/10">
+              <VoiceIndicator
+                isActive={true}
+                variant="bubble"
+                className="h-8 w-24 mx-auto"
+              />
+            </div>
+          </div>
         </div>
       )}
 

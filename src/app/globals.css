@@ -171,3 +171,62 @@
   background-size: 200% 200%;
   animation: gradientMove 15s ease infinite;
 }
+
+/* Animation for voice waves */
+@keyframes voiceWave {
+  0%,
+  100% {
+    transform: scaleY(0.5);
+    opacity: 0.5;
+  }
+  50% {
+    transform: scaleY(1.2);
+    opacity: 1;
+  }
+}
+
+.voice-wave {
+  display: inline-block;
+  margin: 0 1px;
+  width: 3px;
+  height: 15px;
+  border-radius: 1px;
+  background-color: var(--primary);
+  animation: voiceWave var(--speed, 0.5s) ease infinite;
+}
+
+.voice-wave:nth-child(1) {
+  --speed: 0.7s;
+  animation-delay: -0.3s;
+}
+.voice-wave:nth-child(2) {
+  --speed: 0.5s;
+  animation-delay: -0.1s;
+}
+.voice-wave:nth-child(3) {
+  --speed: 0.6s;
+  animation-delay: -0.5s;
+}
+.voice-wave:nth-child(4) {
+  --speed: 0.5s;
+  animation-delay: -0.2s;
+}
+.voice-wave:nth-child(5) {
+  --speed: 0.7s;
+  animation-delay: -0.4s;
+}
+
+/* Voice bubble animation */
+@keyframes voiceBubbleRise {
+  0% {
+    transform: translateY(0) scale(0.3);
+    opacity: 0.8;
+  }
+  50% {
+    opacity: 0.5;
+  }
+  100% {
+    transform: translateY(-100px) scale(1);
+    opacity: 0;
+  }
+}

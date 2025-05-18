@@ -5,8 +5,6 @@ import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import {
   Video,
-  Mic,
-  MicOff,
   VideoOff,
   Send,
   Settings,
@@ -15,9 +13,16 @@ import {
   Loader2,
   MoreVertical,
   RefreshCcw,
+  Mic,
 } from "lucide-react";
 import { SpeechRecognitionInput } from "./speech-recognition-input";
 import { TypingIndicator } from "./typing-indicator";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -59,6 +64,7 @@ export function InterviewSession({
   monitoringInterval = 30000, // Default 30 seconds
 }: InterviewSessionProps) {
   const [videoEnabled, setVideoEnabled] = useState(true);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [micEnabled, setMicEnabled] = useState(true);
   const [forceMicOff, setForceMicOff] = useState(false);
   const [showCompletionUI, setShowCompletionUI] = useState(false);
@@ -361,21 +367,21 @@ export function InterviewSession({
     setVideoEnabled(!videoEnabled);
   };
 
-  const toggleMicrophone = () => {
-    if (videoRef.current && videoRef.current.video) {
-      const video = videoRef.current.video as HTMLVideoElement;
-      const stream = video.srcObject as MediaStream;
+  // const toggleMicrophone = () => {
+  //   if (videoRef.current && videoRef.current.video) {
+  //     const video = videoRef.current.video as HTMLVideoElement;
+  //     const stream = video.srcObject as MediaStream;
 
-      if (stream) {
-        const audioTracks = stream.getAudioTracks();
-        audioTracks.forEach((track) => {
-          track.enabled = !micEnabled;
-        });
-      }
-    }
+  //     if (stream) {
+  //       const audioTracks = stream.getAudioTracks();
+  //       audioTracks.forEach((track) => {
+  //         track.enabled = !micEnabled;
+  //       });
+  //     }
+  //   }
 
-    setMicEnabled(!micEnabled);
-  };
+  //   setMicEnabled(!micEnabled);
+  // };
 
   const handleDeviceChange = (
     videoDeviceId: string | null,
@@ -385,6 +391,28 @@ export function InterviewSession({
     setSelectedAudioDevice(audioDeviceId);
     setShowSettings(false);
   };
+
+  // State to track speech recognition status
+  const [isSpeechListening, setIsSpeechListening] = useState<boolean>(false);
+
+  // Listen for speech recognition status events
+  useEffect(() => {
+    const handleSpeechStatus = (event: CustomEvent) => {
+      setIsSpeechListening(event.detail?.isListening || false);
+    };
+
+    document.addEventListener(
+      "speech-recognition-status",
+      handleSpeechStatus as EventListener,
+    );
+
+    return () => {
+      document.removeEventListener(
+        "speech-recognition-status",
+        handleSpeechStatus as EventListener,
+      );
+    };
+  }, []);
 
   // Wrapper for sendChatMessage that also turns off the mic
   const handleSendMessage = () => {
@@ -505,7 +533,7 @@ export function InterviewSession({
 
         {/* Video Controls */}
         <div className="h-16 flex items-center justify-center gap-4 bg-background/95 backdrop-blur-sm px-4 border-t">
-          <Button
+          {/* <Button
             variant={micEnabled ? "ghost" : "destructive"}
             size="icon"
             onClick={toggleMicrophone}
@@ -516,7 +544,7 @@ export function InterviewSession({
             ) : (
               <MicOff className="h-5 w-5" />
             )}
-          </Button>
+          </Button> */}
 
           <Button
             variant={videoEnabled ? "ghost" : "destructive"}
@@ -714,8 +742,10 @@ export function InterviewSession({
         {/* Input Area - Fixed at bottom */}
         <div className="p-3 border-t bg-background/80 backdrop-blur-sm">
           {/* Speech Recognition Input Component */}
-          <div className="flex gap-2 items-end">
-            <div className="flex-1">
+          <div className="flex items-end relative">
+            <div className="flex-1 pr-28 relative">
+              {" "}
+              {/* Increased padding-right to make space for the buttons */}
               <SpeechRecognitionInput
                 placeholder={
                   isInitializing
@@ -733,25 +763,68 @@ export function InterviewSession({
                   !isUserTurn || isInitializing ? "opacity-50" : ""
                 }`}
                 rows={1}
+                hideButtons={
+                  true
+                } /* Hide the internal mic button so we can use our external ones */
               />
+              {/* Positioned buttons in a button group with consistent styling */}
+              <div className="absolute right-3 bottom-3 flex gap-2 items-center bg-background/70 backdrop-blur-sm px-1.5 py-1.5 rounded-full shadow-sm border border-muted/30">
+                {/* Mic Button with active state */}
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button
+                        type="button"
+                        size="icon"
+                        variant={isSpeechListening ? "default" : "outline"}
+                        className={`h-9 w-9 rounded-full transition-all relative overflow-hidden shadow-sm
+                          ${isSpeechListening ? "border-primary bg-primary text-white" : "border border-muted hover:bg-primary/10 hover:text-primary"}`}
+                        onClick={() => {
+                          document.dispatchEvent(
+                            new CustomEvent("toggle-speech-recognition"),
+                          );
+                        }}
+                        disabled={!isUserTurn || isLoading || isInitializing}
+                      >
+                        {isSpeechListening && (
+                          <div className="absolute inset-0 bg-primary/20 animate-pulse"></div>
+                        )}
+                        <Mic
+                          className={`h-4 w-4 relative z-10 ${isSpeechListening ? "text-primary-foreground" : ""}`}
+                        />
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent side="top">
+                      {isSpeechListening
+                        ? "Stop listening"
+                        : "Start voice recognition"}
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+
+                {/* Send Button */}
+                <Button
+                  size="icon"
+                  onClick={handleSendMessage}
+                  disabled={
+                    !messageInput.trim() ||
+                    !isUserTurn ||
+                    isLoading ||
+                    isInitializing
+                  }
+                  className="flex-shrink-0 h-9 w-9 rounded-full bg-primary hover:bg-primary/90 transition-all shadow-sm"
+                  variant="default"
+                >
+                  <div className="relative flex items-center justify-center">
+                    {isLoading || isInitializing ? (
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                    ) : (
+                      <Send className="h-4 w-4" />
+                    )}
+                  </div>
+                </Button>
+              </div>
             </div>
-            <Button
-              size="icon"
-              onClick={handleSendMessage}
-              disabled={
-                !messageInput.trim() ||
-                !isUserTurn ||
-                isLoading ||
-                isInitializing
-              }
-              className="flex-shrink-0 h-10 w-10 rounded-full bg-primary hover:bg-primary/90 transition-all"
-            >
-              {isLoading || isInitializing ? (
-                <Loader2 className="h-4 w-4 animate-spin" />
-              ) : (
-                <Send className="h-4 w-4" />
-              )}
-            </Button>
           </div>
         </div>
       </div>
