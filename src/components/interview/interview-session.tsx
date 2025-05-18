@@ -2,7 +2,6 @@
 
 import { useState, useEffect, useRef, useCallback } from "react";
 import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import {
   Video,
@@ -17,6 +16,7 @@ import {
   MoreVertical,
   RefreshCcw,
 } from "lucide-react";
+import { SpeechRecognitionInput } from "./speech-recognition-input";
 import { TypingIndicator } from "./typing-indicator";
 import {
   DropdownMenu,
@@ -60,6 +60,7 @@ export function InterviewSession({
 }: InterviewSessionProps) {
   const [videoEnabled, setVideoEnabled] = useState(true);
   const [micEnabled, setMicEnabled] = useState(true);
+  const [forceMicOff, setForceMicOff] = useState(false);
   const [showCompletionUI, setShowCompletionUI] = useState(false);
   const [selectedVideoDevice, setSelectedVideoDevice] = useState<string | null>(
     null,
@@ -385,12 +386,16 @@ export function InterviewSession({
     setShowSettings(false);
   };
 
-  const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === "Enter" && !e.shiftKey && isUserTurn && !isLoading) {
-      e.preventDefault();
-      sendChatMessage();
-    }
+  // Wrapper for sendChatMessage that also turns off the mic
+  const handleSendMessage = () => {
+    // Temporarily set forceMicOff to true, then back to false after a short delay
+    setForceMicOff(true);
+    sendChatMessage();
+    // Reset after a short delay to avoid React state batching issues
+    setTimeout(() => setForceMicOff(false), 100);
   };
+
+  // We no longer need this as the SpeechRecognitionInput component handles key presses
 
   // Remove the handleRestartInterview function since we're now directly using restartInterview
   // with a window.confirm in the dropdown menu onClick handler
@@ -708,27 +713,31 @@ export function InterviewSession({
 
         {/* Input Area - Fixed at bottom */}
         <div className="p-3 border-t bg-background/80 backdrop-blur-sm">
+          {/* Speech Recognition Input Component */}
           <div className="flex gap-2 items-end">
-            <Textarea
-              placeholder={
-                isInitializing
-                  ? "Initializing interview..."
-                  : isUserTurn
-                    ? "Type your message..."
-                    : "Please wait for the AI to respond..."
-              }
-              value={messageInput}
-              onChange={(e) => setMessageInput(e.target.value)}
-              onKeyDown={handleKeyPress}
-              disabled={!isUserTurn || isLoading || isInitializing}
-              className={`min-h-12 resize-none bg-background border-muted focus:border-primary/30 rounded-lg transition-all ${
-                !isUserTurn || isInitializing ? "opacity-50" : ""
-              }`}
-              rows={1}
-            />
+            <div className="flex-1">
+              <SpeechRecognitionInput
+                placeholder={
+                  isInitializing
+                    ? "Initializing interview..."
+                    : isUserTurn
+                      ? "Type your message or speak..."
+                      : "Please wait for the AI to respond..."
+                }
+                value={messageInput}
+                onChange={setMessageInput}
+                onSend={handleSendMessage}
+                forceMicOff={forceMicOff}
+                disabled={!isUserTurn || isLoading || isInitializing}
+                className={`min-h-12 resize-none bg-background border-muted focus:border-primary/30 rounded-lg transition-all ${
+                  !isUserTurn || isInitializing ? "opacity-50" : ""
+                }`}
+                rows={1}
+              />
+            </div>
             <Button
               size="icon"
-              onClick={sendChatMessage}
+              onClick={handleSendMessage}
               disabled={
                 !messageInput.trim() ||
                 !isUserTurn ||
