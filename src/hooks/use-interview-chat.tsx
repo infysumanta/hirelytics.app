@@ -9,6 +9,7 @@ export interface Message {
   sender: "ai" | "user" | "system";
   timestamp: Date;
   isCompletionMessage?: boolean;
+  audioUrl?: string; // URL to the audio file for TTS
 }
 
 interface ConversationMessage {
@@ -155,6 +156,28 @@ export function useInterviewChat({
               timestamp: new Date(),
             };
 
+            // Generate speech for initial greeting
+            try {
+              const response = await fetch("/api/ai/text-to-speech", {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ text: data.greeting }),
+              });
+
+              if (response.ok) {
+                const audioBlob = await response.blob();
+                const audioUrl = URL.createObjectURL(audioBlob);
+                initialMessage.audioUrl = audioUrl;
+              }
+            } catch (error) {
+              console.error(
+                "Error generating speech for initial greeting:",
+                error,
+              );
+            }
+
             setMessages([initialMessage]);
 
             // Add to conversation history
@@ -181,6 +204,25 @@ export function useInterviewChat({
           sender: "ai",
           timestamp: new Date(),
         };
+
+        // Generate speech for fallback message
+        try {
+          const response = await fetch("/api/ai/text-to-speech", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ text: fallbackMessage.text }),
+          });
+
+          if (response.ok) {
+            const audioBlob = await response.blob();
+            const audioUrl = URL.createObjectURL(audioBlob);
+            fallbackMessage.audioUrl = audioUrl;
+          }
+        } catch (error) {
+          console.error("Error generating speech for fallback message:", error);
+        }
 
         setMessages([fallbackMessage]);
         conversationHistoryRef.current = [
@@ -308,18 +350,63 @@ export function useInterviewChat({
         isCompletionMessage: !!data.isCompleted,
       };
 
+      // Generate speech for AI response
+      try {
+        const response = await fetch("/api/ai/text-to-speech", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ text: data.response }),
+        });
+
+        if (response.ok) {
+          const audioBlob = await response.blob();
+          const audioUrl = URL.createObjectURL(audioBlob);
+          aiMessage.audioUrl = audioUrl;
+        } else {
+          console.error("Failed to generate speech for AI response");
+        }
+      } catch (error) {
+        console.error("Error generating speech:", error);
+      }
+
       if (data.isCompleted && data.completionMessage) {
         // If this is the final response, add a system completion message too
+        const systemMessage: Message = {
+          id: (Date.now() + 2).toString(),
+          text: data.completionMessage,
+          sender: "system",
+          timestamp: new Date(),
+          isCompletionMessage: true,
+        };
+
+        // Generate speech for completion message
+        try {
+          const response = await fetch("/api/ai/text-to-speech", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ text: data.completionMessage }),
+          });
+
+          if (response.ok) {
+            const audioBlob = await response.blob();
+            const audioUrl = URL.createObjectURL(audioBlob);
+            systemMessage.audioUrl = audioUrl;
+          }
+        } catch (error) {
+          console.error(
+            "Error generating speech for completion message:",
+            error,
+          );
+        }
+
         setMessages((prevMessages) => [
           ...prevMessages,
           aiMessage,
-          {
-            id: (Date.now() + 2).toString(),
-            text: data.completionMessage,
-            sender: "system",
-            timestamp: new Date(),
-            isCompletionMessage: true,
-          },
+          systemMessage,
         ]);
 
         // Set the interview as completed

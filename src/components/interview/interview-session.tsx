@@ -40,6 +40,8 @@ import {
 import { AIInterviewBackground } from "./ai-interview-background";
 import { AIInterviewerIcon } from "./ai-interviewer-icon";
 import { MediaDeviceSelector } from "./media-device-selector";
+import { AudioPlayer } from "./audio-player";
+import { useAudioAutoplay } from "@/hooks/use-audio-autoplay";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { INTERVIEW_ALERTS } from "@/constants/interview-alerts";
 import { useInterviewChat } from "@/hooks/use-interview-chat";
@@ -395,6 +397,9 @@ export function InterviewSession({
   // State to track speech recognition status
   const [isSpeechListening, setIsSpeechListening] = useState<boolean>(false);
 
+  // Use audio autoplay hook to play the latest AI message automatically
+  useAudioAutoplay(messages);
+  
   // Listen for speech recognition status events
   useEffect(() => {
     const handleSpeechStatus = (event: CustomEvent) => {
@@ -711,12 +716,17 @@ export function InterviewSession({
                         <p className="text-sm whitespace-pre-wrap">
                           {message.text}
                         </p>
-                        <p className="text-xs opacity-70 mt-1 text-right">
-                          {message.timestamp.toLocaleTimeString([], {
-                            hour: "2-digit",
-                            minute: "2-digit",
-                          })}
-                        </p>
+                        <div className="flex justify-between items-center mt-1">
+                          {message.sender === "ai" && message.audioUrl && (
+                            <AudioPlayer audioUrl={message.audioUrl} messageId={message.id} />
+                          )}
+                          <p className="text-xs opacity-70 text-right flex-grow">
+                            {message.timestamp.toLocaleTimeString([], {
+                              hour: "2-digit",
+                              minute: "2-digit",
+                            })}
+                          </p>
+                        </div>
                       </div>
                       {message.sender === "user" && (
                         <div className="flex-shrink-0 ml-2 self-end mb-1">
