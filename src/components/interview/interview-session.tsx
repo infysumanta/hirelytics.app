@@ -398,8 +398,7 @@ export function InterviewSession({
   const [isSpeechListening, setIsSpeechListening] = useState<boolean>(false);
 
   // Use audio autoplay hook to play the latest AI message automatically
-  // Autoplay audio for AI messages and get the ID of the playing message
-  const autoPlayMessageId = useAudioAutoplay(messages);
+  useAudioAutoplay(messages);
   
   // Listen for speech recognition status events
   useEffect(() => {
@@ -719,11 +718,7 @@ export function InterviewSession({
                         </p>
                         <div className="flex justify-between items-center mt-1">
                           {message.sender === "ai" && message.audioUrl && (
-                            <AudioPlayer
-                              audioUrl={message.audioUrl}
-                              messageId={message.id}
-                              autoPlayMessageId={autoPlayMessageId}
-                            />
+                            <AudioPlayer audioUrl={message.audioUrl} messageId={message.id} />
                           )}
                           <p className="text-xs opacity-70 text-right flex-grow">
                             {message.timestamp.toLocaleTimeString([], {

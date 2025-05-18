@@ -6,11 +6,9 @@ import { Play, Pause, Volume2 } from "lucide-react";
 interface AudioPlayerProps {
   audioUrl: string;
   messageId: string;
-  // The message ID that should be autoplayed
-  autoPlayMessageId?: string | null;
 }
 
-export function AudioPlayer({ audioUrl, messageId, autoPlayMessageId }: AudioPlayerProps) {
+export function AudioPlayer({ audioUrl }: AudioPlayerProps) {
   const [isPlaying, setIsPlaying] = useState(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
@@ -38,18 +36,6 @@ export function AudioPlayer({ audioUrl, messageId, autoPlayMessageId }: AudioPla
       }
     };
   }, [audioUrl]);
-
-  // Effect to handle autoplay when autoPlayMessageId changes
-  useEffect(() => {
-    if (autoPlayMessageId === messageId && audioRef.current) {
-      // Pause other audios
-      document.querySelectorAll("audio").forEach((a) => a.pause());
-      // Play this audio
-      audioRef.current
-        .play()
-        .catch((error) => console.error("Autoplay failed:", error));
-    }
-  }, [autoPlayMessageId, messageId]);
 
   const togglePlayPause = () => {
     if (!audioRef.current) return;
