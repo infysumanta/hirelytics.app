@@ -99,3 +99,46 @@ export async function serverTextToSpeech(text: string): Promise<Buffer | null> {
     return null;
   }
 }
+
+/**
+ * Manages blob URLs to prevent memory leaks
+ */
+class AudioUrlManager {
+  private static urls = new Map<string, string>();
+
+  /**
+   * Creates and stores a blob URL for a given message ID
+   */
+  static createUrl(blob: Blob, messageId: string): string {
+    // Revoke previous URL for this message if it exists
+    if (this.urls.has(messageId)) {
+      URL.revokeObjectURL(this.urls.get(messageId)!);
+    }
+
+    const url = URL.createObjectURL(blob);
+    this.urls.set(messageId, url);
+    return url;
+  }
+
+  /**
+   * Revokes a blob URL when it's no longer needed
+   */
+  static revokeUrl(messageId: string): void {
+    if (this.urls.has(messageId)) {
+      URL.revokeObjectURL(this.urls.get(messageId)!);
+      this.urls.delete(messageId);
+    }
+  }
+
+  /**
+   * Revokes all stored blob URLs
+   */
+  static revokeAll(): void {
+    this.urls.forEach((url) => {
+      URL.revokeObjectURL(url);
+    });
+    this.urls.clear();
+  }
+}
+
+export { AudioUrlManager };
