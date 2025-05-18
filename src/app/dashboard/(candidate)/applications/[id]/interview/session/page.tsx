@@ -96,15 +96,15 @@ export default async function InterviewSessionPage(props: Props) {
     }
 
     return (
-      <div className="container px-4 py-4 mx-auto relative">
+      <div className="container mx-auto relative">
         {/* Apply a subtle background for the entire page */}
         <div className="absolute inset-0 -z-10">
           <AIInterviewBackground className="opacity-30" />
         </div>
 
         <div className="mx-auto relative z-10">
-          <Card className="mb-2 border-border/60 shadow-lg">
-            <CardHeader className="py-3">
+          <Card className="border-border/60 shadow-lg">
+            <CardHeader>
               <h1 className="text-xl font-bold">
                 {job.title} - Live Interview
               </h1>
@@ -112,7 +112,7 @@ export default async function InterviewSessionPage(props: Props) {
                 AI Interview session for {job.companyName}
               </p>
             </CardHeader>
-            <CardContent className="p-4">
+            <CardContent className="p-1">
               <InterviewSession
                 applicationId={applicationId}
                 jobTitle={job.title}
