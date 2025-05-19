@@ -27,9 +27,27 @@ import {
   Camera,
   FileCheck,
   Award,
+  Download,
+  X,
+  ExternalLink,
+  Maximize2,
 } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogClose,
+} from "@/components/ui/dialog";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel";
 
 // Define the application interface
 interface JobApplication {
@@ -39,6 +57,9 @@ interface JobApplication {
   candidateName?: string;
   fileName: string;
   resumeUrl: string;
+  signedResumeUrl?: string; // Added signed URL for resume
+  s3Key?: string;
+  s3Bucket?: string;
   preferredLanguage: string;
   status: "pending" | "reviewed" | "accepted" | "rejected";
   parsedResume?: {
@@ -99,6 +120,13 @@ export default function JobApplicationDetailsPage() {
   const applicationId = params.id as string;
   const [activeTab, setActiveTab] = useState("resume");
   const queryClient = useQueryClient();
+
+  // State for image gallery
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const [isImageDialogOpen, setIsImageDialogOpen] = useState(false);
+
+  // State for resume viewer
+  const [isResumeDialogOpen, setIsResumeDialogOpen] = useState(false);
 
   // Fetch application details
   const { data: application, isLoading } = useQuery({
@@ -226,8 +254,77 @@ export default function JobApplicationDetailsPage() {
     return nextUserMessage?.text || null;
   };
 
+  // PDF Viewer Dialog
+  const ResumeDialog = () => {
+    const [isIframeLoaded, setIsIframeLoaded] = useState(false);
+    const [iframeError, setIframeError] = useState(false);
+
+    const handleIframeLoad = () => {
+      setIsIframeLoaded(true);
+    };
+
+    const handleIframeError = () => {
+      setIframeError(true);
+    };
+
+    // Use signed URL if available, otherwise fallback to regular resumeUrl
+    const resumeUrl = application?.signedResumeUrl || application?.resumeUrl;
+
+    return (
+      <Dialog open={isResumeDialogOpen} onOpenChange={setIsResumeDialogOpen}>
+        <DialogContent className="max-w-7xl h-[90vh] flex flex-col">
+          <DialogHeader>
+            <div className="flex items-center justify-between">
+              <DialogTitle>Resume: {application?.fileName}</DialogTitle>
+            </div>
+          </DialogHeader>
+          <div className="flex-1 h-[300px] mt-4 border rounded-md overflow-hidden relative">
+            {!isIframeLoaded && !iframeError && (
+              <div className="absolute inset-0 flex items-center justify-center bg-background">
+                <div className="text-center">
+                  <Clock className="h-10 w-10 animate-spin text-muted-foreground mx-auto mb-4" />
+                  <p className="text-muted-foreground">Loading resume...</p>
+                </div>
+              </div>
+            )}
+
+            {iframeError ? (
+              <div className="absolute inset-0 flex items-center justify-center bg-background">
+                <div className="text-center p-6">
+                  <AlertCircle className="h-10 w-10 text-destructive mx-auto mb-4" />
+                  <h3 className="font-medium text-lg mb-2">
+                    Unable to display resume
+                  </h3>
+                  <p className="text-muted-foreground mb-4">
+                    The resume cannot be displayed in the browser. Please
+                    download it to view.
+                  </p>
+                  <Button onClick={() => window.open(resumeUrl, "_blank")}>
+                    <Download className="h-4 w-4 mr-1" />
+                    Download Resume
+                  </Button>
+                </div>
+              </div>
+            ) : (
+              <iframe
+                src={resumeUrl}
+                className="w-full h-full"
+                title={`Resume of ${application?.candidateName || "candidate"}`}
+                onLoad={handleIframeLoad}
+                onError={handleIframeError}
+              />
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
+    );
+  };
+
   return (
     <div className="space-y-6">
+      {/* Render PDF Dialog */}
+      <ResumeDialog />
+
       {/* Header with back button */}
       <div className="flex items-center justify-between">
         <div className="space-y-1">
@@ -310,6 +407,15 @@ export default function JobApplicationDetailsPage() {
                 <FileText className="h-4 w-4 mr-2" />
                 <span className="text-muted-foreground mr-2">Resume:</span>
                 <span className="font-medium">{application.fileName}</span>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="ml-2"
+                  onClick={() => setIsResumeDialogOpen(true)}
+                >
+                  <ExternalLink className="h-4 w-4 mr-1" />
+                  View
+                </Button>
               </div>
 
               <div className="flex items-center">
@@ -949,7 +1055,11 @@ export default function JobApplicationDetailsPage() {
                   {application.monitoringImages.map((image, index) => (
                     <div
                       key={index}
-                      className="border rounded-lg overflow-hidden"
+                      className="border rounded-lg overflow-hidden relative group cursor-pointer"
+                      onClick={() => {
+                        setSelectedImage(image.signedUrl || "");
+                        setIsImageDialogOpen(true);
+                      }}
                     >
                       <div className="aspect-video relative">
                         <Image
@@ -959,8 +1069,11 @@ export default function JobApplicationDetailsPage() {
                           }
                           alt={`Monitoring image ${index + 1}`}
                           fill
-                          className="object-cover"
+                          className="object-cover transition-transform group-hover:scale-105"
                         />
+                      </div>
+                      <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-colors flex items-center justify-center opacity-0 group-hover:opacity-100">
+                        <Maximize2 className="text-white h-6 w-6" />
                       </div>
                       <div className="p-2 text-xs text-center text-muted-foreground">
                         {format(
@@ -971,6 +1084,61 @@ export default function JobApplicationDetailsPage() {
                     </div>
                   ))}
                 </div>
+
+                {/* Image Lightbox Dialog */}
+                <Dialog
+                  open={isImageDialogOpen}
+                  onOpenChange={setIsImageDialogOpen}
+                >
+                  <DialogContent className="max-w-4xl max-h-[90vh] p-0">
+                    <DialogHeader className="sr-only">
+                      <DialogTitle>Monitoring Image</DialogTitle>
+                    </DialogHeader>
+                    <div className="relative">
+                      <DialogClose className="absolute top-2 right-2 z-50 bg-black/70 rounded-full p-1">
+                        <X className="h-6 w-6 text-white" />
+                      </DialogClose>
+                      {selectedImage && (
+                        <div className="w-full h-full max-h-[80vh]">
+                          <Carousel className="w-full">
+                            <CarouselContent>
+                              {application.monitoringImages.map(
+                                (image, index) => (
+                                  <CarouselItem key={index}>
+                                    <div className="flex items-center justify-center p-1 h-[80vh]">
+                                      <div className="relative w-full h-full flex items-center justify-center">
+                                        <Image
+                                          src={image.signedUrl || ""}
+                                          alt={`Monitoring image ${index + 1}`}
+                                          fill
+                                          className="object-contain"
+                                        />
+                                        <div className="absolute bottom-4 left-0 right-0 text-center">
+                                          <div className="inline-block bg-black/70 text-white text-sm px-2 py-1 rounded">
+                                            Image {index + 1} of{" "}
+                                            {application.monitoringImages
+                                              ?.length || 0}{" "}
+                                            •
+                                            {format(
+                                              new Date(image.timestamp),
+                                              " MMM d, yyyy HH:mm:ss",
+                                            )}
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </CarouselItem>
+                                ),
+                              )}
+                            </CarouselContent>
+                            <CarouselPrevious className="left-2" />
+                            <CarouselNext className="right-2" />
+                          </Carousel>
+                        </div>
+                      )}
+                    </div>
+                  </DialogContent>
+                </Dialog>
               </CardContent>
             </Card>
           ) : (
@@ -1058,7 +1226,7 @@ export default function JobApplicationDetailsPage() {
                 </p>
                 <Button asChild>
                   <a
-                    href={application.resumeUrl}
+                    href={application.signedResumeUrl || application.resumeUrl}
                     target="_blank"
                     rel="noopener noreferrer"
                   >

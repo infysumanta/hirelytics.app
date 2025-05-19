@@ -50,15 +50,14 @@ export async function GET(
     const url = new URL(req.url);
     const includeBase64 = url.searchParams.get("includeBase64") === "true";
 
-    // Generate signed URLs for monitoring images if present
+    // Generate signed URLs for files stored in S3
     const appData = application.toJSON();
+    const s3Client = createS3Client();
+    const bucketName =
+      appData.s3Bucket || process.env.AWS_S3_BUCKET || "hirelytics-uploads";
 
     // Process monitoring images if they exist
     if (appData.monitoringImages && appData.monitoringImages.length > 0) {
-      const s3Client = createS3Client();
-      const bucketName =
-        appData.s3Bucket || process.env.AWS_S3_BUCKET || "hirelytics-uploads";
-
       // Generate signed URLs for each monitoring image
       const monitoringImagesWithUrls = await Promise.all(
         appData.monitoringImages.map(async (image: MonitoringImage) => {
@@ -83,13 +82,31 @@ export async function GET(
       appData.monitoringImages = monitoringImagesWithUrls;
     }
 
+    // Generate signed URL for resume if s3Key exists
+    if (appData.s3Key) {
+      const command = new GetObjectCommand({
+        Bucket: bucketName,
+        Key: appData.s3Key,
+      });
+
+      // Generate a URL that expires in 1 hour
+      const signedResumeUrl = await getSignedUrl(s3Client, command, {
+        expiresIn: 3600,
+      });
+
+      // Add the signed URL to the response
+      appData.signedResumeUrl = signedResumeUrl;
+    }
+
     // Return application data
     const response = {
       success: true,
       application: {
         ...appData,
-        // Only include base64 data if specifically requested
-        ...(includeBase64 ? {} : { resumeBase64: "**base64 data stored**" }),
+        // Handle resumeBase64 based on includeBase64 parameter
+        resumeBase64: includeBase64
+          ? appData.resumeBase64
+          : "**base64 data stored**",
         job: job,
       },
     };
@@ -152,12 +169,13 @@ export async function PATCH(
 
     const appData = updatedApplication.toJSON();
 
+    // Process S3 stored files to generate signed URLs
+    const s3Client = createS3Client();
+    const bucketName =
+      appData.s3Bucket || process.env.AWS_S3_BUCKET || "hirelytics-uploads";
+
     // Process monitoring images if they exist
     if (appData.monitoringImages && appData.monitoringImages.length > 0) {
-      const s3Client = createS3Client();
-      const bucketName =
-        appData.s3Bucket || process.env.AWS_S3_BUCKET || "hirelytics-uploads";
-
       // Generate signed URLs for each monitoring image
       const monitoringImagesWithUrls = await Promise.all(
         appData.monitoringImages.map(async (image: MonitoringImage) => {
@@ -182,12 +200,34 @@ export async function PATCH(
       appData.monitoringImages = monitoringImagesWithUrls;
     }
 
+    // Generate signed URL for resume if s3Key exists
+    if (appData.s3Key) {
+      const command = new GetObjectCommand({
+        Bucket: bucketName,
+        Key: appData.s3Key,
+      });
+
+      // Generate a URL that expires in 1 hour
+      const signedResumeUrl = await getSignedUrl(s3Client, command, {
+        expiresIn: 3600,
+      });
+
+      // Add the signed URL to the response
+      appData.signedResumeUrl = signedResumeUrl;
+    }
+
+    // Get query parameter to include base64 data or not
+    const url = new URL(req.url);
+    const includeBase64 = url.searchParams.get("includeBase64") === "true";
+
     // Return updated application
     return NextResponse.json({
       success: true,
       application: {
         ...appData,
-        resumeBase64: "**base64 data stored**", // Don't expose the full base64 data
+        resumeBase64: includeBase64
+          ? appData.resumeBase64
+          : "**base64 data stored**",
       },
     });
   } catch (error) {
