@@ -7,7 +7,6 @@ import User from "@/models/user";
 import { auth } from "@/auth";
 import { z } from "zod";
 import { v4 as uuidv4 } from "uuid";
-import { IUser } from "@/models/user"; // Import the IUser interface for type casting
 
 // Helper function to check if user is a recruiter
 async function isRecruiter() {
@@ -143,40 +142,25 @@ export async function GET(req: NextRequest) {
     if (search) {
       query.$or = [
         { title: { $regex: search, $options: "i" } },
+        { description: { $regex: search, $options: "i" } },
         { companyName: { $regex: search, $options: "i" } },
-        { skills: { $in: [new RegExp(search, "i")] } },
       ];
     }
 
-    // Get jobs with pagination
+    // Fetch jobs with pagination
     const skip = (page - 1) * limit;
     const jobs = await Job.find(query)
       .sort({ createdAt: -1 })
       .skip(skip)
-      .limit(limit);
-    // .populate("recruiter", "name email");
+      .limit(limit)
+      .lean();
 
     const totalJobs = await Job.countDocuments(query);
     const totalPages = Math.ceil(totalJobs / limit);
 
     // Return jobs
     return NextResponse.json({
-      jobs: jobs.map((job) => ({
-        id: job._id.toString(),
-        title: job.title,
-        companyName: job.companyName,
-        skills: job.skills,
-        location: job.location,
-        expiryDate: job.expiryDate,
-        urlId: job.urlId,
-        isActive: job.isActive,
-        createdAt: job.createdAt,
-        recruiter: {
-          id: (job.recruiter as IUser)._id.toString(),
-          name: (job.recruiter as IUser).name,
-          email: (job.recruiter as IUser).email,
-        },
-      })),
+      jobs,
       pagination: {
         totalJobs,
         totalPages,
