@@ -18,15 +18,17 @@ export async function GET() {
     const { role, id: userId } = session.user;
 
     // Common statistics for all dashboards
-    const totalJobs = await Job.countDocuments({ isActive: true });
+    const totalJobs = await Job.countDocuments({ isActive: true }).catch(
+      () => 0,
+    );
     const totalCandidates = await User.countDocuments({
       role: "candidate",
       isActive: true,
-    });
+    }).catch(() => 0);
     const totalRecruiters = await User.countDocuments({
       role: "recruiter",
       isActive: true,
-    });
+    }).catch(() => 0);
 
     // Role-specific data
     switch (role) {
@@ -34,11 +36,12 @@ export async function GET() {
         const recentJobsAdmin = await Job.find({ isActive: true })
           .sort({ createdAt: -1 })
           .limit(5)
-          .populate("recruiter", "name");
+          .populate("recruiter", "name")
+          .catch(() => []);
 
         const applicationStatusData = await JobApplication.aggregate([
           { $group: { _id: "$status", count: { $sum: 1 } } },
-        ]);
+        ]).catch(() => []);
 
         const jobsPerRecruiter = await Job.aggregate([
           { $match: { isActive: true } },
@@ -54,7 +57,7 @@ export async function GET() {
           { $group: { _id: "$recruiterInfo.name", count: { $sum: 1 } } },
           { $sort: { count: -1 } },
           { $limit: 5 },
-        ]);
+        ]).catch(() => []);
 
         return NextResponse.json({
           totalJobs,
@@ -68,31 +71,28 @@ export async function GET() {
       case "recruiter":
         const recruiterObjectId = new mongoose.Types.ObjectId(userId);
 
-        // Count jobs created by this recruiter
         const myJobs = await Job.countDocuments({
           recruiter: recruiterObjectId,
           isActive: true,
-        });
+        }).catch(() => 0);
 
-        // Get all job IDs for this recruiter
         const recruiterJobs = await Job.find({
           recruiter: recruiterObjectId,
           isActive: true,
-        }).select("_id");
+        })
+          .select("_id")
+          .catch(() => []);
         const jobIdStrings = recruiterJobs.map((job) => job._id.toString());
 
-        // Count applications for this recruiter's jobs
         const totalApplications = await JobApplication.countDocuments({
           jobId: { $in: jobIdStrings },
-        });
+        }).catch(() => 0);
 
-        // Get applications by status for this recruiter's jobs
         const applicationsByStatus = await JobApplication.aggregate([
           { $match: { jobId: { $in: jobIdStrings } } },
           { $group: { _id: "$status", count: { $sum: 1 } } },
-        ]);
+        ]).catch(() => []);
 
-        // Get recent applications for this recruiter's jobs
         const recentApplications = await JobApplication.aggregate([
           { $match: { jobId: { $in: jobIdStrings } } },
           { $sort: { createdAt: -1 } },
@@ -101,11 +101,16 @@ export async function GET() {
             $lookup: {
               from: "jobs",
               localField: "jobId",
-              foreignField: "urlId",
+              foreignField: "_id",
               as: "jobInfo",
             },
           },
-          { $unwind: { path: "$jobInfo", preserveNullAndEmptyArrays: true } },
+          {
+            $unwind: {
+              path: "$jobInfo",
+              preserveNullAndEmptyArrays: true,
+            },
+          },
           {
             $lookup: {
               from: "users",
@@ -126,15 +131,17 @@ export async function GET() {
               status: 1,
               createdAt: 1,
               jobInfo: {
-                title: "$jobInfo.title",
-                companyName: "$jobInfo.companyName",
+                title: { $ifNull: ["$jobInfo.title", "Unknown Job"] },
+                companyName: {
+                  $ifNull: ["$jobInfo.companyName", "Unknown Company"],
+                },
               },
               candidateName: {
                 $ifNull: ["$candidateInfo.name", "$candidateName"],
               },
             },
           },
-        ]);
+        ]).catch(() => []);
 
         return NextResponse.json({
           myJobs,
@@ -146,38 +153,53 @@ export async function GET() {
       case "candidate":
         const userObjectId = new mongoose.Types.ObjectId(userId);
 
-        // Get count of applications by this candidate
         const myApplicationsCount = await JobApplication.countDocuments({
           userId: userObjectId,
-        });
+        }).catch(() => 0);
 
-        // Get application status breakdown
         const myApplicationsByStatus = await JobApplication.aggregate([
           { $match: { userId: userObjectId } },
           { $group: { _id: "$status", count: { $sum: 1 } } },
-        ]);
+        ]).catch(() => []);
 
-        // Get recent available jobs
         const recentJobsCandidate = await Job.find({ isActive: true })
           .sort({ createdAt: -1 })
           .limit(5)
-          .select("title companyName location createdAt");
+          .select("title companyName location createdAt")
+          .catch(() => []);
 
-        // Get candidate's recent job applications with job details
         const myRecentApplications = await JobApplication.aggregate([
           { $match: { userId: userObjectId } },
           { $sort: { createdAt: -1 } },
           { $limit: 5 },
-          // Handle lookup for job info using the jobId string
           {
             $lookup: {
               from: "jobs",
               localField: "jobId",
-              foreignField: "urlId",
+              foreignField: "_id",
               as: "jobInfo",
             },
           },
-          { $unwind: { path: "$jobInfo", preserveNullAndEmptyArrays: true } },
+          {
+            $unwind: {
+              path: "$jobInfo",
+              preserveNullAndEmptyArrays: true,
+            },
+          },
+          {
+            $lookup: {
+              from: "users",
+              localField: "userId",
+              foreignField: "_id",
+              as: "userInfo",
+            },
+          },
+          {
+            $unwind: {
+              path: "$userInfo",
+              preserveNullAndEmptyArrays: true,
+            },
+          },
           {
             $project: {
               _id: 1,
@@ -189,9 +211,13 @@ export async function GET() {
                   $ifNull: ["$jobInfo.companyName", "Unknown Company"],
                 },
               },
+              userInfo: {
+                name: { $ifNull: ["$userInfo.name", "Unknown User"] },
+                email: { $ifNull: ["$userInfo.email", "Unknown Email"] },
+              },
             },
           },
-        ]);
+        ]).catch(() => []);
 
         return NextResponse.json({
           myApplicationsCount,

@@ -64,7 +64,8 @@ export interface IJobApplication extends Document {
 const JobApplicationSchema = new Schema(
   {
     jobId: {
-      type: String,
+      type: Schema.Types.ObjectId,
+      ref: "Job",
       required: [true, "Job ID is required"],
     },
     userId: {
