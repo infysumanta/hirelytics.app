@@ -20,6 +20,7 @@ import {
   ChevronRight,
   Sparkles,
   Users,
+  Briefcase as BriefcaseIcon,
 } from "lucide-react";
 
 // Animation variants
@@ -153,6 +154,17 @@ export default function Home() {
                 <span className="relative z-10">
                   {common("buttons.getStarted")}
                 </span>
+              </Button>
+            </Link>
+            <Link href="/jobs">
+              <Button
+                size="lg"
+                variant="outline"
+                className="gap-2 group relative overflow-hidden"
+              >
+                <span className="absolute inset-0 bg-gradient-to-r from-indigo-500/20 to-cyan-500/20 opacity-0 group-hover:opacity-100 transition-opacity"></span>
+                <BriefcaseIcon size={18} className="relative z-10" />
+                <span className="relative z-10">Find Jobs</span>
               </Button>
             </Link>
             <Link href="#how-it-works">
