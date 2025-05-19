@@ -95,9 +95,15 @@ export async function POST(req: NextRequest) {
 
     // Create system prompt with job and resume context
     const systemPrompt = `
-      You are a professional AI interviewer conducting an interview for the ${job.title} position at ${job.companyName}. 
-      The candidate has applied with the following resume: "${application.resume?.text || "No resume provided"}".
-      The job requires these skills: ${job.skills?.join(", ") || "various technical and soft skills"}.
+      You are Hirelytics AI, a professional AI interviewer conducting an interview for the ${
+        job.title
+      } position at ${job.companyName}. 
+      The candidate has applied with the following resume: "${
+        application.resume?.text || "No resume provided"
+      }".
+      The job requires these skills: ${
+        job.skills?.join(", ") || "various technical and soft skills"
+      }.
       
       INTERVIEW STRUCTURE:
       You are conducting a structured interview with the following phases:
@@ -109,7 +115,9 @@ export async function POST(req: NextRequest) {
       6. Conclusion: End with a professional closing message
       
       TECHNICAL QUESTIONS:
-      For ${job.title}, select 3 diverse technical questions from this expanded list (choose questions most relevant to the role and vary your wording):
+      For ${
+        job.title
+      }, select 3 diverse technical questions from this expanded list (choose questions most relevant to the role and vary your wording):
       1. Based on your experience with [specific skill from resume], what approach would you take to [common task in the role]?
       2. How would you implement [specific feature/functionality related to job requirements]?
       3. What challenges have you faced when working with [technology mentioned in job skills] and how did you overcome them?
@@ -186,15 +194,63 @@ export async function POST(req: NextRequest) {
       Behavioral questions asked: ${interviewState.behavioralQuestionsAsked}/3
       
       Your next action:
-      ${interviewState.currentPhase === "introduction" ? "Listen to candidate's introduction and then give feedback before asking first technical question." : ""}
-      ${interviewState.currentPhase === "candidate_introduction" ? "Give brief feedback on the candidate's introduction and ask the first technical question." : ""}
-      ${interviewState.currentPhase === "technical_questions" && interviewState.technicalQuestionsAsked < 3 ? `Give brief feedback on the previous answer and ask technical question #${interviewState.technicalQuestionsAsked + 1}.` : ""}
-      ${interviewState.currentPhase === "technical_questions" && interviewState.technicalQuestionsAsked >= 3 ? "Give brief feedback on the previous answer and transition to project discussion by asking about their most significant project." : ""}
-      ${interviewState.currentPhase === "project_discussion" && interviewState.projectQuestionsAsked < 3 ? `Give brief feedback and ask project question #${interviewState.projectQuestionsAsked + 1}.` : ""}
-      ${interviewState.currentPhase === "project_discussion" && interviewState.projectQuestionsAsked >= 3 ? "Give brief feedback and transition to behavioral questions." : ""}
-      ${interviewState.currentPhase === "behavioral_questions" && interviewState.behavioralQuestionsAsked < 3 ? `Give brief feedback and ask behavioral question #${interviewState.behavioralQuestionsAsked + 1}.` : ""}
-      ${interviewState.currentPhase === "behavioral_questions" && interviewState.behavioralQuestionsAsked >= 3 ? "Give brief feedback and transition to conclusion phase. Let the candidate know that all planned questions have been asked." : ""}
-      ${interviewState.currentPhase === "conclusion" ? "Thank the candidate with a clear ending statement like: 'Thank you for participating in this interview. The interview is now complete, and your responses will be analyzed. The system will now redirect you to view your feedback. We wish you success in your job search.' Make it clear that the interview is finished and the AI will not respond further." : ""}
+      ${
+        interviewState.currentPhase === "introduction"
+          ? "Listen to candidate's introduction and then give feedback before asking first technical question."
+          : ""
+      }
+      ${
+        interviewState.currentPhase === "candidate_introduction"
+          ? "Give brief feedback on the candidate's introduction and ask the first technical question."
+          : ""
+      }
+      ${
+        interviewState.currentPhase === "technical_questions" &&
+        interviewState.technicalQuestionsAsked < 3
+          ? `Give brief feedback on the previous answer and ask technical question #${
+              interviewState.technicalQuestionsAsked + 1
+            }.`
+          : ""
+      }
+      ${
+        interviewState.currentPhase === "technical_questions" &&
+        interviewState.technicalQuestionsAsked >= 3
+          ? "Give brief feedback on the previous answer and transition to project discussion by asking about their most significant project."
+          : ""
+      }
+      ${
+        interviewState.currentPhase === "project_discussion" &&
+        interviewState.projectQuestionsAsked < 3
+          ? `Give brief feedback and ask project question #${
+              interviewState.projectQuestionsAsked + 1
+            }.`
+          : ""
+      }
+      ${
+        interviewState.currentPhase === "project_discussion" &&
+        interviewState.projectQuestionsAsked >= 3
+          ? "Give brief feedback and transition to behavioral questions."
+          : ""
+      }
+      ${
+        interviewState.currentPhase === "behavioral_questions" &&
+        interviewState.behavioralQuestionsAsked < 3
+          ? `Give brief feedback and ask behavioral question #${
+              interviewState.behavioralQuestionsAsked + 1
+            }.`
+          : ""
+      }
+      ${
+        interviewState.currentPhase === "behavioral_questions" &&
+        interviewState.behavioralQuestionsAsked >= 3
+          ? "Give brief feedback and transition to conclusion phase. Let the candidate know that all planned questions have been asked."
+          : ""
+      }
+      ${
+        interviewState.currentPhase === "conclusion"
+          ? "Thank the candidate with a clear ending statement like: 'Thank you for participating in this interview. The interview is now complete, and your responses will be analyzed. The system will now redirect you to view your feedback. We wish you success in your job search.' Make it clear that the interview is finished and the AI will not respond further."
+          : ""
+      }
       
       After receiving the candidate's response, always include a brief assessment of their answer before asking the next question.
       Make sure to construct a proper transition between different phases of the interview.
@@ -208,7 +264,9 @@ export async function POST(req: NextRequest) {
       
       ${interviewStatePrompt}
       
-      ${formattedHistory.map((msg) => `${msg.role.toUpperCase()}: ${msg.content}`).join("\n\n")}
+      ${formattedHistory
+        .map((msg) => `${msg.role.toUpperCase()}: ${msg.content}`)
+        .join("\n\n")}
       
       USER: ${message}
       
@@ -233,7 +291,9 @@ export async function POST(req: NextRequest) {
         "That concludes the interview. Thank you for your time and participation. Your responses are being analyzed, and you'll receive feedback shortly.";
     } else if (isQuestion && interviewState.currentPhase !== "completed") {
       // If candidate is asking a question, provide a gentle redirect
-      response = `I appreciate your curiosity. As the interviewer, I need to focus on evaluating your qualifications for the ${job.title} position. Let's continue with our structured interview process. ${
+      response = `I appreciate your curiosity. As the interviewer, I need to focus on evaluating your qualifications for the ${
+        job.title
+      } position. Let's continue with our structured interview process. ${
         interviewState.lastQuestion
           ? "Could you please answer the question I asked?"
           : "Let me ask you a relevant question."
