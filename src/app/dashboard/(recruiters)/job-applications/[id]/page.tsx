@@ -87,6 +87,7 @@ interface JobApplication {
   monitoringImages?: {
     s3Key: string;
     timestamp: string;
+    signedUrl?: string;
   }[];
   createdAt: string;
   updatedAt: string;
@@ -141,7 +142,9 @@ export default function JobApplicationDetailsPage() {
     onError: (error) => {
       console.error("Error updating status:", error);
       toast.error(
-        `Failed to update status: ${error instanceof Error ? error.message : "Unknown error"}`,
+        `Failed to update status: ${
+          error instanceof Error ? error.message : "Unknown error"
+        }`,
       );
     },
   });
@@ -197,18 +200,12 @@ export default function JobApplicationDetailsPage() {
   const questions = application.interviewChatHistory
     ? application.interviewChatHistory
         .filter((msg) => msg.sender === "ai" && msg.questionCategory)
-        .reduce(
-          (acc, message) => {
-            const category = message.questionCategory || "other";
-            if (!acc[category]) acc[category] = [];
-            acc[category].push(message);
-            return acc;
-          },
-          {} as Record<
-            string,
-            (typeof application.interviewChatHistory)[number][]
-          >,
-        )
+        .reduce((acc, message) => {
+          const category = message.questionCategory || "other";
+          if (!acc[category]) acc[category] = [];
+          acc[category].push(message);
+          return acc;
+        }, {} as Record<string, (typeof application.interviewChatHistory)[number][]>)
     : {};
 
   // Get answers that follow questions
@@ -347,8 +344,8 @@ export default function JobApplicationDetailsPage() {
                       application.parsedResume.matchScore >= 70
                         ? "bg-green-500/20 text-green-500"
                         : application.parsedResume.matchScore >= 50
-                          ? "bg-yellow-500/20 text-yellow-500"
-                          : "bg-red-500/20 text-red-500"
+                        ? "bg-yellow-500/20 text-yellow-500"
+                        : "bg-red-500/20 text-red-500"
                     }`}
                   >
                     {application.parsedResume.matchScore}%
@@ -360,8 +357,8 @@ export default function JobApplicationDetailsPage() {
                     application.parsedResume.matchScore >= 70
                       ? "bg-green-100"
                       : application.parsedResume.matchScore >= 50
-                        ? "bg-yellow-100"
-                        : "bg-red-100"
+                      ? "bg-yellow-100"
+                      : "bg-red-100"
                   }`}
                 >
                   <div
@@ -369,8 +366,8 @@ export default function JobApplicationDetailsPage() {
                       application.parsedResume.matchScore >= 70
                         ? "bg-green-500"
                         : application.parsedResume.matchScore >= 50
-                          ? "bg-yellow-500"
-                          : "bg-red-500"
+                        ? "bg-yellow-500"
+                        : "bg-red-500"
                     }`}
                     style={{ width: `${application.parsedResume.matchScore}%` }}
                   />
@@ -956,7 +953,10 @@ export default function JobApplicationDetailsPage() {
                     >
                       <div className="aspect-video relative">
                         <Image
-                          src={`/api/applications/${applicationId}/monitoring-image/${image.s3Key}`}
+                          src={
+                            image.signedUrl ||
+                            `/api/applications/${applicationId}/monitoring-image/${image.s3Key}`
+                          }
                           alt={`Monitoring image ${index + 1}`}
                           fill
                           className="object-cover"
@@ -1005,10 +1005,10 @@ export default function JobApplicationDetailsPage() {
                       application.status === "accepted"
                         ? "bg-green-500/20 text-green-500"
                         : application.status === "rejected"
-                          ? "bg-red-500/20 text-red-500"
-                          : application.status === "reviewed"
-                            ? "bg-blue-500/20 text-blue-500"
-                            : "bg-yellow-500/20 text-yellow-500"
+                        ? "bg-red-500/20 text-red-500"
+                        : application.status === "reviewed"
+                        ? "bg-blue-500/20 text-blue-500"
+                        : "bg-yellow-500/20 text-yellow-500"
                     }`}
                   >
                     {application.status.charAt(0).toUpperCase() +

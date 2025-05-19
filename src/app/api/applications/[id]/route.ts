@@ -3,6 +3,16 @@ import { connectToDatabase } from "@/lib/mongodb";
 import { JobApplication } from "@/models/job-application";
 import { auth } from "@/auth";
 import Job from "@/models/job";
+import { createS3Client } from "@/lib/s3-client";
+import { GetObjectCommand } from "@aws-sdk/client-s3";
+import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
+
+// Define the MonitoringImage interface based on the model
+interface MonitoringImage {
+  s3Key: string;
+  timestamp: Date;
+  signedUrl?: string;
+}
 
 export async function GET(
   req: NextRequest,
@@ -23,7 +33,7 @@ export async function GET(
       );
     }
 
-    const id = params.id;
+    const { id } = await params;
 
     // Fetch application by ID
     const application = await JobApplication.findById(id);
@@ -40,11 +50,44 @@ export async function GET(
     const url = new URL(req.url);
     const includeBase64 = url.searchParams.get("includeBase64") === "true";
 
+    // Generate signed URLs for monitoring images if present
+    const appData = application.toJSON();
+
+    // Process monitoring images if they exist
+    if (appData.monitoringImages && appData.monitoringImages.length > 0) {
+      const s3Client = createS3Client();
+      const bucketName =
+        appData.s3Bucket || process.env.AWS_S3_BUCKET || "hirelytics-uploads";
+
+      // Generate signed URLs for each monitoring image
+      const monitoringImagesWithUrls = await Promise.all(
+        appData.monitoringImages.map(async (image: MonitoringImage) => {
+          const command = new GetObjectCommand({
+            Bucket: bucketName,
+            Key: image.s3Key,
+          });
+
+          // Generate a URL that expires in 1 hour
+          const signedUrl = await getSignedUrl(s3Client, command, {
+            expiresIn: 3600,
+          });
+
+          return {
+            ...image,
+            signedUrl,
+          };
+        }),
+      );
+
+      // Replace the original monitoring images with ones that have signed URLs
+      appData.monitoringImages = monitoringImagesWithUrls;
+    }
+
     // Return application data
     const response = {
       success: true,
       application: {
-        ...application.toJSON(),
+        ...appData,
         // Only include base64 data if specifically requested
         ...(includeBase64 ? {} : { resumeBase64: "**base64 data stored**" }),
         job: job,
@@ -107,11 +150,43 @@ export async function PATCH(
       { new: true },
     );
 
+    const appData = updatedApplication.toJSON();
+
+    // Process monitoring images if they exist
+    if (appData.monitoringImages && appData.monitoringImages.length > 0) {
+      const s3Client = createS3Client();
+      const bucketName =
+        appData.s3Bucket || process.env.AWS_S3_BUCKET || "hirelytics-uploads";
+
+      // Generate signed URLs for each monitoring image
+      const monitoringImagesWithUrls = await Promise.all(
+        appData.monitoringImages.map(async (image: MonitoringImage) => {
+          const command = new GetObjectCommand({
+            Bucket: bucketName,
+            Key: image.s3Key,
+          });
+
+          // Generate a URL that expires in 1 hour
+          const signedUrl = await getSignedUrl(s3Client, command, {
+            expiresIn: 3600,
+          });
+
+          return {
+            ...image,
+            signedUrl,
+          };
+        }),
+      );
+
+      // Replace the original monitoring images with ones that have signed URLs
+      appData.monitoringImages = monitoringImagesWithUrls;
+    }
+
     // Return updated application
     return NextResponse.json({
       success: true,
       application: {
-        ...updatedApplication.toJSON(),
+        ...appData,
         resumeBase64: "**base64 data stored**", // Don't expose the full base64 data
       },
     });
