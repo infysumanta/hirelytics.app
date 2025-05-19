@@ -4,6 +4,7 @@ import * as React from "react";
 import { cn } from "@/lib/utils";
 import { useTheme } from "next-themes";
 import { motion } from "framer-motion";
+import { GradientBackground } from "./gradient-background";
 import {
   Card,
   CardContent,
@@ -300,23 +301,7 @@ export function AnimatedAuthCard({
           ease: "easeInOut",
         }}
       >
-        <motion.div
-          className="absolute inset-0 rounded-lg"
-          style={{
-            background: `linear-gradient(45deg, ${getBaseColor()}05, ${getBaseColor()}15, ${getBaseColor()}05)`,
-            backgroundSize: "200% 200%",
-            zIndex: -1,
-          }}
-          animate={{
-            backgroundPosition: ["0% 0%", "100% 100%", "0% 0%"],
-          }}
-          transition={{
-            duration: 8,
-            repeat: Infinity,
-            repeatType: "reverse",
-            ease: "easeInOut",
-          }}
-        />
+        <GradientBackground baseColor={getBaseColor()} className="rounded-lg" />
         <Card
           className={cn(
             "w-full backdrop-blur-sm border-2 relative overflow-hidden",
@@ -330,9 +315,8 @@ export function AnimatedAuthCard({
         >
           {/* Animated border glow effect */}
           <motion.div
-            className="absolute inset-0 rounded-lg pointer-events-none"
+            className="absolute inset-0 rounded-lg pointer-events-none z-index-0"
             style={{
-              zIndex: 0,
               opacity: 0.3,
             }}
             animate={{

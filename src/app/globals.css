@@ -172,6 +172,21 @@
   animation: gradientMove 15s ease infinite;
 }
 
+/* Auth Card Gradient */
+.auth-card-gradient {
+  background-size: 200% 200%;
+  z-index: -1;
+}
+
+/* Z-index classes */
+.z-index-0 {
+  z-index: 0;
+}
+
+.z-index-minus-1 {
+  z-index: -1;
+}
+
 /* Animation for voice waves */
 @keyframes voiceWave {
   0%,
