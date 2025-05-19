@@ -98,17 +98,10 @@ export async function GET() {
           { $sort: { createdAt: -1 } },
           { $limit: 5 },
           {
-            $addFields: {
-              jobIdObj: {
-                $toObjectId: "$jobId",
-              },
-            },
-          },
-          {
             $lookup: {
               from: "jobs",
-              localField: "jobIdObj",
-              foreignField: "_id",
+              localField: "jobId",
+              foreignField: "urlId",
               as: "jobInfo",
             },
           },
@@ -175,20 +168,12 @@ export async function GET() {
           { $match: { userId: userObjectId } },
           { $sort: { createdAt: -1 } },
           { $limit: 5 },
-          // Convert string jobId to ObjectId for proper lookup
-          {
-            $addFields: {
-              jobIdObj: {
-                $toObjectId: "$jobId",
-              },
-            },
-          },
-          // Handle lookup for job info using the converted ObjectId
+          // Handle lookup for job info using the jobId string
           {
             $lookup: {
               from: "jobs",
-              localField: "jobIdObj",
-              foreignField: "_id",
+              localField: "jobId",
+              foreignField: "urlId",
               as: "jobInfo",
             },
           },
