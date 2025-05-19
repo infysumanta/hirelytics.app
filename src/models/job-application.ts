@@ -37,6 +37,8 @@ interface InterviewMessage {
   questionId?: string; // Optional field to link messages to specific questions
   questionCategory?: string; // Technical, project, or behavioral
   feedback?: string; // AI feedback on a user's answer
+  audioS3Key?: string; // S3 key for the audio file of AI response
+  audioS3Bucket?: string; // S3 bucket containing the audio file
 }
 
 export interface IJobApplication extends Document {
@@ -144,6 +146,8 @@ const JobApplicationSchema = new Schema(
         questionId: String,
         questionCategory: String,
         feedback: String,
+        audioS3Key: String, // S3 key for the audio file of AI response
+        audioS3Bucket: String, // S3 bucket containing the audio file
       },
     ],
     interviewState: InterviewStateSchema,

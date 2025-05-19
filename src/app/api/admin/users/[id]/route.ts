@@ -18,18 +18,18 @@ const updateUserSchema = z.object({
 
 export async function GET(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     // Check if user is admin
     if (!(await isAdmin())) {
       return NextResponse.json(
         { error: "Unauthorized. Admin access required." },
-        { status: 403 }
+        { status: 403 },
       );
     }
 
-    const { id } = params;
+    const { id } = await params;
 
     // Validate ID format
     if (!mongoose.Types.ObjectId.isValid(id)) {
@@ -62,25 +62,25 @@ export async function GET(
     console.error("Error fetching user:", error);
     return NextResponse.json(
       { error: "Failed to fetch user" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
 
 export async function PATCH(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     // Check if user is admin
     if (!(await isAdmin())) {
       return NextResponse.json(
         { error: "Unauthorized. Admin access required." },
-        { status: 403 }
+        { status: 403 },
       );
     }
 
-    const { id } = params;
+    const { id } = await params;
 
     // Validate ID format
     if (!mongoose.Types.ObjectId.isValid(id)) {
@@ -105,7 +105,7 @@ export async function PATCH(
     if (user.role === "admin" && validatedData.isActive === false) {
       return NextResponse.json(
         { error: "Cannot disable admin users" },
-        { status: 403 }
+        { status: 403 },
       );
     }
 
@@ -113,18 +113,18 @@ export async function PATCH(
     const updatedUser = await User.findByIdAndUpdate(
       id,
       { $set: validatedData },
-      { new: true }
+      { new: true },
     ).select("-password");
 
     // Return updated user data
     return NextResponse.json({
       user: {
-        id: updatedUser._id.toString(),
-        name: updatedUser.name,
-        email: updatedUser.email,
-        role: updatedUser.role,
-        isActive: updatedUser.isActive,
-        updatedAt: updatedUser.updatedAt,
+        id: updatedUser?._id.toString(),
+        name: updatedUser?.name,
+        email: updatedUser?.email,
+        role: updatedUser?.role,
+        isActive: updatedUser?.isActive,
+        updatedAt: updatedUser?.updatedAt,
       },
       message: "User updated successfully",
     });
@@ -134,13 +134,13 @@ export async function PATCH(
     if (error instanceof z.ZodError) {
       return NextResponse.json(
         { error: error.errors[0].message },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
     return NextResponse.json(
       { error: "Failed to update user" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

@@ -4,6 +4,8 @@ import { connectToDatabase } from "@/lib/mongodb";
 import { JobApplication } from "@/models/job-application";
 import { getJobById } from "@/actions/jobs";
 import { generateGeminiText } from "@/lib/ai-utils";
+import { serverTextToSpeech } from "@/lib/deepgram-tts";
+import { uploadAudioToS3 } from "@/lib/audio-utils";
 
 // Schema for validating request body
 const initInterviewSchema = z.object({
@@ -137,6 +139,16 @@ About: ${application.parsedResume.about || "No summary available"}
       );
     }
 
+    // Create AI greeting message
+    const aiGreetingMessage = {
+      text: initialGreeting,
+      sender: "ai",
+      timestamp: new Date(),
+      audioS3Key: "",
+      audioS3Bucket: "",
+      audioUrl: "",
+    };
+
     // Initialize the chat history if it doesn't exist yet or if we're forcing a restart
     if (
       !currentApplication.interviewChatHistory ||
@@ -150,23 +162,59 @@ About: ${application.parsedResume.about || "No summary available"}
         );
       }
 
+      // Create messages array
+      const messages = [
+        {
+          text: systemMessage,
+          sender: "system",
+          timestamp: new Date(),
+        },
+      ];
+
+      // Generate and save audio for AI greeting
+      try {
+        // Convert AI greeting to speech
+        const audioBuffer = await serverTextToSpeech(initialGreeting);
+
+        if (audioBuffer) {
+          // Upload audio to S3
+          const audioS3Data = await uploadAudioToS3(audioBuffer, applicationId);
+
+          // Add S3 info to the AI greeting message
+          aiGreetingMessage.audioS3Key = audioS3Data.s3Key;
+          aiGreetingMessage.audioS3Bucket = audioS3Data.s3Bucket;
+
+          // Generate signed URL for immediate playback
+          const { getAudioSignedUrl } = await import("@/lib/audio-utils");
+          const audioUrl = await getAudioSignedUrl(
+            audioS3Data.s3Key,
+            audioS3Data.s3Bucket,
+          );
+
+          // Add audio URL to the message for immediate playback
+          aiGreetingMessage.audioUrl = audioUrl;
+
+          console.log(
+            `[Interview Init] Audio generated and uploaded to ${audioS3Data.s3Key}`,
+          );
+        }
+      } catch (audioError) {
+        console.error(
+          "[Interview Init] Error generating or uploading audio:",
+          audioError,
+        );
+        // Continue with the flow even if audio generation fails
+      }
+
+      // Add AI greeting to messages
+      messages.push(aiGreetingMessage);
+
       // Save both system message and initial AI greeting to the database and initialize interview state
       await JobApplication.findByIdAndUpdate(
         applicationId,
         {
           $set: {
-            interviewChatHistory: [
-              {
-                text: systemMessage,
-                sender: "system",
-                timestamp: new Date(),
-              },
-              {
-                text: initialGreeting,
-                sender: "ai",
-                timestamp: new Date(),
-              },
-            ],
+            interviewChatHistory: messages,
             interviewState: {
               currentPhase: "introduction",
               technicalQuestionsAsked: 0,
@@ -201,6 +249,10 @@ About: ${application.parsedResume.about || "No summary available"}
       applicationId,
       hasExistingChat: false,
       chatHistory: initialChatHistory, // Return the newly created messages
+      initialAudioS3Key: aiGreetingMessage.audioS3Key,
+      initialAudioS3Bucket: aiGreetingMessage.audioS3Bucket,
+      // Include the direct audio URL for immediate playback
+      audioUrl: aiGreetingMessage.audioUrl,
     });
   } catch (error) {
     console.error("Error initializing interview:", error);

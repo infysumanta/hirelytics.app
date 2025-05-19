@@ -112,8 +112,8 @@ function extractExperience(text: string): {
       const captureIndex = yearsMatch[1].match(/\d+/)
         ? 1
         : yearsMatch[2].match(/\d+/)
-          ? 2
-          : 0;
+        ? 2
+        : 0;
       if (captureIndex > 0) {
         years = parseInt(yearsMatch[captureIndex]);
         break;
@@ -264,7 +264,7 @@ function extractEducation(
 
 export async function POST(
   req: NextRequest,
-  { params }: { params: { id: string } },
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     await connectToDatabase();
@@ -397,10 +397,19 @@ export async function POST(
             ${requirements ? `Additional Requirements: ${requirements}` : ""}
 
             Candidate Information:
-            Resume Text: ${parsedText.substring(0, 5000)} ${parsedText.length > 5000 ? "...(truncated)" : ""}
+            Resume Text: ${parsedText.substring(0, 5000)} ${
+            parsedText.length > 5000 ? "...(truncated)" : ""
+          }
             Identified Skills: ${skills.join(", ")}
-            Experience: ${experience.years} years at companies: ${experience.companies.join(", ")}
-            Education: ${education.map((e: { degree: string; institution: string }) => `${e.degree} from ${e.institution}`).join("; ")}
+            Experience: ${
+              experience.years
+            } years at companies: ${experience.companies.join(", ")}
+            Education: ${education
+              .map(
+                (e: { degree: string; institution: string }) =>
+                  `${e.degree} from ${e.institution}`,
+              )
+              .join("; ")}
 
             First, verify and enhance the extracted information:
             1. If the identified skills seem incomplete, extract additional relevant skills from the resume

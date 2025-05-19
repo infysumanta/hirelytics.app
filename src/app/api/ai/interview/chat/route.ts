@@ -5,6 +5,8 @@ import { JobApplication } from "@/models/job-application";
 import { getJobById } from "@/actions/jobs";
 import { connectToDatabase } from "@/lib/mongodb-debug";
 import { safeMongoUpdate } from "@/lib/mongo-utils";
+import { serverTextToSpeech } from "@/lib/deepgram-tts";
+import { uploadAudioToS3 } from "@/lib/audio-utils";
 
 // Schema for validating the request body
 const interviewChatSchema = z.object({
@@ -468,15 +470,58 @@ export async function POST(req: NextRequest) {
         questionId: interviewState.lastQuestion || undefined,
         questionCategory: currentQuestion?.category,
       },
-      {
-        text: response,
-        sender: "ai",
-        timestamp: new Date(),
-        questionId: currentQuestion?.id,
-        questionCategory: currentQuestion?.category,
-        feedback: feedback,
-      },
     ];
+
+    // Create AI message (separate to add audio)
+    const aiMessage = {
+      text: response,
+      sender: "ai",
+      timestamp: new Date(),
+      questionId: currentQuestion?.id,
+      questionCategory: currentQuestion?.category,
+      feedback: feedback,
+      audioS3Key: "",
+      audioS3Bucket: "",
+      audioUrl: "",
+    };
+
+    // Generate and save audio for AI response
+    try {
+      // Convert AI response to speech
+      const audioBuffer = await serverTextToSpeech(response);
+
+      if (audioBuffer) {
+        // Upload audio to S3
+        const audioS3Data = await uploadAudioToS3(audioBuffer, applicationId);
+
+        // Add S3 info to the AI message
+        aiMessage.audioS3Key = audioS3Data.s3Key;
+        aiMessage.audioS3Bucket = audioS3Data.s3Bucket;
+
+        // Generate signed URL for immediate playback
+        const { getAudioSignedUrl } = await import("@/lib/audio-utils");
+        const audioUrl = await getAudioSignedUrl(
+          audioS3Data.s3Key,
+          audioS3Data.s3Bucket,
+        );
+
+        // Add audio URL to the AI message for immediate playback
+        aiMessage.audioUrl = audioUrl;
+
+        console.log(
+          `[Chat API] Audio generated and uploaded to ${audioS3Data.s3Key}`,
+        );
+      }
+    } catch (audioError) {
+      console.error(
+        "[Chat API] Error generating or uploading audio:",
+        audioError,
+      );
+      // Continue with the flow even if audio generation fails
+    }
+
+    // Add the AI message to newMessages
+    newMessages.push(aiMessage);
 
     // Save user message and AI response to database with question tracking
     let updatedApplication;
@@ -526,12 +571,16 @@ export async function POST(req: NextRequest) {
         completionMessage:
           "Your interview has been successfully completed! Your responses have been recorded and will be analyzed. Thank you for participating in this interview process with us.",
         updatedChatHistory: updatedApplication?.interviewChatHistory || null,
+        // Include the audioUrl directly in the response for immediate playback
+        audioUrl: aiMessage.audioUrl,
       });
     } else {
       return NextResponse.json({
         response,
         applicationId,
         updatedChatHistory: updatedApplication?.interviewChatHistory || null,
+        // Include the audioUrl directly in the response for immediate playback
+        audioUrl: aiMessage.audioUrl,
       });
     }
   } catch (error) {

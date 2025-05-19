@@ -312,7 +312,7 @@ export function SpeechRecognitionInput({
     }
   }, [silenceTimer]);
 
-  const toggleListening = () => {
+  const toggleListening = useCallback(() => {
     console.log("Toggling speech recognition, current state:", isListening);
 
     // Use a small delay to ensure previous operations have completed
@@ -323,7 +323,8 @@ export function SpeechRecognitionInput({
         startListening();
       }
     }, 100);
-  };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
     if (e.key === "Enter" && !e.shiftKey && !disabled) {
@@ -511,7 +512,9 @@ export function SpeechRecognitionInput({
             </div>
             <div className="text-muted-foreground max-w-sm mx-auto">
               {AUTO_STOP_ENABLED
-                ? `I'll automatically stop listening after ${Math.round(DEFAULT_SILENCE_TIMEOUT / 1000)} seconds of silence`
+                ? `I'll automatically stop listening after ${Math.round(
+                    DEFAULT_SILENCE_TIMEOUT / 1000,
+                  )} seconds of silence`
                 : "I'm capturing your voice now. Please speak clearly and tap the microphone icon when you've finished speaking"}
             </div>
 

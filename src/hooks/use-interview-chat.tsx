@@ -10,6 +10,8 @@ export interface Message {
   timestamp: Date;
   isCompletionMessage?: boolean;
   audioUrl?: string; // URL to the audio file for TTS
+  audioS3Key?: string; // S3 key for the audio file
+  audioS3Bucket?: string; // S3 bucket containing the audio file
 }
 
 interface ConversationMessage {
@@ -42,8 +44,9 @@ export function useInterviewChat({
   const [isUserTurn, setIsUserTurn] = useState(false);
   const [isInitializing, setIsInitializing] = useState(true);
   const [isCompleted, setIsCompleted] = useState(false);
-  const conversationHistoryRef = useRef<ConversationMessage[]>([]); // Initialize interview with job and resume context or load existing chat
-  const hasInitializedRef = useRef(false); // Track if initialization has been done
+  const conversationHistoryRef = useRef<ConversationMessage[]>([]);
+  const hasInitializedRef = useRef(false);
+
   useEffect(() => {
     const initializeInterview = async () => {
       if (hasInitializedRef.current) return;
@@ -82,6 +85,8 @@ export function useInterviewChat({
                 text: string;
                 sender: "ai" | "user" | "system";
                 timestamp: string;
+                audioS3Key?: string;
+                audioS3Bucket?: string;
               },
               index: number,
             ) => ({
@@ -92,6 +97,8 @@ export function useInterviewChat({
               isCompletionMessage:
                 msg.text.includes("interview is now complete") ||
                 msg.text.includes("Thank you for participating"),
+              audioS3Key: msg.audioS3Key,
+              audioS3Bucket: msg.audioS3Bucket,
             }),
           );
 
@@ -120,74 +127,26 @@ export function useInterviewChat({
             `Continuing previous interview with ${formattedMessages.length} messages`,
           );
         } else {
-          // Start new chat with returned chat history which should include system message and initial greeting
-          if (data.chatHistory && data.chatHistory.length > 0) {
-            const formattedMessages: Message[] = data.chatHistory.map(
-              (
-                msg: {
-                  text: string;
-                  sender: "ai" | "user" | "system";
-                  timestamp: string | Date;
-                },
-                index: number,
-              ) => ({
-                id: `new-${index}`,
-                text: msg.text,
-                sender: msg.sender,
-                timestamp: new Date(msg.timestamp),
-              }),
-            );
+          // Start new chat with initial greeting
+          const initialMessage: Message = {
+            id: Date.now().toString(),
+            text: data.greeting,
+            sender: "ai",
+            timestamp: new Date(),
+            audioS3Key: data.initialAudioS3Key,
+            audioS3Bucket: data.initialAudioS3Bucket,
+            audioUrl: data.audioUrl, // Use the direct audio URL from the response
+          };
 
-            setMessages(formattedMessages);
+          setMessages([initialMessage]);
 
-            // Build conversation history for context - filter out system messages
-            conversationHistoryRef.current = formattedMessages
-              .filter((msg) => msg.sender !== "system") // Exclude system messages from AI context
-              .map((msg) => ({
-                role: msg.sender === "ai" ? "assistant" : "user",
-                content: msg.text,
-              }));
-          } else {
-            // Fallback to just using the greeting if for some reason chatHistory is not included
-            const initialMessage: Message = {
-              id: Date.now().toString(),
-              text: data.greeting,
-              sender: "ai",
-              timestamp: new Date(),
-            };
-
-            // Generate speech for initial greeting
-            try {
-              const response = await fetch("/api/ai/text-to-speech", {
-                method: "POST",
-                headers: {
-                  "Content-Type": "application/json",
-                },
-                body: JSON.stringify({ text: data.greeting }),
-              });
-
-              if (response.ok) {
-                const audioBlob = await response.blob();
-                const audioUrl = URL.createObjectURL(audioBlob);
-                initialMessage.audioUrl = audioUrl;
-              }
-            } catch (error) {
-              console.error(
-                "Error generating speech for initial greeting:",
-                error,
-              );
-            }
-
-            setMessages([initialMessage]);
-
-            // Add to conversation history
-            conversationHistoryRef.current = [
-              {
-                role: "assistant",
-                content: data.greeting,
-              },
-            ];
-          }
+          // Add to conversation history
+          conversationHistoryRef.current = [
+            {
+              role: "assistant",
+              content: data.greeting,
+            },
+          ];
 
           toast.success("Interview session initialized");
           // After initialization, it's user's turn
@@ -205,25 +164,6 @@ export function useInterviewChat({
           timestamp: new Date(),
         };
 
-        // Generate speech for fallback message
-        try {
-          const response = await fetch("/api/ai/text-to-speech", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ text: fallbackMessage.text }),
-          });
-
-          if (response.ok) {
-            const audioBlob = await response.blob();
-            const audioUrl = URL.createObjectURL(audioBlob);
-            fallbackMessage.audioUrl = audioUrl;
-          }
-        } catch (error) {
-          console.error("Error generating speech for fallback message:", error);
-        }
-
         setMessages([fallbackMessage]);
         conversationHistoryRef.current = [
           {
@@ -240,6 +180,55 @@ export function useInterviewChat({
 
     initializeInterview();
   }, [applicationId]);
+
+  // Load audio URLs for messages that have S3 keys
+  useEffect(() => {
+    const loadAudioUrls = async () => {
+      const messagesToProcess = messages.filter(
+        (msg) => msg.sender === "ai" && msg.audioS3Key && !msg.audioUrl,
+      );
+
+      if (messagesToProcess.length === 0) return;
+
+      // Process each message that needs an audio URL
+      await Promise.all(
+        messagesToProcess.map(async (message) => {
+          try {
+            // Get signed URL from our API
+            const response = await fetch("/api/ai/audio", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                key: message.audioS3Key,
+                bucket: message.audioS3Bucket,
+              }),
+            });
+
+            if (response.ok) {
+              const data = await response.json();
+
+              if (data.success && data.url) {
+                // Update the message with the audio URL
+                setMessages((prev) =>
+                  prev.map((msg) =>
+                    msg.id === message.id
+                      ? { ...msg, audioUrl: data.url }
+                      : msg,
+                  ),
+                );
+              }
+            }
+          } catch (error) {
+            console.error("Error loading audio URL:", error);
+          }
+        }),
+      );
+    };
+
+    loadAudioUrls();
+  }, [messages]);
 
   // Update conversation history when messages change
   useEffect(() => {
@@ -341,38 +330,26 @@ export function useInterviewChat({
 
       const data = await response.json();
 
+      // Get the latest message from the response
+      const latestAiMessage =
+        data.updatedChatHistory?.[data.updatedChatHistory.length - 1];
+
       // Add AI response
       const aiMessage: Message = {
         id: (Date.now() + 1).toString(),
         text: data.response,
         sender: "ai",
         timestamp: new Date(),
-        isCompletionMessage: !!data.isCompleted,
+        isCompletionMessage: data.isCompleted,
+        // Add audio info if available in the response
+        audioS3Key: latestAiMessage?.audioS3Key,
+        audioS3Bucket: latestAiMessage?.audioS3Bucket,
+        // Use the direct audio URL from the response for immediate playback
+        audioUrl: data.audioUrl || latestAiMessage?.audioUrl,
       };
 
-      // Generate speech for AI response
-      try {
-        const response = await fetch("/api/ai/text-to-speech", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ text: data.response }),
-        });
-
-        if (response.ok) {
-          const audioBlob = await response.blob();
-          const audioUrl = URL.createObjectURL(audioBlob);
-          aiMessage.audioUrl = audioUrl;
-        } else {
-          console.error("Failed to generate speech for AI response");
-        }
-      } catch (error) {
-        console.error("Error generating speech:", error);
-      }
-
+      // When the interview is completed, also add a system message with the completion message
       if (data.isCompleted && data.completionMessage) {
-        // If this is the final response, add a system completion message too
         const systemMessage: Message = {
           id: (Date.now() + 2).toString(),
           text: data.completionMessage,
@@ -380,28 +357,6 @@ export function useInterviewChat({
           timestamp: new Date(),
           isCompletionMessage: true,
         };
-
-        // Generate speech for completion message
-        try {
-          const response = await fetch("/api/ai/text-to-speech", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ text: data.completionMessage }),
-          });
-
-          if (response.ok) {
-            const audioBlob = await response.blob();
-            const audioUrl = URL.createObjectURL(audioBlob);
-            systemMessage.audioUrl = audioUrl;
-          }
-        } catch (error) {
-          console.error(
-            "Error generating speech for completion message:",
-            error,
-          );
-        }
 
         setMessages((prevMessages) => [
           ...prevMessages,
@@ -487,6 +442,8 @@ export function useInterviewChat({
         text: data.greeting,
         sender: "ai",
         timestamp: new Date(),
+        audioS3Key: data.initialAudioS3Key,
+        audioS3Bucket: data.initialAudioS3Bucket,
       };
 
       setMessages([initialMessage]);
