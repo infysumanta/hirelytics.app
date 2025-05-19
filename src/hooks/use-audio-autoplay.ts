@@ -7,6 +7,29 @@ import { Message } from "./use-interview-chat";
 export function useAudioAutoplay(messages: Message[]): string | null {
   const lastPlayedRef = useRef<string | null>(null);
   const [playingMessageId, setPlayingMessageId] = useState<string | null>(null);
+  const initialLoadRef = useRef(true);
+  const userInteractedRef = useRef(false);
+
+  // Track user interactions to enable autoplay after first interaction
+  useEffect(() => {
+    const handleUserInteraction = () => {
+      userInteractedRef.current = true;
+      // Remove event listeners once we've detected interaction
+      document.removeEventListener("click", handleUserInteraction);
+      document.removeEventListener("keydown", handleUserInteraction);
+      document.removeEventListener("touchstart", handleUserInteraction);
+    };
+
+    document.addEventListener("click", handleUserInteraction);
+    document.addEventListener("keydown", handleUserInteraction);
+    document.addEventListener("touchstart", handleUserInteraction);
+
+    return () => {
+      document.removeEventListener("click", handleUserInteraction);
+      document.removeEventListener("keydown", handleUserInteraction);
+      document.removeEventListener("touchstart", handleUserInteraction);
+    };
+  }, []);
 
   useEffect(() => {
     if (messages.length === 0) return;
@@ -18,8 +41,26 @@ export function useAudioAutoplay(messages: Message[]): string | null {
 
     // If we found one and haven't signaled it yet
     if (lastAiMessage?.audioUrl && lastAiMessage.id !== lastPlayedRef.current) {
-      lastPlayedRef.current = lastAiMessage.id;
-      setPlayingMessageId(lastAiMessage.id);
+      if (initialLoadRef.current) {
+        // On initial page load/refresh, only play if user has interacted with the page
+        if (userInteractedRef.current) {
+          console.log("Playing audio on page load - user has interacted");
+          lastPlayedRef.current = lastAiMessage.id;
+          setPlayingMessageId(lastAiMessage.id);
+        } else {
+          console.log(
+            "Skipping autoplay on page load - waiting for user interaction",
+          );
+          // We still mark it as "played" so we don't try to play it again
+          lastPlayedRef.current = lastAiMessage.id;
+        }
+        initialLoadRef.current = false;
+      } else {
+        // For new messages after initial load
+        console.log("Playing new message audio after initial load");
+        lastPlayedRef.current = lastAiMessage.id;
+        setPlayingMessageId(lastAiMessage.id);
+      }
     }
   }, [messages]);
 
