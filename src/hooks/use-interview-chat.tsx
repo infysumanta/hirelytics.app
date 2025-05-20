@@ -54,6 +54,9 @@ export function useInterviewChat({
       if (hasInitializedRef.current) return;
       hasInitializedRef.current = true;
 
+      // Dispatch a custom event to signal chat initialization
+      document.dispatchEvent(new Event("chat-initializing"));
+
       setIsInitializing(true);
       setIsLoading(true);
 
@@ -277,6 +280,9 @@ export function useInterviewChat({
       timestamp: new Date().toISOString(),
     });
 
+    // Dispatch a custom event to signal chat activity
+    document.dispatchEvent(new Event("chat-message-sent"));
+
     // Clear input immediately before any other state updates
     setMessageInput("");
     console.log(messageInput);
@@ -423,6 +429,9 @@ export function useInterviewChat({
 
   // Function to restart the interview
   const restartInterview = useCallback(async () => {
+    // Dispatch a custom event to signal chat initialization
+    document.dispatchEvent(new Event("chat-initializing"));
+
     setIsInitializing(true);
     setIsLoading(true);
     setMessages([]);
