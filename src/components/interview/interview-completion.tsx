@@ -24,7 +24,7 @@ export function InterviewCompletion({
   jobTitle,
   companyName,
 }: InterviewCompletionProps) {
-  const [closingTimer, setClosingTimer] = useState(8);
+  const [closingTimer, setClosingTimer] = useState(12); // Increased from 8 to 12 seconds
   const [isChatClosed, setIsChatClosed] = useState(false);
   const router = useRouter();
 
@@ -63,7 +63,7 @@ export function InterviewCompletion({
         "[Completion UI] Maximum wait time reached, forcing feedback button",
       );
       setIsChatClosed(true);
-    }, 10000); // 10 seconds max wait
+    }, 15000); // Increased from 10 to 15 seconds max wait to give users more time to read
 
     return () => clearTimeout(maxWaitTimer);
   }, []);

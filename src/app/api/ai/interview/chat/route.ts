@@ -55,6 +55,42 @@ function isCandidateQuestion(message: string): boolean {
   );
 }
 
+// Helper function to detect if the candidate is asking for question repetition or clarification
+function isClarificationRequest(message: string): boolean {
+  const lowerMessage = message.toLowerCase().trim();
+
+  const clarificationPhrases = [
+    "repeat",
+    "say again",
+    "explain again",
+    "clarify",
+    "don't understand",
+    "didn't understand",
+    "not clear",
+    "unclear",
+    "what do you mean",
+    "can you repeat",
+    "please repeat",
+    "once more",
+    "one more time",
+    "could you repeat",
+    "repeat the question",
+    "didn't hear",
+    "didn't catch",
+    "come again",
+    "pardon me",
+    "sorry i didn't catch that",
+    "sorry i didn't hear",
+    "could you clarify",
+    "could you explain",
+    "i'm confused",
+    "i am confused",
+    "not sure i understand",
+  ];
+
+  return clarificationPhrases.some((phrase) => lowerMessage.includes(phrase));
+}
+
 export async function POST(req: NextRequest) {
   try {
     // Parse request body
@@ -165,6 +201,9 @@ export async function POST(req: NextRequest) {
       5. Be professional but assertive - you are evaluating the candidate
       6. Always ask only ONE question at a time
       7. Keep your responses concise (maximum 2-3 sentences)
+      8. If a candidate asks for clarification or to repeat a question, be helpful and repeat the question with additional context if needed
+      9. During the conclusion phase, wait for proper acknowledgment from the candidate before finalizing the interview
+      10. If candidate responses are unclear or seem confused, offer to rephrase the question
       8. Vary your question phrasing - don't always start questions the same way
       9. Randomize your feedback style to avoid repetitive responses
       10. After all questions are completed, thank the candidate professionally, inform them that their interview is complete and being analyzed, and that they'll receive feedback shortly
@@ -250,7 +289,7 @@ export async function POST(req: NextRequest) {
       }
       ${
         interviewState.currentPhase === "conclusion"
-          ? "Thank the candidate with a clear ending statement like: 'Thank you for participating in this interview. The interview is now complete, and your responses will be analyzed. The system will now redirect you to view your feedback. We wish you success in your job search.' Make it clear that the interview is finished and the AI will not respond further."
+          ? "Thank the candidate with a clear ending statement like: 'Thank you for participating in this interview. The interview is now complete, and your responses will be analyzed. The system will now redirect you to view your feedback. We wish you success in your job search.' Then wait for the candidate to acknowledge before finalizing the interview. If they have any final questions or comments, address them briefly and politely remind them that the interview is concluding."
           : ""
       }
       
@@ -279,6 +318,11 @@ export async function POST(req: NextRequest) {
     let response;
     let nextPhase = interviewState.currentPhase;
 
+    let technicalQuestionsAsked = interviewState.technicalQuestionsAsked;
+    let projectQuestionsAsked = interviewState.projectQuestionsAsked;
+    let behavioralQuestionsAsked = interviewState.behavioralQuestionsAsked;
+    const askedQuestions = [...(interviewState.askedQuestions || [])];
+
     // Special case: Force interview completion with debug commands "/complete" or "/end"
     if (
       message.toLowerCase().trim() === "/complete" ||
@@ -292,25 +336,43 @@ export async function POST(req: NextRequest) {
       response =
         "That concludes the interview. Thank you for your time and participation. Your responses are being analyzed, and you'll receive feedback shortly.";
     } else if (isQuestion && interviewState.currentPhase !== "completed") {
-      // If candidate is asking a question, provide a gentle redirect
-      response = `I appreciate your curiosity. As the interviewer, I need to focus on evaluating your qualifications for the ${
-        job.title
-      } position. Let's continue with our structured interview process. ${
-        interviewState.lastQuestion
-          ? "Could you please answer the question I asked?"
-          : "Let me ask you a relevant question."
-      }`;
+      // Check if the candidate is asking for clarification or repetition of the question
+      if (isClarificationRequest(message)) {
+        // Find the last question asked based on the current state
+        const currentAskedQuestion = askedQuestions.find(
+          (q) => q.id === interviewState.lastQuestion,
+        );
+
+        if (currentAskedQuestion) {
+          response = `I'll repeat that question: ${currentAskedQuestion.question} Would you like me to clarify anything specific about this question?`;
+        } else {
+          // If we can't find the specific question, provide a more generic repetition
+          response = `Let me repeat the question. ${
+            interviewState.currentPhase === "technical_questions"
+              ? "This is a technical question about your expertise in this field."
+              : interviewState.currentPhase === "project_discussion"
+              ? "I asked about your experience with a specific project."
+              : interviewState.currentPhase === "behavioral_questions"
+              ? "This question is about how you handle specific workplace situations."
+              : "Could you please respond to my previous question?"
+          } Would you like me to approach this question differently or provide more context?`;
+        }
+      } else {
+        // Regular question (not a clarification request) - provide a gentle redirect
+        response = `I appreciate your curiosity. As the interviewer, I need to focus on evaluating your qualifications for the ${
+          job.title
+        } position. Let's continue with our structured interview process. ${
+          interviewState.lastQuestion
+            ? "Could you please answer the question I asked?"
+            : "Let me ask you a relevant question."
+        }`;
+      }
     } else {
       // Normal response flow
       response = await generateGeminiText(finalPrompt, "gemini-2.0-flash-lite");
     }
 
     // Determine next interview state based on AI response and current state
-
-    let technicalQuestionsAsked = interviewState.technicalQuestionsAsked;
-    let projectQuestionsAsked = interviewState.projectQuestionsAsked;
-    let behavioralQuestionsAsked = interviewState.behavioralQuestionsAsked;
-    const askedQuestions = [...(interviewState.askedQuestions || [])];
 
     // The AI's response indicates the phase transition
     if (interviewState.currentPhase === "introduction") {
@@ -405,35 +467,69 @@ export async function POST(req: NextRequest) {
         nextPhase = "conclusion";
       }
     } else if (interviewState.currentPhase === "conclusion") {
-      nextPhase = "completed";
+      // Only transition to completed if the candidate's message indicates acknowledgement
+      // This ensures we don't abruptly end the interview without proper closure
+      const acknowledgmentPhrases = [
+        "thank you",
+        "thanks",
+        "okay",
+        "ok",
+        "alright",
+        "sounds good",
+        "understood",
+        "bye",
+        "goodbye",
+        "see you",
+      ];
+      const lowerMessage = message.toLowerCase().trim();
 
-      // Automatically trigger interview evaluation
-      try {
-        // Make a call to the evaluate endpoint
-        const evaluateResponse = await fetch(
-          new URL(`/api/ai/interview/evaluate`, req.url).toString(),
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ applicationId }),
-          },
+      const isAcknowledgment = acknowledgmentPhrases.some((phrase) =>
+        lowerMessage.includes(phrase),
+      );
+      const isVeryShort = message.length < 15; // Consider very short messages as acknowledgments
+
+      if (isAcknowledgment || isVeryShort) {
+        nextPhase = "completed";
+        console.log(
+          "[Chat API] Interview completion acknowledged by candidate:",
+          message,
         );
 
-        if (!evaluateResponse.ok) {
-          console.error("Failed to automatically evaluate interview");
-        } else {
-          const evalData = await evaluateResponse.json();
-          console.log(
-            "Interview evaluation triggered successfully:",
-            evalData.status,
+        // Automatically trigger interview evaluation
+        try {
+          // Make a call to the evaluate endpoint
+          const evaluateResponse = await fetch(
+            new URL(`/api/ai/interview/evaluate`, req.url).toString(),
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({ applicationId }),
+            },
+          );
+
+          if (!evaluateResponse.ok) {
+            console.error("Failed to automatically evaluate interview");
+          } else {
+            const evalData = await evaluateResponse.json();
+            console.log(
+              "Interview evaluation triggered successfully:",
+              evalData.status,
+            );
+          }
+        } catch (evalError) {
+          console.error(
+            "Error triggering automatic interview evaluation:",
+            evalError,
           );
         }
-      } catch (evalError) {
-        console.error(
-          "Error triggering automatic interview evaluation:",
-          evalError,
+      } else {
+        // Stay in conclusion phase but indicate the interview is wrapping up
+        response =
+          "I appreciate your final thoughts. This concludes our interview. Thank you for your time today. Do you have any brief closing comments before we finish?";
+        console.log(
+          "[Chat API] Awaiting final acknowledgment from candidate before completing interview.",
         );
       }
     }

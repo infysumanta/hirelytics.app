@@ -313,13 +313,41 @@ export function InterviewSession({
     // Determine if we should show the completion UI
     if (isCompleted || hasCompletionMessage || interviewState.isCompleted) {
       console.log(
-        "[Completion Debug] Interview completed, showing UI in 2 seconds",
+        "[Completion Debug] Interview completed, showing UI in 5 seconds",
       );
-      // Wait a moment to let the user read the final message before showing completion UI
+
+      // Allow for a longer period to let the user read the final message and respond if needed
       const timer = setTimeout(() => {
-        console.log("[Completion Debug] Setting showCompletionUI to true");
-        setShowCompletionUI(true);
-      }, 2000);
+        // Check if there have been user messages after the completion message
+        const lastCompletionIndex = messages.findIndex(
+          (msg) => msg.isCompletionMessage,
+        );
+
+        // Only proceed with completion if there haven't been user messages after completion message
+        // or if it's been forced through other means
+        const hasUserMessageAfterCompletion =
+          lastCompletionIndex !== -1 &&
+          messages
+            .slice(lastCompletionIndex + 1)
+            .some((msg) => msg.sender === "user");
+
+        if (!hasUserMessageAfterCompletion || interviewState.isCompleted) {
+          console.log("[Completion Debug] Setting showCompletionUI to true");
+          setShowCompletionUI(true);
+        } else {
+          console.log(
+            "[Completion Debug] User sent message after completion, not showing completion UI yet",
+          );
+          // Check again in 5 seconds if the user is still interacting
+          const extendedTimer = setTimeout(() => {
+            console.log(
+              "[Completion Debug] Final check - showing completion UI",
+            );
+            setShowCompletionUI(true);
+          }, 5000);
+          return () => clearTimeout(extendedTimer);
+        }
+      }, 5000); // Extended from 2000 to 5000 ms to give more time for reading
 
       return () => clearTimeout(timer);
     }
