@@ -42,6 +42,7 @@ import { AIInterviewerIcon } from "./ai-interviewer-icon";
 import { MediaDeviceSelector } from "./media-device-selector";
 import { AudioPlayer } from "./audio-player";
 import { useAudioAutoplay } from "@/hooks/use-audio-autoplay";
+import { useAudioPlaybackState } from "@/hooks/use-audio-playback-state";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { INTERVIEW_ALERTS } from "@/constants/interview-alerts";
 import { useInterviewChat } from "@/hooks/use-interview-chat";
@@ -400,7 +401,10 @@ export function InterviewSession({
   // Use audio autoplay hook to play the latest AI message automatically
   // Autoplay audio for AI messages and get the ID of the playing message
   const autoPlayMessageId = useAudioAutoplay(messages);
-  
+
+  // Track global audio playback state
+  const { isAudioPlaying } = useAudioPlaybackState();
+
   // Listen for speech recognition status events
   useEffect(() => {
     const handleSpeechStatus = (event: CustomEvent) => {
@@ -428,6 +432,43 @@ export function InterviewSession({
     // Reset after a short delay to avoid React state batching issues
     setTimeout(() => setForceMicOff(false), 100);
   };
+
+  // We no longer force the mic off during audio playback
+  // This allows users to start speaking even while audio is playing
+  useEffect(() => {
+    // Only track audio state for debugging purposes
+    if (isAudioPlaying) {
+      console.log("[Interview Session] Audio is playing - mic remains enabled");
+    } else if (!forceMicOff && !isAudioPlaying) {
+      console.log(
+        "[Interview Session] Audio stopped - mic remains enabled if user's turn",
+      );
+    }
+
+    // No longer setting forceMicOff based on audio playback
+    // This allows the user to interrupt the audio by starting to speak
+  }, [isAudioPlaying, forceMicOff]);
+
+  // Stop all audio playback when speech recognition starts
+  useEffect(() => {
+    const handleSpeechStarted = () => {
+      // If speech recognition starts, stop all audio playback
+      if (isSpeechListening && isAudioPlaying) {
+        console.log(
+          "[Interview Session] User started speaking - stopping audio playback",
+        );
+        // Stop all audio elements
+        document.querySelectorAll("audio").forEach((audio) => audio.pause());
+        // Dispatch an event to notify that audio playback has ended
+        document.dispatchEvent(new CustomEvent("audio-playback-ended"));
+      }
+    };
+
+    // Listen for changes in speech recognition status
+    if (isSpeechListening) {
+      handleSpeechStarted();
+    }
+  }, [isSpeechListening, isAudioPlaying]);
 
   // We no longer need this as the SpeechRecognitionInput component handles key presses
 
@@ -465,12 +506,16 @@ export function InterviewSession({
       {/* Video Section - 70% on desktop, 100% on mobile */}
       <div className="video-section bg-muted rounded-lg overflow-hidden flex flex-col w-full md:w-[70%]">
         <div
-          className={`flex-1 relative flex ${isMobile ? "flex-col" : "flex-row"}`}
+          className={`flex-1 relative flex ${
+            isMobile ? "flex-col" : "flex-row"
+          }`}
         >
           {/* AI Video */}
           <div
             ref={aiVideoRef}
-            className={`relative ${isMobile ? "h-1/2" : "flex-1"} flex flex-col items-center justify-center overflow-hidden`}
+            className={`relative ${
+              isMobile ? "h-1/2" : "flex-1"
+            } flex flex-col items-center justify-center overflow-hidden`}
           >
             {/* AI Interview background with circuits pattern */}
             <AIInterviewBackground />
@@ -483,7 +528,9 @@ export function InterviewSession({
             <div className="flex flex-col items-center gap-3 z-10">
               <AIInterviewerIcon
                 size={96}
-                className={`shadow-lg shadow-primary/10 ${isLoading || isInitializing ? "animate-pulse" : ""}`}
+                className={`shadow-lg shadow-primary/10 ${
+                  isLoading || isInitializing ? "animate-pulse" : ""
+                }`}
               />
               <div className="text-center">
                 <h3 className="font-semibold">Hirelytics AI</h3>
@@ -507,7 +554,9 @@ export function InterviewSession({
 
           {/* User Video */}
           <div
-            className={`relative ${isMobile ? "h-1/2" : "flex-1"} bg-black flex items-center justify-center`}
+            className={`relative ${
+              isMobile ? "h-1/2" : "flex-1"
+            } bg-black flex items-center justify-center`}
           >
             <div className="absolute top-3 left-3 bg-black/50 backdrop-blur-sm px-3 py-1 rounded-md text-sm font-medium text-white/90 shadow-md border border-white/10">
               You
@@ -664,8 +713,8 @@ export function InterviewSession({
                     message.sender === "system"
                       ? "justify-center"
                       : message.sender === "ai"
-                        ? "justify-start"
-                        : "justify-end"
+                      ? "justify-start"
+                      : "justify-end"
                   }`}
                 >
                   {message.sender === "system" ? (
@@ -712,7 +761,11 @@ export function InterviewSession({
                           message.sender === "ai"
                             ? "bg-muted-foreground/10 text-foreground border border-border/50"
                             : "bg-primary/90 text-primary-foreground"
-                        } ${message.sender === "ai" ? "rounded-tl-none" : "rounded-tr-none"} transition-all hover:shadow-md`}
+                        } ${
+                          message.sender === "ai"
+                            ? "rounded-tl-none"
+                            : "rounded-tr-none"
+                        } transition-all hover:shadow-md`}
                       >
                         <p className="text-sm whitespace-pre-wrap">
                           {message.text}
@@ -766,8 +819,8 @@ export function InterviewSession({
                   isInitializing
                     ? "Initializing interview..."
                     : isUserTurn
-                      ? "Type your message or speak..."
-                      : "Please wait for the AI to respond..."
+                    ? "Type your message or speak..."
+                    : "Please wait for the AI to respond..."
                 }
                 value={messageInput}
                 onChange={setMessageInput}
@@ -793,19 +846,28 @@ export function InterviewSession({
                         size="icon"
                         variant={isSpeechListening ? "default" : "outline"}
                         className={`h-9 w-9 rounded-full transition-all relative overflow-hidden shadow-sm
-                          ${isSpeechListening ? "border-primary bg-primary text-white" : "border border-muted hover:bg-primary/10 hover:text-primary"}`}
+                          ${
+                            isSpeechListening
+                              ? "border-primary bg-primary text-white"
+                              : "border border-muted hover:bg-primary/10 hover:text-primary"
+                          }`}
                         onClick={() => {
                           document.dispatchEvent(
                             new CustomEvent("toggle-speech-recognition"),
                           );
                         }}
-                        disabled={!isUserTurn || isLoading || isInitializing}
+                        disabled={
+                          !isUserTurn || isLoading || isInitializing
+                          // Removed isAudioPlaying to allow users to talk during audio playback
+                        }
                       >
                         {isSpeechListening && (
                           <div className="absolute inset-0 bg-primary/20 animate-pulse"></div>
                         )}
                         <Mic
-                          className={`h-4 w-4 relative z-10 ${isSpeechListening ? "text-primary-foreground" : ""}`}
+                          className={`h-4 w-4 relative z-10 ${
+                            isSpeechListening ? "text-primary-foreground" : ""
+                          }`}
                         />
                       </Button>
                     </TooltipTrigger>

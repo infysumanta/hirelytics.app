@@ -42,18 +42,10 @@ export function useAudioAutoplay(messages: Message[]): string | null {
     // If we found one and haven't signaled it yet
     if (lastAiMessage?.audioUrl && lastAiMessage.id !== lastPlayedRef.current) {
       if (initialLoadRef.current) {
-        // On initial page load/refresh, only play if user has interacted with the page
-        if (userInteractedRef.current) {
-          console.log("Playing audio on page load - user has interacted");
-          lastPlayedRef.current = lastAiMessage.id;
-          setPlayingMessageId(lastAiMessage.id);
-        } else {
-          console.log(
-            "Skipping autoplay on page load - waiting for user interaction",
-          );
-          // We still mark it as "played" so we don't try to play it again
-          lastPlayedRef.current = lastAiMessage.id;
-        }
+        // Always try to play audio on initial page load/refresh
+        console.log("Attempting to play audio on page load/refresh");
+        lastPlayedRef.current = lastAiMessage.id;
+        setPlayingMessageId(lastAiMessage.id);
         initialLoadRef.current = false;
       } else {
         // For new messages after initial load

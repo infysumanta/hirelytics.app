@@ -39,6 +39,7 @@ interface InterviewMessage {
   feedback?: string; // AI feedback on a user's answer
   audioS3Key?: string; // S3 key for the audio file of AI response
   audioS3Bucket?: string; // S3 bucket containing the audio file
+  audioUrl?: string; // Direct URL to the audio file for immediate playback
 }
 
 export interface IJobApplication extends Document {

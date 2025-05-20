@@ -45,14 +45,139 @@ export async function POST(req: NextRequest) {
       const interviewState = application.interviewState || {};
       const isCompleted = interviewState.currentPhase === "completed";
 
-      // Return the existing chat history and preserve the current state
+      // Define an interface for our message structure
+      interface InterviewMessage {
+        text?: string;
+        sender?: "ai" | "user" | "system";
+        timestamp?: Date;
+        questionId?: string;
+        questionCategory?: string;
+        feedback?: string;
+        audioS3Key?: string;
+        audioS3Bucket?: string;
+        audioUrl?: string;
+        [key: string]: any; // For any other properties
+      }
+
+      // Debug the chat history first
+      console.log("[Interview Init] Processing existing chat history", {
+        count: existingChatHistory.length,
+        firstMessage: existingChatHistory[0]
+          ? {
+              text: typeof existingChatHistory[0].text,
+              sender: existingChatHistory[0].sender,
+              hasAudioS3Key: !!existingChatHistory[0].audioS3Key,
+            }
+          : null,
+      });
+
+      // Ensure all AI messages have audioUrl (in case they're missing from legacy data)
+      // Convert MongoDB documents to plain JavaScript objects
+      const processedChatHistory = await Promise.all(
+        existingChatHistory.map(
+          async (message: InterviewMessage, index: number) => {
+            // Create a new plain object with only the properties we need
+            // This avoids MongoDB document methods and metadata
+            const plainMessage = {
+              text: message.text || "",
+              sender: message.sender || "system",
+              timestamp: message.timestamp || new Date(),
+              questionId: message.questionId || undefined,
+              questionCategory: message.questionCategory || undefined,
+              feedback: message.feedback || undefined,
+              audioS3Key: message.audioS3Key || undefined,
+              audioS3Bucket: message.audioS3Bucket || undefined,
+              audioUrl: message.audioUrl || undefined,
+              // Add any other properties that might be needed
+            };
+
+            // Debug first message details
+            if (index === 0) {
+              console.log("[Interview Init] First message converted", {
+                original: {
+                  textType: typeof message.text,
+                  senderType: typeof message.sender,
+                  audioKeyExists: !!message.audioS3Key,
+                  keys: Object.keys(message).slice(0, 5), // Show first 5 keys
+                },
+                converted: {
+                  textType: typeof plainMessage.text,
+                  senderType: typeof plainMessage.sender,
+                  audioKeyExists: !!plainMessage.audioS3Key,
+                },
+              });
+            }
+
+            // Only process AI messages that have S3 info but lack audioUrl
+            if (
+              plainMessage.sender === "ai" &&
+              plainMessage.audioS3Key &&
+              plainMessage.audioS3Bucket &&
+              !plainMessage.audioUrl
+            ) {
+              try {
+                // Generate a fresh audio URL from the S3 keys
+                const { getAudioSignedUrl } = await import("@/lib/audio-utils");
+                const audioUrl = await getAudioSignedUrl(
+                  plainMessage.audioS3Key,
+                  plainMessage.audioS3Bucket,
+                );
+
+                // Debug URL generation
+                console.log(
+                  `[Interview Init] Generated audio URL for message ${index}`,
+                  {
+                    audioUrl: audioUrl.substring(0, 50) + "...", // Show truncated URL for privacy
+                  },
+                );
+
+                // Return the message with the new audioUrl
+                return {
+                  ...plainMessage,
+                  audioUrl,
+                };
+              } catch (error) {
+                console.error(
+                  `[Interview Init] Failed to generate audio URL for message ${index}:`,
+                  error,
+                );
+                return plainMessage;
+              }
+            }
+            return plainMessage;
+          },
+        ),
+      );
+
+      // Debug the processed history
+      console.log("[Interview Init] Processed chat history", {
+        count: processedChatHistory.length,
+        firstMessageHasAudioUrl: processedChatHistory[0]?.audioUrl
+          ? true
+          : false,
+      });
+
+      // Create a sanitized version of the chat history that's safe for client consumption
+      const sanitizedChatHistory = processedChatHistory.map((msg) => ({
+        text: msg.text || "",
+        sender: msg.sender || "system",
+        timestamp: msg.timestamp || new Date(),
+        questionId: msg.questionId,
+        questionCategory: msg.questionCategory,
+        feedback: msg.feedback,
+        audioS3Key: msg.audioS3Key,
+        audioS3Bucket: msg.audioS3Bucket,
+        audioUrl: msg.audioUrl,
+      }));
+
+      // Return the existing chat history with added audioUrls where needed
       return NextResponse.json({
         greeting: null, // No need for new greeting
         jobTitle: job.title,
         companyName: job.companyName,
         applicationId,
         hasExistingChat: true,
-        chatHistory: existingChatHistory,
+        chatHistory: sanitizedChatHistory,
         isCompleted: isCompleted,
       });
     }
@@ -239,6 +364,10 @@ About: ${application.parsedResume.about || "No summary available"}
         text: initialGreeting,
         sender: "ai",
         timestamp: new Date(),
+        // Include all audio-related properties
+        audioUrl: aiGreetingMessage.audioUrl,
+        audioS3Key: aiGreetingMessage.audioS3Key,
+        audioS3Bucket: aiGreetingMessage.audioS3Bucket,
       },
     ];
 
@@ -248,7 +377,7 @@ About: ${application.parsedResume.about || "No summary available"}
       companyName: job.companyName,
       applicationId,
       hasExistingChat: false,
-      chatHistory: initialChatHistory, // Return the newly created messages
+      chatHistory: initialChatHistory, // Return the newly created messages with audioUrl
       initialAudioS3Key: aiGreetingMessage.audioS3Key,
       initialAudioS3Bucket: aiGreetingMessage.audioS3Bucket,
       // Include the direct audio URL for immediate playback

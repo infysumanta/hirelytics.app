@@ -107,6 +107,7 @@ export function SpeechRecognitionInput({
   const [isSpeechEnabled, setIsSpeechEnabled] = useState<boolean>(false);
   const [isListening, setIsListening] = useState<boolean>(false);
   const [silenceTimer, setSilenceTimer] = useState<NodeJS.Timeout | null>(null);
+  const [audioIsPlaying, setAudioIsPlaying] = useState(false);
   const recognitionRef = useRef<SpeechRecognition | null>(null);
 
   // Check if speech recognition is available
@@ -115,6 +116,28 @@ export function SpeechRecognitionInput({
       "SpeechRecognition" in window || "webkitSpeechRecognition" in window;
 
     setIsSpeechEnabled(speechRecognitionAvailable);
+  }, []);
+
+  // Track audio playback state
+  useEffect(() => {
+    const handleAudioStart = () => {
+      console.log("[Speech Recognition] Audio playback started");
+      setAudioIsPlaying(true);
+    };
+
+    const handleAudioEnd = () => {
+      console.log("[Speech Recognition] Audio playback ended");
+      setAudioIsPlaying(false);
+    };
+
+    // Listen for audio playback events
+    document.addEventListener("audio-playback-started", handleAudioStart);
+    document.addEventListener("audio-playback-ended", handleAudioEnd);
+
+    return () => {
+      document.removeEventListener("audio-playback-started", handleAudioStart);
+      document.removeEventListener("audio-playback-ended", handleAudioEnd);
+    };
   }, []);
 
   // Initialize speech recognition
@@ -136,11 +159,34 @@ export function SpeechRecognitionInput({
       recognition.onstart = () => {
         console.log("Speech recognition started");
         setIsListening(true);
+
+        // Broadcast speech recognition status
+        document.dispatchEvent(
+          new CustomEvent("speech-recognition-status", {
+            detail: { isListening: true },
+          }),
+        );
+
+        // Stop all audio playback when speech recognition starts
+        if (audioIsPlaying) {
+          console.log(
+            "Stopping audio playback because speech recognition started",
+          );
+          document.querySelectorAll("audio").forEach((audio) => audio.pause());
+          document.dispatchEvent(new CustomEvent("audio-playback-ended"));
+        }
       };
 
       recognition.onend = () => {
         console.log("Speech recognition ended");
         setIsListening(false);
+
+        // Broadcast speech recognition status
+        document.dispatchEvent(
+          new CustomEvent("speech-recognition-status", {
+            detail: { isListening: false },
+          }),
+        );
       };
 
       recognition.onresult = (event: SpeechRecognitionEvent) => {
@@ -314,6 +360,25 @@ export function SpeechRecognitionInput({
 
   const toggleListening = useCallback(() => {
     console.log("Toggling speech recognition, current state:", isListening);
+    console.log("Component disabled state:", disabled);
+    console.log("Audio playing state:", audioIsPlaying);
+
+    // We now allow starting speech recognition even during audio playback
+    // If audio is playing and user wants to start talking, we'll stop the audio playback
+    if (audioIsPlaying && !isListening) {
+      console.log(
+        "Audio is playing but allowing speech recognition to start - stopping audio",
+      );
+      // Stop audio playback
+      document.querySelectorAll("audio").forEach((audio) => audio.pause());
+      document.dispatchEvent(new CustomEvent("audio-playback-ended"));
+    }
+
+    // Check if it's disabled - important for user turn state
+    if (disabled) {
+      console.log("Cannot toggle listening while disabled (not user's turn)");
+      return;
+    }
 
     // Use a small delay to ensure previous operations have completed
     setTimeout(() => {
@@ -323,8 +388,7 @@ export function SpeechRecognitionInput({
         startListening();
       }
     }, 100);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [isListening, stopListening, startListening, audioIsPlaying, disabled]);
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
     if (e.key === "Enter" && !e.shiftKey && !disabled) {
@@ -336,12 +400,34 @@ export function SpeechRecognitionInput({
     }
   };
 
-  // Effect to turn off mic when forceMicOff prop changes to true
+  // Effect to turn off mic only when forceMicOff prop changes to true
+  // We no longer automatically stop listening when audio starts playing
   useEffect(() => {
     if (forceMicOff && isListening) {
       stopListening();
     }
-  }, [forceMicOff, isListening, stopListening]);
+  }, [forceMicOff, isListening, stopListening, audioIsPlaying]);
+
+  // Listen for audio playback events
+  useEffect(() => {
+    const handleAudioStart = () => {
+      console.log("Audio playback started - disabling mic");
+      setAudioIsPlaying(true);
+    };
+
+    const handleAudioEnd = () => {
+      console.log("Audio playback ended - mic can be enabled again");
+      setAudioIsPlaying(false);
+    };
+
+    document.addEventListener("audio-playback-started", handleAudioStart);
+    document.addEventListener("audio-playback-ended", handleAudioEnd);
+
+    return () => {
+      document.removeEventListener("audio-playback-started", handleAudioStart);
+      document.removeEventListener("audio-playback-ended", handleAudioEnd);
+    };
+  }, []);
 
   // Add event listener for external microphone toggle when hideButtons=true
   useEffect(() => {
@@ -409,7 +495,6 @@ export function SpeechRecognitionInput({
             onChange={(e) => onChange(e.target.value)}
             onKeyDown={handleKeyPress}
             disabled={disabled}
-            readOnly
             className={cn(
               "min-h-12 resize-none rounded-lg transition-all w-full",
               isListening &&

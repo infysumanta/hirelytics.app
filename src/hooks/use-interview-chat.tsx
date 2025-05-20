@@ -2,6 +2,7 @@
 
 import { useState, useCallback, useRef, useEffect } from "react";
 import { toast } from "sonner";
+import { SessionStateManager } from "@/lib/session-state-manager";
 
 export interface Message {
   id: string;
@@ -9,9 +10,7 @@ export interface Message {
   sender: "ai" | "user" | "system";
   timestamp: Date;
   isCompletionMessage?: boolean;
-  audioUrl?: string; // URL to the audio file for TTS
-  audioS3Key?: string; // S3 key for the audio file
-  audioS3Bucket?: string; // S3 bucket containing the audio file
+  audioUrl?: string; // URL to the audio file for TTS - directly from server
 }
 
 interface ConversationMessage {
@@ -47,6 +46,9 @@ export function useInterviewChat({
   const conversationHistoryRef = useRef<ConversationMessage[]>([]);
   const hasInitializedRef = useRef(false);
 
+  // Audio URLs are now provided directly by the server
+  // No need for client-side refreshing
+
   useEffect(() => {
     const initializeInterview = async () => {
       if (hasInitializedRef.current) return;
@@ -78,28 +80,55 @@ export function useInterviewChat({
           data.chatHistory &&
           data.chatHistory.length > 0
         ) {
+          // Debug the received chat history
+          console.log("[Interview Chat] Received chat history from server", {
+            count: data.chatHistory.length,
+            firstMessage: data.chatHistory[0]
+              ? {
+                  text: typeof data.chatHistory[0].text,
+                  sender: data.chatHistory[0].sender,
+                  hasAudioUrl: !!data.chatHistory[0].audioUrl,
+                }
+              : null,
+          });
+
           // Load existing chat history
           const formattedMessages: Message[] = data.chatHistory.map(
             (
               msg: {
-                text: string;
-                sender: "ai" | "user" | "system";
-                timestamp: string;
+                text?: string;
+                sender?: "ai" | "user" | "system";
+                timestamp?: string;
+                audioUrl?: string;
                 audioS3Key?: string;
                 audioS3Bucket?: string;
               },
               index: number,
-            ) => ({
-              id: `history-${index}`,
-              text: msg.text,
-              sender: msg.sender,
-              timestamp: new Date(msg.timestamp),
-              isCompletionMessage:
-                msg.text.includes("interview is now complete") ||
-                msg.text.includes("Thank you for participating"),
-              audioS3Key: msg.audioS3Key,
-              audioS3Bucket: msg.audioS3Bucket,
-            }),
+            ) => {
+              // Debug first message in detail
+              if (index === 0) {
+                console.log(`[Interview Chat] Processing message ${index}:`, {
+                  properties: Object.keys(msg),
+                  text: typeof msg.text,
+                  audioUrl: msg.audioUrl
+                    ? `${msg.audioUrl.substring(0, 30)}...`
+                    : "undefined",
+                });
+              }
+
+              return {
+                id: `history-${index}`,
+                text: msg.text || "", // Ensure text is never undefined
+                sender: msg.sender || "system", // Default to system if missing
+                timestamp: msg.timestamp ? new Date(msg.timestamp) : new Date(),
+                isCompletionMessage:
+                  (msg.text &&
+                    (msg.text.includes("interview is now complete") ||
+                      msg.text.includes("Thank you for participating"))) ||
+                  false,
+                audioUrl: msg.audioUrl || undefined, // Keep the audioUrl if present
+              };
+            },
           );
 
           setMessages(formattedMessages);
@@ -109,9 +138,37 @@ export function useInterviewChat({
             console.log("[Chat Hook] Loaded completed interview");
             setIsCompleted(true);
             setIsUserTurn(false);
+            // Clear any saved state since interview is completed
+            SessionStateManager.clearState(applicationId);
           } else {
-            // Set user turn to true only if the interview is not completed
-            setIsUserTurn(true);
+            // Try to load the saved state first
+            const savedState = SessionStateManager.loadState(applicationId);
+
+            if (savedState && typeof savedState.isUserTurn === "boolean") {
+              console.log(
+                "[Chat Hook] Restoring user turn state from session:",
+                savedState.isUserTurn,
+              );
+              setIsUserTurn(savedState.isUserTurn);
+            } else {
+              // Fall back to analyzing the last message
+              const lastMessage =
+                formattedMessages[formattedMessages.length - 1];
+              // If the last message was from AI, it's the user's turn
+              // If the last message was from the user, we're waiting for AI response
+              const isUsersTurn = lastMessage && lastMessage.sender === "ai";
+              console.log(
+                "[Chat Hook] Setting user turn based on last message:",
+                isUsersTurn,
+              );
+              setIsUserTurn(isUsersTurn);
+
+              // Save the determined state
+              SessionStateManager.saveState(applicationId, {
+                isUserTurn: isUsersTurn,
+                lastMsgId: lastMessage?.id,
+              });
+            }
           }
 
           // Build conversation history for context - filter out system messages for AI context
@@ -133,8 +190,6 @@ export function useInterviewChat({
             text: data.greeting,
             sender: "ai",
             timestamp: new Date(),
-            audioS3Key: data.initialAudioS3Key,
-            audioS3Bucket: data.initialAudioS3Bucket,
             audioUrl: data.audioUrl, // Use the direct audio URL from the response
           };
 
@@ -181,54 +236,8 @@ export function useInterviewChat({
     initializeInterview();
   }, [applicationId]);
 
-  // Load audio URLs for messages that have S3 keys
-  useEffect(() => {
-    const loadAudioUrls = async () => {
-      const messagesToProcess = messages.filter(
-        (msg) => msg.sender === "ai" && msg.audioS3Key && !msg.audioUrl,
-      );
-
-      if (messagesToProcess.length === 0) return;
-
-      // Process each message that needs an audio URL
-      await Promise.all(
-        messagesToProcess.map(async (message) => {
-          try {
-            // Get signed URL from our API
-            const response = await fetch("/api/ai/audio", {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify({
-                key: message.audioS3Key,
-                bucket: message.audioS3Bucket,
-              }),
-            });
-
-            if (response.ok) {
-              const data = await response.json();
-
-              if (data.success && data.url) {
-                // Update the message with the audio URL
-                setMessages((prev) =>
-                  prev.map((msg) =>
-                    msg.id === message.id
-                      ? { ...msg, audioUrl: data.url }
-                      : msg,
-                  ),
-                );
-              }
-            }
-          } catch (error) {
-            console.error("Error loading audio URL:", error);
-          }
-        }),
-      );
-    };
-
-    loadAudioUrls();
-  }, [messages]);
+  // The server now provides complete audio URLs directly
+  // No need to load audio URLs separately
 
   // Update conversation history when messages change
   useEffect(() => {
@@ -262,6 +271,11 @@ export function useInterviewChat({
 
     setIsLoading(true);
     setIsUserTurn(false);
+
+    // Save state to session storage that it's not user's turn
+    SessionStateManager.saveState(applicationId, {
+      isUserTurn: false,
+    });
 
     // Add user message
     const userMessage: Message = {
@@ -341,9 +355,6 @@ export function useInterviewChat({
         sender: "ai",
         timestamp: new Date(),
         isCompletionMessage: data.isCompleted,
-        // Add audio info if available in the response
-        audioS3Key: latestAiMessage?.audioS3Key,
-        audioS3Bucket: latestAiMessage?.audioS3Bucket,
         // Use the direct audio URL from the response for immediate playback
         audioUrl: data.audioUrl || latestAiMessage?.audioUrl,
       };
@@ -372,6 +383,12 @@ export function useInterviewChat({
         setMessages((prevMessages) => [...prevMessages, aiMessage]);
         // After AI responds, it's user's turn again
         setIsUserTurn(true);
+
+        // Save state to session storage
+        SessionStateManager.saveState(applicationId, {
+          isUserTurn: true,
+          lastMsgId: aiMessage.id,
+        });
       }
     } catch (error) {
       console.error("Error in interview chat:", error);
@@ -442,8 +459,7 @@ export function useInterviewChat({
         text: data.greeting,
         sender: "ai",
         timestamp: new Date(),
-        audioS3Key: data.initialAudioS3Key,
-        audioS3Bucket: data.initialAudioS3Bucket,
+        audioUrl: data.audioUrl, // Use the direct audio URL from the response
       };
 
       setMessages([initialMessage]);
