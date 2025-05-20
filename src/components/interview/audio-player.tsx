@@ -19,23 +19,40 @@ function getMediaErrorMessage(error: MediaError): string {
   }
 }
 
+// Track if user has interacted with the page
+let hasUserInteractedWithPage = false;
+
+// Listen for any user interaction with the page
+if (typeof window !== "undefined") {
+  const interactionEvents = [
+    "click",
+    "touchstart",
+    "keydown",
+    "scroll",
+    "mousedown",
+  ];
+
+  const markUserInteraction = () => {
+    hasUserInteractedWithPage = true;
+  };
+
+  // Add listeners for user interaction
+  interactionEvents.forEach((event) => {
+    document.addEventListener(event, markUserInteraction);
+  });
+}
+
 interface AudioPlayerProps {
   audioUrl: string;
   messageId: string;
   // The message ID that should be autoplayed
   autoPlayMessageId?: string | null;
-  // New prop to control if the component should show the continue button
-  showContinueButton?: boolean;
-  // Callback when continue button is clicked
-  onContinue?: () => void;
 }
 
 export function AudioPlayer({
   audioUrl,
   messageId,
   autoPlayMessageId,
-  showContinueButton = false,
-  onContinue,
 }: AudioPlayerProps) {
   const [isPlaying, setIsPlaying] = useState(false);
   const [errorOccurred, setErrorOccurred] = useState(false);
@@ -44,6 +61,9 @@ export function AudioPlayer({
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const isLastMessage = autoPlayMessageId === messageId;
 
+  // Flag to track if this instance has attempted autoplay
+  const hasAttemptedAutoplayRef = useRef(false);
+
   // Setup audio with error handling
   const setupAudio = useCallback(async () => {
     if (!audioUrl) return;
@@ -51,6 +71,12 @@ export function AudioPlayer({
     try {
       // Create a new audio element
       const audio = new Audio();
+
+      // Important: Set muted attribute for autoplay compliance
+      audio.muted = true;
+
+      // Try to set autoplay attribute as well
+      audio.autoplay = true;
 
       // Setup event listeners with proper cleanup functions
       const loadProgressHandler = () =>
@@ -66,7 +92,7 @@ export function AudioPlayer({
       const timeoutId = setTimeout(() => {
         console.warn("Audio loading timeout, may be invalid URL:", audioUrl);
         setErrorOccurred(true);
-      }, 3000); // More generous timeout
+      }, 3000);
 
       // Handle successful audio loading
       const canPlaythroughHandler = () => {
@@ -74,10 +100,67 @@ export function AudioPlayer({
         setIsReady(true);
         setErrorOccurred(false);
 
-        // If this is the last message and should autoplay,
-        // show the continue button instead of autoplaying
-        if (isLastMessage) {
-          setIsWaitingForContinue(true);
+        // If this is the last message that should autoplay
+        if (isLastMessage && !hasAttemptedAutoplayRef.current) {
+          hasAttemptedAutoplayRef.current = true;
+
+          // Pause all other audio elements first
+          document.querySelectorAll("audio").forEach((a) => a.pause());
+
+          // Signal that audio playback is starting
+          document.dispatchEvent(new CustomEvent("audio-playback-started"));
+
+          // Try to play audio with browser-friendly approach:
+          // 1. First play muted (most browsers allow this)
+          audio.muted = true;
+          audio
+            .play()
+            .then(() => {
+              console.log("Muted autoplay successful");
+
+              // Check if user has interacted with the page
+              if (hasUserInteractedWithPage) {
+                // If user has interacted, we can unmute
+                audio.muted = false;
+                setIsPlaying(true);
+                console.log("Audio unmuted after user interaction");
+              } else {
+                // Keep playing muted and wait for interaction
+                setIsPlaying(true);
+
+                // Set up a one-time listener for user interaction to unmute
+                const unmuteFn = () => {
+                  if (audio && !audio.paused) {
+                    audio.muted = false;
+                    console.log(
+                      "Audio unmuted after deferred user interaction",
+                    );
+                  }
+                };
+
+                const interactionEvents = ["click", "touchstart", "keydown"];
+                interactionEvents.forEach((event) => {
+                  document.addEventListener(event, unmuteFn, { once: true });
+                });
+
+                // Clean up these listeners after audio ends
+                audio.addEventListener(
+                  "ended",
+                  () => {
+                    interactionEvents.forEach((event) => {
+                      document.removeEventListener(event, unmuteFn);
+                    });
+                  },
+                  { once: true },
+                );
+              }
+            })
+            .catch((error) => {
+              console.log("Autoplay failed, need user interaction:", error);
+              // Show a smaller continue button
+              setIsWaitingForContinue(true);
+              setIsPlaying(false);
+            });
         }
       };
 
@@ -164,6 +247,7 @@ export function AudioPlayer({
     setIsReady(false);
     setErrorOccurred(false);
     setIsWaitingForContinue(false);
+    hasAttemptedAutoplayRef.current = false;
 
     // Setup audio and store the cleanup function
     let cleanupFn: (() => void) | undefined;
@@ -180,39 +264,51 @@ export function AudioPlayer({
     };
   }, [audioUrl, messageId, setupAudio]);
 
-  // Handle the continue button click
+  // Continue button handler for manual playback
   const handleContinue = useCallback(() => {
     setIsWaitingForContinue(false);
+    hasUserInteractedWithPage = true;
 
-    // Play the audio
+    // Play the audio with unmuted sound
     if (audioRef.current && isReady) {
+      // Ensure audio is not muted
+      audioRef.current.muted = false;
+
       // Pause all other audio elements first
       document.querySelectorAll("audio").forEach((audio) => audio.pause());
 
       // Signal that audio playback is starting
       document.dispatchEvent(new CustomEvent("audio-playback-started"));
 
-      audioRef.current.play().catch((error) => {
-        console.error("Play failed:", error);
-        setErrorOccurred(true);
-      });
+      // This should work now as it's from a user interaction
+      audioRef.current
+        .play()
+        .then(() => {
+          console.log("Audio playback started via user interaction");
+          setIsPlaying(true);
+        })
+        .catch((error) => {
+          console.error("Play failed even with user interaction:", error);
+          setErrorOccurred(true);
+        });
     }
-
-    // Call the onContinue callback if provided
-    if (onContinue) {
-      onContinue();
-    }
-  }, [isReady, onContinue]);
+  }, [isReady]);
 
   // Handle play/pause toggle
   const togglePlayPause = useCallback(async () => {
     if (!audioRef.current) return;
+
+    // Mark that user has interacted
+    hasUserInteractedWithPage = true;
 
     if (isPlaying) {
       audioRef.current.pause();
     } else if (isReady) {
       // Reset error state
       setErrorOccurred(false);
+
+      // Ensure audio is not muted since this is user-initiated
+      audioRef.current.muted = false;
 
       // Pause all other audio elements first
       document.querySelectorAll("audio").forEach((audio) => audio.pause());
@@ -223,6 +319,7 @@ export function AudioPlayer({
       // Try to play with better error handling
       try {
         await audioRef.current.play();
+        setIsPlaying(true);
       } catch (error) {
         console.error("Play failed:", error);
         setErrorOccurred(true);
@@ -230,60 +327,62 @@ export function AudioPlayer({
     }
   }, [isPlaying, isReady]);
 
-  // If waiting for continue and it's the last message that should autoplay
-  if (isWaitingForContinue && isLastMessage && showContinueButton) {
-    return (
-      <button
-        onClick={handleContinue}
-        className="flex items-center gap-2 p-2 rounded bg-primary text-primary-foreground font-medium"
-        aria-label="Continue with audio playback"
-      >
-        <Play className="h-4 w-4" />
-        <span>Continue</span>
-      </button>
-    );
-  }
-
-  // Normal play/pause button
   return (
-    <button
-      onClick={togglePlayPause}
-      className={`flex items-center justify-center p-1.5 rounded-full border transition-colors ${
-        errorOccurred
-          ? "bg-red-100/30 text-red-500 border-red-300 hover:bg-red-100/50"
-          : isPlaying
-          ? "bg-primary text-primary-foreground border-primary animate-pulse"
-          : "bg-primary/10 hover:bg-primary/20 border-primary/30 text-primary hover:border-primary"
-      }`}
-      aria-label={
-        errorOccurred
-          ? "Audio error - try again"
-          : isPlaying
-          ? "Pause audio"
-          : "Play audio"
-      }
-      title={
-        errorOccurred
-          ? "Audio error - try again"
-          : isPlaying
-          ? "Pause audio"
-          : "Play audio"
-      }
-      disabled={!isReady && !errorOccurred}
-    >
-      {errorOccurred ? (
-        <div className="flex items-center gap-1">
-          <Play className="h-3 w-3" />
-          <span className="text-xs">Retry</span>
-        </div>
-      ) : isPlaying ? (
-        <div className="flex items-center gap-1">
-          <Pause className="h-3 w-3" />
-          <Volume2 className="h-3 w-3" />
-        </div>
-      ) : (
-        <Play className="h-3 w-3" />
+    <>
+      {/* Inline continue button when autoplay fails */}
+      {isWaitingForContinue && isLastMessage && (
+        <button
+          onClick={handleContinue}
+          className="flex items-center gap-2 p-2 rounded bg-primary text-primary-foreground font-medium"
+          aria-label="Continue with audio playback"
+        >
+          <Play className="h-4 w-4" />
+          <span>Continue</span>
+        </button>
       )}
-    </button>
+
+      {/* Normal play/pause button */}
+      {!isWaitingForContinue && (
+        <button
+          onClick={togglePlayPause}
+          className={`flex items-center justify-center p-1.5 rounded-full border transition-colors ${
+            errorOccurred
+              ? "bg-red-100/30 text-red-500 border-red-300 hover:bg-red-100/50"
+              : isPlaying
+              ? "bg-primary text-primary-foreground border-primary animate-pulse"
+              : "bg-primary/10 hover:bg-primary/20 border-primary/30 text-primary hover:border-primary"
+          }`}
+          aria-label={
+            errorOccurred
+              ? "Audio error - try again"
+              : isPlaying
+              ? "Pause audio"
+              : "Play audio"
+          }
+          title={
+            errorOccurred
+              ? "Audio error - try again"
+              : isPlaying
+              ? "Pause audio"
+              : "Play audio"
+          }
+          disabled={!isReady && !errorOccurred}
+        >
+          {errorOccurred ? (
+            <div className="flex items-center gap-1">
+              <Play className="h-3 w-3" />
+              <span className="text-xs">Retry</span>
+            </div>
+          ) : isPlaying ? (
+            <div className="flex items-center gap-1">
+              <Pause className="h-3 w-3" />
+              <Volume2 className="h-3 w-3" />
+            </div>
+          ) : (
+            <Play className="h-3 w-3" />
+          )}
+        </button>
+      )}
+    </>
   );
 }
