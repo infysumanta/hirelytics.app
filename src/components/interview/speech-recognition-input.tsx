@@ -100,7 +100,7 @@ export function SpeechRecognitionInput({
   placeholder = "Type your message...",
   className,
   disabled = false,
-  rows = 1,
+  rows = 5,
   forceMicOff = false,
   hideButtons = false,
 }: SpeechRecognitionInputProps) {
@@ -266,6 +266,7 @@ export function SpeechRecognitionInput({
     }
   };
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const startListening = () => {
     if (disabled) return;
 
@@ -396,9 +397,26 @@ export function SpeechRecognitionInput({
       if (isListening) {
         stopListening();
       }
+
+      // Log that Enter key was pressed to send message
+      console.log("Enter key pressed to send message, current input:", value);
+
+      // Send the message which should trigger input clearing
       onSend();
     }
   };
+
+  // Force textarea to sync with value prop - useful when parent components clear the input
+  useEffect(() => {
+    const textarea = document.querySelector("textarea") as HTMLTextAreaElement;
+    if (textarea && textarea.value !== value) {
+      console.log("Forcing textarea sync with value prop:", {
+        textareaValue: textarea.value,
+        propValue: value,
+      });
+      textarea.value = value;
+    }
+  }, [value]);
 
   // Effect to turn off mic only when forceMicOff prop changes to true
   // We no longer automatically stop listening when audio starts playing
@@ -459,6 +477,21 @@ export function SpeechRecognitionInput({
     }
   }, [isListening, hideButtons]);
 
+  // Enhanced logging for value prop changes to debug input clearing
+  useEffect(() => {
+    console.log("SpeechRecognitionInput value changed:", {
+      value,
+      length: value?.length || 0,
+      timestamp: new Date().toISOString(),
+      isEmpty: !value || value.length === 0,
+    });
+
+    // If value becomes empty, log that the input has been cleared
+    if (!value || value.length === 0) {
+      console.log("Input has been cleared at:", new Date().toISOString());
+    }
+  }, [value]);
+
   // Cleanup on unmount
   useEffect(() => {
     return () => {
@@ -496,7 +529,7 @@ export function SpeechRecognitionInput({
             onKeyDown={handleKeyPress}
             disabled={disabled}
             className={cn(
-              "min-h-12 resize-none rounded-lg transition-all w-full",
+              "min-h-[5lh] resize-none rounded-lg transition-all w-full max-h-[5lh]", // Added max-h-[3lh] to limit height
               isListening &&
                 "border-primary border-2 shadow-[0_0_15px_rgba(136,58,234,0.3)]",
               disabled && "opacity-70 cursor-not-allowed",
@@ -585,7 +618,7 @@ export function SpeechRecognitionInput({
         )}
       </div>
 
-      {/* Voice status guidance text */}
+      {/* Voice status guidance text
       {isListening && (
         <div className="mt-3 relative">
           <div className="absolute -left-1 -right-1 top-0 h-1 bg-gradient-to-r from-transparent via-primary/30 to-transparent"></div>
@@ -612,7 +645,7 @@ export function SpeechRecognitionInput({
             </div>
           </div>
         </div>
-      )}
+      )} */}
 
       {!isSpeechEnabled && (
         <div className="text-xs mt-1 text-muted-foreground">

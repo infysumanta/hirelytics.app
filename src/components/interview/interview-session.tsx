@@ -428,9 +428,24 @@ export function InterviewSession({
   const handleSendMessage = () => {
     // Temporarily set forceMicOff to true, then back to false after a short delay
     setForceMicOff(true);
+
+    // Log current message input before clearing
+    console.log("Message about to be sent:", {
+      content: messageInput,
+      length: messageInput.length,
+      timestamp: new Date().toISOString(),
+    });
+
+    // Force clear the input box before sending (extra safety measure)
+    setMessageInput("");
+
+    // Ensure the message is sent after input is cleared
     sendChatMessage();
-    // Reset after a short delay to avoid React state batching issues
-    setTimeout(() => setForceMicOff(false), 100);
+
+    // Reset mic state after a short delay to avoid React state batching issues
+    setTimeout(() => {
+      setForceMicOff(false);
+    }, 100);
   };
 
   // We no longer force the mic off during audio playback
@@ -882,7 +897,15 @@ export function InterviewSession({
                 {/* Send Button */}
                 <Button
                   size="icon"
-                  onClick={handleSendMessage}
+                  onClick={() => {
+                    // Force clear the input field in DOM before calling handleSendMessage
+                    const textareaElement = document.querySelector("textarea");
+                    if (textareaElement) {
+                      textareaElement.value = "";
+                      console.log("DOM textarea cleared by send button");
+                    }
+                    handleSendMessage();
+                  }}
                   disabled={
                     !messageInput.trim() ||
                     !isUserTurn ||

@@ -269,6 +269,19 @@ export function useInterviewChat({
   const sendMessage = useCallback(async () => {
     if (messageInput.trim() === "" || !isUserTurn || isLoading) return;
 
+    // Store the message content before clearing
+    const sentMessage = messageInput.trim();
+
+    console.log("sendMessage hook called, clearing input:", {
+      originalMessage: sentMessage,
+      timestamp: new Date().toISOString(),
+    });
+
+    // Clear input immediately before any other state updates
+    setMessageInput("");
+    console.log(messageInput);
+
+    // Now continue with the message sending process
     setIsLoading(true);
     setIsUserTurn(false);
 
@@ -280,14 +293,13 @@ export function useInterviewChat({
     // Add user message
     const userMessage: Message = {
       id: Date.now().toString(),
-      text: messageInput,
+      text: sentMessage,
       sender: "user",
       timestamp: new Date(),
     };
 
-    const sentMessage = messageInput.trim();
+    // Update messages state with the stored message content
     setMessages((prevMessages) => [...prevMessages, userMessage]);
-    setMessageInput("");
 
     try {
       // Check for special command to force completion
