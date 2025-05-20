@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { Play, Pause, Volume2 } from "lucide-react";
 
 // Helper function to convert MediaError codes to readable messages
@@ -24,239 +24,168 @@ interface AudioPlayerProps {
   messageId: string;
   // The message ID that should be autoplayed
   autoPlayMessageId?: string | null;
+  // New prop to control if the component should show the continue button
+  showContinueButton?: boolean;
+  // Callback when continue button is clicked
+  onContinue?: () => void;
 }
 
 export function AudioPlayer({
   audioUrl,
   messageId,
   autoPlayMessageId,
+  showContinueButton = false,
+  onContinue,
 }: AudioPlayerProps) {
   const [isPlaying, setIsPlaying] = useState(false);
   const [errorOccurred, setErrorOccurred] = useState(false);
+  const [isReady, setIsReady] = useState(false);
+  const [isWaitingForContinue, setIsWaitingForContinue] = useState(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
-  useEffect(() => {
+  const isLastMessage = autoPlayMessageId === messageId;
+
+  // Setup audio with error handling
+  const setupAudio = useCallback(async () => {
     if (!audioUrl) return;
 
-    // Create audio element without URL validation
-    const checkUrl = async () => {
-      try {
-        // Server now provides valid URLs, so we just create the audio element
+    try {
+      // Create a new audio element
+      const audio = new Audio();
 
-        // Create a new audio element
-        const audio = new Audio();
+      // Setup event listeners with proper cleanup functions
+      const loadProgressHandler = () =>
+        console.log("Audio loading in progress...");
+      const loadStartHandler = () => console.log("Audio loading started");
+      const loadedDataHandler = () => console.log("Audio loaded basic data");
 
-        // Set callbacks for load progress
-        audio.onprogress = () => console.log("Audio loading in progress...");
-        audio.onloadstart = () => console.log("Audio loading started");
-        audio.onloadeddata = () => console.log("Audio loaded basic data");
+      audio.addEventListener("progress", loadProgressHandler);
+      audio.addEventListener("loadstart", loadStartHandler);
+      audio.addEventListener("loadeddata", loadedDataHandler);
 
-        // Set load timeout to detect stuck/invalid URLs
-        const timeoutId = setTimeout(() => {
-          console.warn("Audio loading timeout, may be invalid URL:", audioUrl);
-          setErrorOccurred(true);
-        }, 8000);
-
-        // Listen for canplaythrough event to clear the timeout
-        audio.addEventListener(
-          "canplaythrough",
-          () => {
-            clearTimeout(timeoutId);
-            setErrorOccurred(false);
-          },
-          { once: true },
-        );
-
-        // Setup listeners before setting src to catch immediate errors
-        audio.addEventListener("ended", () => {
-          setIsPlaying(false);
-          document.dispatchEvent(new CustomEvent("audio-playback-ended"));
-        });
-
-        audio.addEventListener("pause", () => {
-          setIsPlaying(false);
-          document.dispatchEvent(new CustomEvent("audio-playback-ended"));
-        });
-
-        audio.addEventListener("play", () => {
-          setIsPlaying(true);
-          document.dispatchEvent(new CustomEvent("audio-playback-started"));
-        });
-
-        // Error handler with more robust error reporting
-        audio.addEventListener("error", () => {
-          // Convert MediaError to a plain object with error information
-          const errorDetails = audio.error
-            ? {
-                code: audio.error.code,
-                message: getMediaErrorMessage(audio.error),
-                url: audioUrl,
-                state: audio.readyState,
-              }
-            : {
-                message: "Unknown error with audio element",
-                url: audioUrl,
-              };
-
-          console.error("Audio playback error:", errorDetails);
-          clearTimeout(timeoutId);
-          setIsPlaying(false);
-          setErrorOccurred(true);
-        });
-
-        // Set the source
-        audio.src = audioUrl;
-
-        // Start preloading
-        audio.load();
-
-        // Store the instance
-        audioRef.current = audio;
-      } catch (error) {
-        console.error("Error setting up audio:", error);
+      // Set load timeout to detect stuck/invalid URLs
+      const timeoutId = setTimeout(() => {
+        console.warn("Audio loading timeout, may be invalid URL:", audioUrl);
         setErrorOccurred(true);
-      }
-    };
+      }, 3000); // More generous timeout
 
-    // Reset error state when URL changes
-    setErrorOccurred(false);
+      // Handle successful audio loading
+      const canPlaythroughHandler = () => {
+        clearTimeout(timeoutId);
+        setIsReady(true);
+        setErrorOccurred(false);
 
-    // Initialize audio
-    checkUrl();
-
-    return () => {
-      // Clean up
-      if (audioRef.current) {
-        const audio = audioRef.current;
-        audio.pause();
-        audio.src = ""; // Clear source to stop any downloads in progress
-
-        // Remove all event listeners
-        audio.removeEventListener("ended", () => setIsPlaying(false));
-        audio.removeEventListener("pause", () => setIsPlaying(false));
-        audio.removeEventListener("play", () => setIsPlaying(true));
-        audio.removeEventListener("error", () => {});
-        audio.removeEventListener("canplaythrough", () => {});
-
-        audioRef.current = null;
-      }
-    };
-  }, [audioUrl, messageId]);
-
-  // Effect to handle autoplay when autoPlayMessageId changes
-  useEffect(() => {
-    if (autoPlayMessageId === messageId && audioRef.current) {
-      // Signal that mic should be disabled during playback
-      document.dispatchEvent(new CustomEvent("audio-playback-started"));
-
-      // Pause other audios
-      document.querySelectorAll("audio").forEach((a) => a.pause());
-
-      // Play this audio with retry logic
-      const attemptPlay = async () => {
-        try {
-          console.log(`Attempting to play audio for message ${messageId}`);
-          // Reset error state before attempting to play
-          setErrorOccurred(false);
-
-          // Check if audio element has been created and loaded
-          if (!audioRef.current) {
-            console.error("Audio element not initialized for autoplay");
-            setErrorOccurred(true);
-            return;
-          }
-
-          // Wait for audio to be ready
-          if (audioRef.current.readyState < 2) {
-            // HAVE_CURRENT_DATA (2) or higher
-            console.log(
-              `Audio not ready yet (state: ${audioRef.current.readyState}), waiting...`,
-            );
-
-            // Use a promise with both success and timeout paths
-            await new Promise<void>((resolve) => {
-              // Create a one-time canplay listener
-              const canPlayHandler = () => {
-                console.log("Audio can play now, continuing with playback");
-                resolve();
-              };
-
-              // Add the event listener
-              audioRef.current?.addEventListener("canplay", canPlayHandler, {
-                once: true,
-              });
-
-              // Set timeout for loading
-              const timeout = setTimeout(() => {
-                console.warn("Audio loading timeout during autoplay");
-                setErrorOccurred(true);
-                // Remove the canplay handler to avoid memory leaks
-                audioRef.current?.removeEventListener(
-                  "canplay",
-                  canPlayHandler,
-                );
-                resolve();
-              }, 5000);
-
-              // Add a handler to clear the timeout when canplay fires
-              audioRef.current?.addEventListener(
-                "canplay",
-                () => clearTimeout(timeout),
-                { once: true },
-              );
-            });
-          }
-
-          // Only try to play if we haven't encountered errors
-          if (!errorOccurred && audioRef.current) {
-            console.log("Starting audio playback");
-
-            try {
-              // Use a try-catch inside to specifically handle play() rejection
-              await audioRef.current.play();
-              console.log("Audio playback started successfully");
-            } catch (playError) {
-              console.error("Play() method failed:", playError);
-              setErrorOccurred(true);
-            }
-          } else {
-            console.warn(
-              "Skipping playback due to errors or missing audio element",
-            );
-          }
-        } catch (error) {
-          console.error("Autoplay setup failed:", error);
-          setErrorOccurred(true);
-          // Error will be shown in the UI to let user manually play
-        } finally {
-          // Signal that mic can be re-enabled after playback ends
-          if (audioRef.current) {
-            audioRef.current.addEventListener(
-              "ended",
-              () => {
-                console.log("Audio ended, sending playback-ended event");
-                document.dispatchEvent(new CustomEvent("audio-playback-ended"));
-              },
-              { once: true },
-            );
-          }
+        // If this is the last message and should autoplay,
+        // show the continue button instead of autoplaying
+        if (isLastMessage) {
+          setIsWaitingForContinue(true);
         }
       };
 
-      attemptPlay();
+      audio.addEventListener("canplaythrough", canPlaythroughHandler, {
+        once: true,
+      });
+
+      // Setup playback state listeners
+      const endedHandler = () => {
+        setIsPlaying(false);
+        document.dispatchEvent(new CustomEvent("audio-playback-ended"));
+      };
+
+      const pauseHandler = () => {
+        setIsPlaying(false);
+        document.dispatchEvent(new CustomEvent("audio-playback-ended"));
+      };
+
+      const playHandler = () => {
+        setIsPlaying(true);
+        document.dispatchEvent(new CustomEvent("audio-playback-started"));
+      };
+
+      audio.addEventListener("ended", endedHandler);
+      audio.addEventListener("pause", pauseHandler);
+      audio.addEventListener("play", playHandler);
+
+      // Error handler
+      const errorHandler = () => {
+        const errorDetails = audio.error
+          ? {
+              code: audio.error.code,
+              message: getMediaErrorMessage(audio.error),
+              url: audioUrl,
+              state: audio.readyState,
+            }
+          : {
+              message: "Unknown error with audio element",
+              url: audioUrl,
+            };
+
+        console.error("Audio playback error:", errorDetails);
+        clearTimeout(timeoutId);
+        setIsPlaying(false);
+        setErrorOccurred(true);
+      };
+
+      audio.addEventListener("error", errorHandler);
+
+      // Set the source
+      audio.src = audioUrl;
+
+      // Start preloading
+      audio.load();
+
+      // Store the instance with all its event handlers
+      audioRef.current = audio;
+
+      // Return cleanup function
+      return () => {
+        clearTimeout(timeoutId);
+        audio.removeEventListener("progress", loadProgressHandler);
+        audio.removeEventListener("loadstart", loadStartHandler);
+        audio.removeEventListener("loadeddata", loadedDataHandler);
+        audio.removeEventListener("canplaythrough", canPlaythroughHandler);
+        audio.removeEventListener("ended", endedHandler);
+        audio.removeEventListener("pause", pauseHandler);
+        audio.removeEventListener("play", playHandler);
+        audio.removeEventListener("error", errorHandler);
+
+        audio.pause();
+        audio.src = "";
+        audioRef.current = null;
+      };
+    } catch (error) {
+      console.error("Error setting up audio:", error);
+      setErrorOccurred(true);
+      return undefined;
     }
-  }, [autoPlayMessageId, messageId, errorOccurred]);
+  }, [audioUrl, isLastMessage]);
 
-  const togglePlayPause = async () => {
-    if (!audioRef.current) return;
+  // Initialize audio on mount or when URL changes
+  useEffect(() => {
+    setIsReady(false);
+    setErrorOccurred(false);
+    setIsWaitingForContinue(false);
 
-    if (isPlaying) {
-      audioRef.current.pause();
-    } else {
-      // Reset error state when trying to play again
-      setErrorOccurred(false);
+    // Setup audio and store the cleanup function
+    let cleanupFn: (() => void) | undefined;
 
-      // No need to validate URL anymore - server provides valid URLs
+    setupAudio().then((cleanup) => {
+      cleanupFn = cleanup;
+    });
 
+    // Return cleanup function
+    return () => {
+      if (cleanupFn) {
+        cleanupFn();
+      }
+    };
+  }, [audioUrl, messageId, setupAudio]);
+
+  // Handle the continue button click
+  const handleContinue = useCallback(() => {
+    setIsWaitingForContinue(false);
+
+    // Play the audio
+    if (audioRef.current && isReady) {
       // Pause all other audio elements first
       document.querySelectorAll("audio").forEach((audio) => audio.pause());
 
@@ -266,14 +195,56 @@ export function AudioPlayer({
       audioRef.current.play().catch((error) => {
         console.error("Play failed:", error);
         setErrorOccurred(true);
-
-        // Log error for debugging but don't attempt to refresh the URL
-        // URLs are now provided directly by the server and should be valid
-        console.error("Audio playback error with URL:", audioUrl);
       });
     }
-  };
 
+    // Call the onContinue callback if provided
+    if (onContinue) {
+      onContinue();
+    }
+  }, [isReady, onContinue]);
+
+  // Handle play/pause toggle
+  const togglePlayPause = useCallback(async () => {
+    if (!audioRef.current) return;
+
+    if (isPlaying) {
+      audioRef.current.pause();
+    } else if (isReady) {
+      // Reset error state
+      setErrorOccurred(false);
+
+      // Pause all other audio elements first
+      document.querySelectorAll("audio").forEach((audio) => audio.pause());
+
+      // Signal that audio playback is starting
+      document.dispatchEvent(new CustomEvent("audio-playback-started"));
+
+      // Try to play with better error handling
+      try {
+        await audioRef.current.play();
+      } catch (error) {
+        console.error("Play failed:", error);
+        setErrorOccurred(true);
+      }
+    }
+  }, [isPlaying, isReady]);
+
+  // If waiting for continue and it's the last message that should autoplay
+  if (isWaitingForContinue && isLastMessage && showContinueButton) {
+    return (
+      <button
+        onClick={handleContinue}
+        className="flex items-center gap-2 p-2 rounded bg-primary text-primary-foreground font-medium"
+        aria-label="Continue with audio playback"
+      >
+        <Play className="h-4 w-4" />
+        <span>Continue</span>
+      </button>
+    );
+  }
+
+  // Normal play/pause button
   return (
     <button
       onClick={togglePlayPause}
@@ -298,6 +269,7 @@ export function AudioPlayer({
           ? "Pause audio"
           : "Play audio"
       }
+      disabled={!isReady && !errorOccurred}
     >
       {errorOccurred ? (
         <div className="flex items-center gap-1">
