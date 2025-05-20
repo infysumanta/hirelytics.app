@@ -22,6 +22,18 @@ function getMediaErrorMessage(error: MediaError): string {
 // Track if user has interacted with the page
 let hasUserInteractedWithPage = false;
 
+// Track DOM content loaded status
+let isDOMContentLoaded = false;
+
+// Create global registry for last audio player
+const lastAudioPlayerRegistry: {
+  messageId: string | null;
+  triggerAutoplay: (() => void) | null;
+} = {
+  messageId: null,
+  triggerAutoplay: null,
+};
+
 // Listen for any user interaction with the page
 if (typeof window !== "undefined") {
   const interactionEvents = [
@@ -34,12 +46,39 @@ if (typeof window !== "undefined") {
 
   const markUserInteraction = () => {
     hasUserInteractedWithPage = true;
+
+    // When user interacts with the page, trigger the last audio player's autoplay if available
+    if (lastAudioPlayerRegistry.triggerAutoplay) {
+      const autoplayFn = lastAudioPlayerRegistry.triggerAutoplay;
+      lastAudioPlayerRegistry.triggerAutoplay = null; // Clear it to prevent multiple calls
+      autoplayFn();
+    }
   };
 
   // Add listeners for user interaction
   interactionEvents.forEach((event) => {
     document.addEventListener(event, markUserInteraction);
   });
+
+  // Add listener for DOM content loaded
+  if (
+    document.readyState === "complete" ||
+    document.readyState === "interactive"
+  ) {
+    // DOM already loaded
+    isDOMContentLoaded = true;
+  } else {
+    document.addEventListener("DOMContentLoaded", () => {
+      isDOMContentLoaded = true;
+
+      // If there's a registered autoplay function, call it
+      if (lastAudioPlayerRegistry.triggerAutoplay) {
+        const autoplayFn = lastAudioPlayerRegistry.triggerAutoplay;
+        lastAudioPlayerRegistry.triggerAutoplay = null; // Clear it to prevent multiple calls
+        setTimeout(autoplayFn, 300); // Small delay for browser to stabilize
+      }
+    });
+  }
 }
 
 interface AudioPlayerProps {
@@ -63,6 +102,71 @@ export function AudioPlayer({
 
   // Flag to track if this instance has attempted autoplay
   const hasAttemptedAutoplayRef = useRef(false);
+
+  // Define the autoplay function to be called at the right time
+  const attemptAutoplay = useCallback(
+    async (audio: HTMLAudioElement) => {
+      if (!audio || !isLastMessage || hasAttemptedAutoplayRef.current) return;
+
+      hasAttemptedAutoplayRef.current = true;
+      console.log("Attempting autoplay for last audio message:", messageId);
+
+      // Pause all other audio elements first
+      document.querySelectorAll("audio").forEach((a) => a.pause());
+
+      // Signal that audio playback is starting
+      document.dispatchEvent(new CustomEvent("audio-playback-started"));
+
+      // Try to play audio with browser-friendly approach:
+      // 1. First play muted (most browsers allow this)
+      audio.muted = true;
+      try {
+        await audio.play();
+        console.log("Muted autoplay successful");
+
+        // Check if user has interacted with the page
+        if (hasUserInteractedWithPage) {
+          // If user has interacted, we can unmute
+          audio.muted = false;
+          setIsPlaying(true);
+          console.log("Audio unmuted after user interaction");
+        } else {
+          // Keep playing muted and wait for interaction
+          setIsPlaying(true);
+
+          // Set up a one-time listener for user interaction to unmute
+          const unmuteFn = () => {
+            if (audio && !audio.paused) {
+              audio.muted = false;
+              console.log("Audio unmuted after deferred user interaction");
+            }
+          };
+
+          const interactionEvents = ["click", "touchstart", "keydown"];
+          interactionEvents.forEach((event) => {
+            document.addEventListener(event, unmuteFn, { once: true });
+          });
+
+          // Clean up these listeners after audio ends
+          audio.addEventListener(
+            "ended",
+            () => {
+              interactionEvents.forEach((event) => {
+                document.removeEventListener(event, unmuteFn);
+              });
+            },
+            { once: true },
+          );
+        }
+      } catch (error) {
+        console.log("Autoplay failed, need user interaction:", error);
+        // Show a smaller continue button
+        setIsWaitingForContinue(true);
+        setIsPlaying(false);
+      }
+    },
+    [isLastMessage, messageId],
+  );
 
   // Setup audio with error handling
   const setupAudio = useCallback(async () => {
@@ -100,67 +204,21 @@ export function AudioPlayer({
         setIsReady(true);
         setErrorOccurred(false);
 
-        // If this is the last message that should autoplay
-        if (isLastMessage && !hasAttemptedAutoplayRef.current) {
-          hasAttemptedAutoplayRef.current = true;
+        // If this is the last message that should autoplay, register it
+        if (isLastMessage) {
+          // Update the registry with this audio player's message ID and autoplay function
+          lastAudioPlayerRegistry.messageId = messageId;
+          lastAudioPlayerRegistry.triggerAutoplay = () =>
+            attemptAutoplay(audio);
 
-          // Pause all other audio elements first
-          document.querySelectorAll("audio").forEach((a) => a.pause());
-
-          // Signal that audio playback is starting
-          document.dispatchEvent(new CustomEvent("audio-playback-started"));
-
-          // Try to play audio with browser-friendly approach:
-          // 1. First play muted (most browsers allow this)
-          audio.muted = true;
-          audio
-            .play()
-            .then(() => {
-              console.log("Muted autoplay successful");
-
-              // Check if user has interacted with the page
-              if (hasUserInteractedWithPage) {
-                // If user has interacted, we can unmute
-                audio.muted = false;
-                setIsPlaying(true);
-                console.log("Audio unmuted after user interaction");
-              } else {
-                // Keep playing muted and wait for interaction
-                setIsPlaying(true);
-
-                // Set up a one-time listener for user interaction to unmute
-                const unmuteFn = () => {
-                  if (audio && !audio.paused) {
-                    audio.muted = false;
-                    console.log(
-                      "Audio unmuted after deferred user interaction",
-                    );
-                  }
-                };
-
-                const interactionEvents = ["click", "touchstart", "keydown"];
-                interactionEvents.forEach((event) => {
-                  document.addEventListener(event, unmuteFn, { once: true });
-                });
-
-                // Clean up these listeners after audio ends
-                audio.addEventListener(
-                  "ended",
-                  () => {
-                    interactionEvents.forEach((event) => {
-                      document.removeEventListener(event, unmuteFn);
-                    });
-                  },
-                  { once: true },
-                );
-              }
-            })
-            .catch((error) => {
-              console.log("Autoplay failed, need user interaction:", error);
-              // Show a smaller continue button
-              setIsWaitingForContinue(true);
-              setIsPlaying(false);
-            });
+          // Check if we can autoplay immediately
+          if (isDOMContentLoaded || hasUserInteractedWithPage) {
+            attemptAutoplay(audio);
+          } else {
+            console.log(
+              "Audio ready but waiting for DOM loaded or user interaction",
+            );
+          }
         }
       };
 
@@ -234,13 +292,19 @@ export function AudioPlayer({
         audio.pause();
         audio.src = "";
         audioRef.current = null;
+
+        // Clear the autoplay registry if this was the last message
+        if (isLastMessage && lastAudioPlayerRegistry.messageId === messageId) {
+          lastAudioPlayerRegistry.messageId = null;
+          lastAudioPlayerRegistry.triggerAutoplay = null;
+        }
       };
     } catch (error) {
       console.error("Error setting up audio:", error);
       setErrorOccurred(true);
       return undefined;
     }
-  }, [audioUrl, isLastMessage]);
+  }, [audioUrl, isLastMessage, messageId, attemptAutoplay]);
 
   // Initialize audio on mount or when URL changes
   useEffect(() => {
@@ -248,6 +312,12 @@ export function AudioPlayer({
     setErrorOccurred(false);
     setIsWaitingForContinue(false);
     hasAttemptedAutoplayRef.current = false;
+
+    // Register this component as the last audio player if it is the last message
+    if (isLastMessage) {
+      console.log("Registering last audio player:", messageId);
+      // We'll set the triggerAutoplay function after setup
+    }
 
     // Setup audio and store the cleanup function
     let cleanupFn: (() => void) | undefined;
@@ -262,7 +332,7 @@ export function AudioPlayer({
         cleanupFn();
       }
     };
-  }, [audioUrl, messageId, setupAudio]);
+  }, [audioUrl, messageId, setupAudio, isLastMessage]);
 
   // Continue button handler for manual playback
   const handleContinue = useCallback(() => {
