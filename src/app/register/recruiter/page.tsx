@@ -5,8 +5,26 @@ import { RegisterForm } from "@/components/auth/register-form";
 import { motion } from "framer-motion";
 import { AnimatedBackground } from "@/components/ui/animated-background";
 import { AnimatedAuthCard } from "@/components/ui/auth-card";
+import { config } from "@/lib/config";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 
 export default function RecruiterRegisterPage() {
+  const registrationEnabled = config.registrationEnabled;
+  const router = useRouter();
+
+  // If registration is disabled, redirect to main registration page
+  // which will show the wishlist form
+  useEffect(() => {
+    if (!registrationEnabled) {
+      router.push("/register");
+    }
+  }, [registrationEnabled, router]);
+
+  // If registration is disabled, don't render anything until redirect completes
+  if (!registrationEnabled) {
+    return null;
+  }
   // Create footer content with animations
   const footerContent = (
     <>

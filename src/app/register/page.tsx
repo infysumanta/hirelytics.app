@@ -6,6 +6,8 @@ import { motion } from "framer-motion";
 import { useTranslations } from "next-intl";
 import { AnimatedBackground } from "@/components/ui/animated-background";
 import { AnimatedAuthCard } from "@/components/ui/auth-card";
+import { WishlistForm } from "@/components/auth/wishlist-form";
+import { config } from "@/lib/config";
 
 // Animation variants for staggered children
 const fadeIn = {
@@ -29,7 +31,27 @@ const staggerContainer = {
 
 export default function RegisterPage() {
   const t = useTranslations("Auth");
+  const registrationEnabled = config.registrationEnabled;
 
+  // If registration is disabled, show the wishlist form
+  if (!registrationEnabled) {
+    return (
+      <AnimatedBackground patternColor="primary" colorScheme="indigo">
+        <div className="w-full max-w-md px-4">
+          <AnimatedAuthCard
+            title="Registration Not Yet Started "
+            description="We're currently not accepting registrations. Join our waitlist to be notified when registration reopens and we will remind you to register."
+            colorScheme="indigo"
+            contentClassName="flex flex-col space-y-4"
+          >
+            <WishlistForm />
+          </AnimatedAuthCard>
+        </div>
+      </AnimatedBackground>
+    );
+  }
+
+  // Normal registration flow
   return (
     <AnimatedBackground patternColor="primary" colorScheme="indigo">
       <div className="w-full max-w-md px-4">

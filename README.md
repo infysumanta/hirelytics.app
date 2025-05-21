@@ -5,6 +5,8 @@ A comprehensive recruitment and hiring platform built with Next.js 15, NextAuth 
 ## Features
 
 - **Role-Based Authentication**: Separate login and registration flows for admin, recruiter, and candidate roles
+- **Registration Control**: Toggle user registration on/off with a simple environment variable
+- **Waitlist System**: Collect interested user information when registration is disabled
 - **Protected Routes**: Unified dashboard with role-specific content and protected routes
 - **Enhanced Security**:
   - Automatic redirects for authenticated/unauthenticated users
@@ -49,6 +51,14 @@ MONGODB_URI=your_mongodb_connection_string
 # NextAuth Configuration
 # Generate a secret with: openssl rand -base64 32
 NEXTAUTH_SECRET=your_random_string_for_jwt_encryption
+
+# Registration Control
+# Set to 'true' to allow new users to register, 'false' to disable registration
+REGISTRATION_ENABLED=true
+
+# Admin Email for Notifications
+# Receives emails when new users join the waitlist
+ADMIN_EMAIL=your_admin_email
 NEXTAUTH_URL=http://localhost:3000
 
 # AWS S3 Configuration (or S3-compatible storage like Tigris)
