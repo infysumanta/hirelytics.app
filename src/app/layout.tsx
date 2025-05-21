@@ -17,9 +17,10 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Hirelytics - Role-Based Recruitment Platform",
+  title:
+    "Hirelytics - AI Interview Plat to Revolutionize Your Hiring with Hirelytics AI Platform",
   description:
-    "A role-based recruitment platform for recruiters, candidates, and administrators",
+    "Our AI-driven platform transforms the recruitment process from job posting to candidate selection. Automate interviews, analyze resumes, and make data-driven hiring decisions.",
 };
 
 export default async function RootLayout({
