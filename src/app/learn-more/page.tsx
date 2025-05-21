@@ -12,6 +12,7 @@ import {
   Trophy,
 } from "lucide-react";
 import { motion } from "framer-motion";
+import Image from "next/image";
 
 const fadeIn = {
   hidden: { opacity: 0, y: 20 },
@@ -33,7 +34,7 @@ export default function LearnMorePage() {
   return (
     <div className="flex min-h-screen flex-col">
       {/* Hero Section with Gradient Background */}
-      <section className="relative py-20 overflow-hidden">
+      <section className="relative py-10 overflow-hidden">
         {/* Animated background */}
         <div className="absolute inset-0 z-0 opacity-40">
           <div className="absolute top-0 left-0 h-[500px] w-[500px] rounded-full bg-blue-600/30 dark:bg-blue-500/30 blur-[120px] animate-pulse-slow"></div>
@@ -44,7 +45,18 @@ export default function LearnMorePage() {
         </div>
 
         {/* Back button and content */}
-        <div className="container mx-auto px-4 relative z-10">
+        <div className="container mx-auto relative z-10">
+          {/* Logo */}
+          <motion.div variants={fadeIn} className="mb-8">
+            <Image
+              height={200}
+              width={650}
+              src="/images/hirelytics-full-logo.svg"
+              alt="Hirelytics"
+              className="h-20 md:h-24 w-auto max-w-full dark:invert-[0.15] dark:brightness-110 mb-6"
+              priority
+            />
+          </motion.div>
           <div className="mb-12">
             <Link href="/">
               <Button

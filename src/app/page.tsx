@@ -24,6 +24,7 @@ import {
   Users,
   Briefcase as BriefcaseIcon,
 } from "lucide-react";
+import Image from "next/image";
 
 // Animation variants
 const fadeIn = {
@@ -65,6 +66,8 @@ export default function Home() {
 
   return (
     <div className="flex min-h-screen flex-col items-center">
+      {/* Logo */}
+
       {/* Hero Section */}
       <AnimatedBackground
         colorScheme="indigo"
@@ -123,6 +126,16 @@ export default function Home() {
           >
             <Sparkles size={16} className="text-primary" />
             {t("hero.aiPoweredRecruitment")}
+          </motion.div>
+          <motion.div variants={fadeIn} className="mb-8">
+            <Image
+              width={650}
+              height={200}
+              src="/images/hirelytics-full-logo.svg"
+              alt="Hirelytics"
+              className="h-20 md:h-24 w-auto max-w-full dark:invert-[0.15] dark:brightness-110 mb-6"
+              priority
+            />
           </motion.div>
 
           <motion.h1

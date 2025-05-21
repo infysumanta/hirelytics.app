@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import Link from "next/link";
+import Image from "next/image";
 
 import { NavMain } from "@/components/nav-main";
 import { NavUser } from "@/components/nav-user";
@@ -26,10 +27,12 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
               className="data-[slot=sidebar-menu-button]:!p-1.5"
             >
               <Link href="/">
-                <img
+                <Image
                   src="/images/hirelytics-logo.svg"
                   alt="Hirelytics Logo"
-                  className="!size-6 mr-2"
+                  width={24}
+                  height={24}
+                  className="!size-6 mr-2 dark:invert-[0.15] dark:brightness-110"
                 />
                 <span className="text-base font-semibold">Hirelytics</span>
               </Link>
