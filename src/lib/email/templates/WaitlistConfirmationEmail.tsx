@@ -123,7 +123,9 @@ export const WaitlistConfirmationEmail = ({
         <Text style={textBase}>
           Best regards,
           <br />
-          The Hirelytics Team
+          <strong>Sumanta Kabiraj</strong>
+          <br />
+          <em>Founder, CEO, Hirelytics</em>
         </Text>
       </Section>
     </BaseEmailTemplate>
