@@ -18,7 +18,7 @@ const bucketName = process.env.AWS_BUCKET_NAME || "hirelytics";
 
 export async function GET(
   req: NextRequest,
-  { params }: { params: { id: string; key: string } },
+  { params }: { params: Promise<{ id: string; key: string }> },
 ) {
   try {
     await connectToDatabase();
@@ -43,7 +43,7 @@ export async function GET(
       );
     }
 
-    const { id, key } = params;
+    const { id, key } = await params;
 
     // Verify the application exists
     const application = await JobApplication.findById(id);

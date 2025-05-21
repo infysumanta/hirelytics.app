@@ -6,7 +6,7 @@ import Job from "@/models/job";
 
 export async function PUT(
   req: NextRequest,
-  { params }: { params: { id: string } },
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     await connectToDatabase();
@@ -31,7 +31,7 @@ export async function PUT(
       );
     }
 
-    const { id } = params;
+    const { id } = await params;
 
     // Verify the application exists
     const application = await JobApplication.findById(id);

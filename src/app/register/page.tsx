@@ -38,7 +38,7 @@ export default function RegisterPage() {
   // Effect for redirecting when registration is disabled
   useEffect(() => {
     if (!registrationEnabled) {
-      router.push('/wishlist');
+      router.push("/wishlist");
     }
   }, [router, registrationEnabled]);
 

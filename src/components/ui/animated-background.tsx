@@ -2,7 +2,7 @@
 
 import React from "react";
 import { motion } from "framer-motion";
-import { cn } from "@/lib/utils";
+import { cn, safeStyle } from "@/lib/utils";
 
 interface AnimatedBackgroundProps {
   children: React.ReactNode;
@@ -82,14 +82,14 @@ export function AnimatedBackground({
         {/* Large blob */}
         <motion.div
           className={cn(`absolute rounded-full ${blobColors[0]}/20`)}
-          style={{
+          style={safeStyle({
             width: "45%",
             height: "45%",
             top: "5%",
             left: "0%",
             opacity: patternOpacity * 2,
             filter: "blur(70px)",
-          }}
+          })}
           animate={
             animate
               ? {
@@ -110,14 +110,14 @@ export function AnimatedBackground({
         {/* Medium blob */}
         <motion.div
           className={cn(`absolute rounded-full ${blobColors[1]}/25`)}
-          style={{
+          style={safeStyle({
             width: "30%",
             height: "30%",
             bottom: "15%",
             right: "5%",
             opacity: patternOpacity * 2.5,
             filter: "blur(60px)",
-          }}
+          })}
           animate={
             animate
               ? {
@@ -138,14 +138,14 @@ export function AnimatedBackground({
         {/* Small blob */}
         <motion.div
           className={cn(`absolute rounded-full ${blobColors[2]}/30`)}
-          style={{
+          style={safeStyle({
             width: "20%",
             height: "20%",
             top: "55%",
             left: "25%",
             opacity: patternOpacity * 3,
             filter: "blur(40px)",
-          }}
+          })}
           animate={
             animate
               ? {
@@ -166,14 +166,14 @@ export function AnimatedBackground({
         {/* Extra small blob */}
         <motion.div
           className={cn(`absolute rounded-full ${blobColors[3]}/35`)}
-          style={{
+          style={safeStyle({
             width: "15%",
             height: "15%",
             bottom: "5%",
             left: "15%",
             opacity: patternOpacity * 3.5,
             filter: "blur(30px)",
-          }}
+          })}
           animate={
             animate
               ? {
@@ -194,14 +194,14 @@ export function AnimatedBackground({
         {/* Additional small blob for more color */}
         <motion.div
           className={cn(`absolute rounded-full ${blobColors[0]}/25`)}
-          style={{
+          style={safeStyle({
             width: "12%",
             height: "12%",
             top: "25%",
             right: "20%",
             opacity: patternOpacity * 3,
             filter: "blur(35px)",
-          }}
+          })}
           animate={
             animate
               ? {

@@ -16,7 +16,7 @@ interface MonitoringImage {
 
 export async function GET(
   req: NextRequest,
-  { params }: { params: { id: string } },
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     await connectToDatabase();
@@ -123,7 +123,7 @@ export async function GET(
 
 export async function PATCH(
   req: NextRequest,
-  { params }: { params: { id: string } },
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     await connectToDatabase();
@@ -140,7 +140,7 @@ export async function PATCH(
       );
     }
 
-    const id = params.id;
+    const { id } = await params;
 
     // Find the application
     const application = await JobApplication.findById(id);

@@ -7,10 +7,11 @@ import { connectToDatabase } from "@/lib/mongodb";
 import { notFound } from "next/navigation";
 
 type Props = {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 };
 
-export default async function ApplicationSubmittedPage({ params }: Props) {
+export default async function ApplicationSubmittedPage(props: Props) {
+  const params = await props.params;
   const applicationId = params.id;
 
   try {

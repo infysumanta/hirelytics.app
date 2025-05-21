@@ -3,7 +3,6 @@
 import { AnimatedBackground } from "@/components/ui/animated-background";
 import { AnimatedAuthCard } from "@/components/ui/auth-card";
 import { WishlistForm } from "@/components/auth/wishlist-form";
-import { useTranslations } from "next-intl";
 import { motion } from "framer-motion";
 
 // Animation variants for staggered children

@@ -14,10 +14,11 @@ import { JobApplication } from "@/models/job-application";
 import { connectToDatabase } from "@/lib/mongodb";
 
 type Props = {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 };
 
-export default async function ApplicationDetailsPage({ params }: Props) {
+export default async function ApplicationDetailsPage(props: Props) {
+  const params = await props.params;
   const applicationId = params.id;
 
   try {

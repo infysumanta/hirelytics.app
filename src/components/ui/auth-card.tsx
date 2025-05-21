@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { cn } from "@/lib/utils";
+import { cn, safeStyle } from "@/lib/utils";
 import { useTheme } from "next-themes";
 import { motion } from "framer-motion";
 import { GradientBackground } from "./gradient-background";
@@ -126,13 +126,14 @@ export function AuthCard({
         ease: "easeInOut",
       }}
     >
+      {" "}
       <motion.div
         className="absolute inset-0 rounded-lg"
-        style={{
+        style={safeStyle({
           background: `linear-gradient(45deg, ${getBaseColor()}10, ${getBaseColor()}30, ${getBaseColor()}10)`,
           backgroundSize: "200% 200%",
           zIndex: -1,
-        }}
+        })}
         animate={{
           backgroundPosition: ["0% 0%", "100% 100%", "0% 0%"],
         }}
@@ -157,10 +158,10 @@ export function AuthCard({
         {/* Animated border glow effect */}
         <motion.div
           className="absolute inset-0 rounded-lg pointer-events-none"
-          style={{
+          style={safeStyle({
             zIndex: 0,
             opacity: 0.5,
-          }}
+          })}
           animate={{
             opacity: [0.3, 0.5, 0.3],
           }}
@@ -315,10 +316,11 @@ export function AnimatedAuthCard({
         >
           {/* Animated border glow effect */}
           <motion.div
-            className="absolute inset-0 rounded-lg pointer-events-none z-index-0"
-            style={{
+            className="absolute inset-0 rounded-lg pointer-events-none"
+            style={safeStyle({
               opacity: 0.3,
-            }}
+              zIndex: 0,
+            })}
             animate={{
               opacity: [0.2, 0.3, 0.2],
             }}
