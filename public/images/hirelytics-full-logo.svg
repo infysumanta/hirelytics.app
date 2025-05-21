@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 200" fill="none">
+	<rect x="10" y="10" width="180" height="180" rx="40" fill="#0C4A6E" />
+	<path d="M55 65v70M55 100h30M105 65v70M140 65v70M140 65c10 0 15 5 15 15v40c0 10-5 15-15 15"
+		stroke="#38BDF8" stroke-width="16" stroke-linecap="round" stroke-linejoin="round" />
+	<path d="M30 110c0-35 20-50 45-50s45 15 45 50-20 50-45 50-45-15-45-50z" stroke="#FFFFFF"
+		stroke-width="3" stroke-dasharray="8 8" />
+	<circle cx="65" cy="90" r="8" fill="#FFFFFF" />
+	<circle cx="85" cy="90" r="8" fill="#FFFFFF" />
+	<path d="M65 125c4-7 16-7 20 0" stroke="#FFFFFF" stroke-width="3" stroke-linecap="round" />
+	<text x="220" y="120" font-family="Arial, sans-serif" font-weight="700" font-size="72"
+		fill="#0C4A6E">Hirelytics</text>
+	<text x="220" y="160" font-family="Arial, sans-serif" font-weight="400" font-size="24"
+		fill="#64748B">AI Interview Platform</text>
+</svg>
