@@ -56,6 +56,7 @@ export async function POST(req: NextRequest) {
         audioS3Key?: string;
         audioS3Bucket?: string;
         audioUrl?: string;
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         [key: string]: any; // For any other properties
       }
 

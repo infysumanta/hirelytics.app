@@ -1,9 +1,8 @@
 import * as React from "react";
-import { Section, Heading, Text, Link, Img } from "@react-email/components";
+import { Section, Heading, Text, Link } from "@react-email/components";
 import {
   BaseEmailTemplate,
   headingLg,
-  headingMd,
   textBase,
   textLg,
   highlightedBox,
