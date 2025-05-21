@@ -1,5 +1,11 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
-	<rect width="64" height="64" rx="12" fill="#0C4A6E" />
-	<path d="M18 22v20M18 32h8M34 22v20M44 22v20M44 22c2 0 4 2 4 4v12c0 2-2 4-4 4"
-		stroke="#38BDF8" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" />
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="none">
+	<rect width="512" height="512" rx="80" fill="#0C4A6E" />
+	<path
+		d="M130 170v172M130 256h80M270 170v172M350 170v172M350 170c20 0 40 20 40 40v92c0 20-20 40-40 40"
+		stroke="#38BDF8" stroke-width="36" stroke-linecap="round" stroke-linejoin="round" />
+	<path d="M75 280c0-90 60-130 120-130s120 40 120 130-60 130-120 130-120-40-120-130z"
+		stroke="#FFFFFF" stroke-width="6" stroke-dasharray="16 16" />
+	<circle cx="170" cy="220" r="20" fill="#FFFFFF" />
+	<circle cx="230" cy="220" r="20" fill="#FFFFFF" />
+	<path d="M170 320c10-20 50-20 60 0" stroke="#FFFFFF" stroke-width="6" stroke-linecap="round" />
 </svg>

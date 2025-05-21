@@ -30,14 +30,14 @@ export const metadata: Metadata = {
   manifest: "/manifest.json",
   themeColor: "#0C4A6E",
   openGraph: {
-    title: "Hirelytics - AI Interview Platform",
+    title: "Hirelytics - AI Interview Platform for Modern Hiring",
     description:
       "Transform your hiring process with AI-powered interviews and candidate analysis",
     images: ["/images/hirelytics-logo.svg"],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Hirelytics - AI Interview Platform",
+    title: "Hirelytics - AI Interview Platform for Modern Hiring",
     description:
       "Transform your hiring process with AI-powered interviews and candidate analysis",
     images: ["/images/hirelytics-logo.svg"],

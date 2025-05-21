@@ -1,5 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="none">
-	<rect width="512" height="512" rx="80" fill="#0C4A6E" />
+	<rect width="512" height="512" rx="80" fill="#0C4A6E" class="dark-mode-bg" />
 	<path
 		d="M130 170v172M130 256h80M270 170v172M350 170v172M350 170c20 0 40 20 40 40v92c0 20-20 40-40 40"
 		stroke="#38BDF8" stroke-width="36" stroke-linecap="round" stroke-linejoin="round" />
@@ -8,4 +8,11 @@
 	<circle cx="170" cy="220" r="20" fill="#FFFFFF" />
 	<circle cx="230" cy="220" r="20" fill="#FFFFFF" />
 	<path d="M170 320c10-20 50-20 60 0" stroke="#FFFFFF" stroke-width="6" stroke-linecap="round" />
+
+
+	<style>
+		@media (prefers-color-scheme: dark) {
+		.dark-mode-bg { fill: #1e40af; }
+		}
+</style>
 </svg>
