@@ -216,7 +216,7 @@ export default function Home() {
                 </div>
               </Link>
               <Link
-                href="/register"
+                href="/wishlist"
                 className="group transition-all hover:text-primary"
               >
                 <div className="inline-flex items-center gap-2 rounded-full border border-border px-3 py-1.5 text-xs font-medium backdrop-blur-sm hover:border-primary/30 hover:bg-primary/5">

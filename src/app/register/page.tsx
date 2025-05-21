@@ -6,7 +6,8 @@ import { motion } from "framer-motion";
 import { useTranslations } from "next-intl";
 import { AnimatedBackground } from "@/components/ui/animated-background";
 import { AnimatedAuthCard } from "@/components/ui/auth-card";
-import { WishlistForm } from "@/components/auth/wishlist-form";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 import { config } from "@/lib/config";
 
 // Animation variants for staggered children
@@ -31,20 +32,30 @@ const staggerContainer = {
 
 export default function RegisterPage() {
   const t = useTranslations("Auth");
+  const router = useRouter();
   const registrationEnabled = config.registrationEnabled;
 
-  // If registration is disabled, show the wishlist form
+  // Effect for redirecting when registration is disabled
+  useEffect(() => {
+    if (!registrationEnabled) {
+      router.push('/wishlist');
+    }
+  }, [router, registrationEnabled]);
+
+  // If registration is disabled, show loading state while redirecting
   if (!registrationEnabled) {
     return (
       <AnimatedBackground patternColor="primary" colorScheme="indigo">
         <div className="w-full max-w-md px-4">
           <AnimatedAuthCard
-            title="Registration Not Yet Started "
-            description="We're currently not accepting registrations. Join our waitlist to be notified when registration reopens and we will remind you to register."
+            title="Redirecting..."
+            description="Please wait while we redirect you to the waitlist page."
             colorScheme="indigo"
-            contentClassName="flex flex-col space-y-4"
+            contentClassName="flex flex-col space-y-4 items-center justify-center"
           >
-            <WishlistForm />
+            <div className="py-4">
+              <div className="animate-spin h-8 w-8 border-4 border-primary border-t-transparent rounded-full"></div>
+            </div>
           </AnimatedAuthCard>
         </div>
       </AnimatedBackground>

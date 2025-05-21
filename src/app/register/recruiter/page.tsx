@@ -13,17 +13,31 @@ export default function RecruiterRegisterPage() {
   const registrationEnabled = config.registrationEnabled;
   const router = useRouter();
 
-  // If registration is disabled, redirect to main registration page
-  // which will show the wishlist form
+  // If registration is disabled, redirect directly to the wishlist page
   useEffect(() => {
     if (!registrationEnabled) {
-      router.push("/register");
+      router.push("/wishlist");
     }
   }, [registrationEnabled, router]);
 
-  // If registration is disabled, don't render anything until redirect completes
+  // If registration is disabled, show loading state while redirecting
   if (!registrationEnabled) {
-    return null;
+    return (
+      <AnimatedBackground patternColor="primary" colorScheme="indigo">
+        <div className="w-full max-w-md px-4">
+          <AnimatedAuthCard
+            title="Redirecting..."
+            description="Please wait while we redirect you to the waitlist page."
+            colorScheme="indigo"
+            contentClassName="flex flex-col space-y-4 items-center justify-center"
+          >
+            <div className="py-4">
+              <div className="animate-spin h-8 w-8 border-4 border-primary border-t-transparent rounded-full"></div>
+            </div>
+          </AnimatedAuthCard>
+        </div>
+      </AnimatedBackground>
+    );
   }
   // Create footer content with animations
   const footerContent = (
