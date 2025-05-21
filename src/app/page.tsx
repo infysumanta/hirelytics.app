@@ -19,6 +19,8 @@ import {
   ArrowRight,
   ChevronRight,
   Sparkles,
+  User as UserIcon,
+  Heart,
   Users,
   Briefcase as BriefcaseIcon,
 } from "lucide-react";
@@ -167,7 +169,7 @@ export default function Home() {
                 <span className="relative z-10">Find Jobs</span>
               </Button>
             </Link>
-            <Link href="#how-it-works">
+            <Link href="/learn-more">
               <Button size="lg" variant="outline" className="gap-2 group">
                 <Search size={18} />
                 <span>{common("buttons.howItWorks")}</span>
@@ -177,6 +179,56 @@ export default function Home() {
                 />
               </Button>
             </Link>
+          </motion.div>
+
+          {/* User Access Links */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.6 }}
+            className="mt-8"
+          >
+            <div className="flex flex-wrap justify-center gap-3">
+              <Link
+                href="/login?type=candidate"
+                className="group transition-all hover:text-primary"
+              >
+                <div className="inline-flex items-center gap-2 rounded-full border border-border px-3 py-1.5 text-xs font-medium backdrop-blur-sm hover:border-primary/30 hover:bg-primary/5">
+                  <UserIcon size={14} />
+                  Candidate Login
+                  <ChevronRight
+                    size={14}
+                    className="transition-transform group-hover:translate-x-0.5"
+                  />
+                </div>
+              </Link>
+              <Link
+                href="/login?type=recruiter"
+                className="group transition-all hover:text-primary"
+              >
+                <div className="inline-flex items-center gap-2 rounded-full border border-border px-3 py-1.5 text-xs font-medium backdrop-blur-sm hover:border-primary/30 hover:bg-primary/5">
+                  <Building2 size={14} />
+                  Recruiter Login
+                  <ChevronRight
+                    size={14}
+                    className="transition-transform group-hover:translate-x-0.5"
+                  />
+                </div>
+              </Link>
+              <Link
+                href="/register"
+                className="group transition-all hover:text-primary"
+              >
+                <div className="inline-flex items-center gap-2 rounded-full border border-border px-3 py-1.5 text-xs font-medium backdrop-blur-sm hover:border-primary/30 hover:bg-primary/5">
+                  <Heart size={14} />
+                  Wishlist
+                  <ChevronRight
+                    size={14}
+                    className="transition-transform group-hover:translate-x-0.5"
+                  />
+                </div>
+              </Link>
+            </div>
           </motion.div>
         </motion.div>
       </AnimatedBackground>
@@ -876,18 +928,18 @@ export default function Home() {
                 </li>
                 <li>
                   <Link
-                    href="#"
+                    href="/learn-more"
                     className="inline-flex items-center gap-1 transition-colors hover:text-primary"
                   >
-                    <span>Pricing</span>
+                    <span>Learn More</span>
                   </Link>
                 </li>
                 <li>
                   <Link
-                    href="#"
+                    href="/wishlist"
                     className="inline-flex items-center gap-1 transition-colors hover:text-primary"
                   >
-                    <span>FAQ</span>
+                    <span>Wishlist</span>
                   </Link>
                 </li>
               </ul>
@@ -897,34 +949,34 @@ export default function Home() {
               <ul className="space-y-3 text-sm text-muted-foreground">
                 <li>
                   <Link
-                    href="#"
+                    href="/login?type=recruiter"
                     className="inline-flex items-center gap-1 transition-colors hover:text-primary"
                   >
-                    <span>Post a Job</span>
+                    <span>Recruiter Login</span>
                   </Link>
                 </li>
                 <li>
                   <Link
-                    href="#"
+                    href="/register?type=recruiter"
                     className="inline-flex items-center gap-1 transition-colors hover:text-primary"
                   >
-                    <span>Find Candidates</span>
+                    <span>Register as Recruiter</span>
                   </Link>
                 </li>
                 <li>
                   <Link
-                    href="#"
+                    href="/learn-more"
                     className="inline-flex items-center gap-1 transition-colors hover:text-primary"
                   >
-                    <span>Recruitment Tools</span>
+                    <span>Learn More</span>
                   </Link>
                 </li>
                 <li>
                   <Link
-                    href="#"
+                    href="/dashboard"
                     className="inline-flex items-center gap-1 transition-colors hover:text-primary"
                   >
-                    <span>Success Stories</span>
+                    <span>Dashboard</span>
                   </Link>
                 </li>
               </ul>
@@ -934,7 +986,7 @@ export default function Home() {
               <ul className="space-y-3 text-sm text-muted-foreground">
                 <li>
                   <Link
-                    href="#"
+                    href="/jobs"
                     className="inline-flex items-center gap-1 transition-colors hover:text-primary"
                   >
                     <span>Find Jobs</span>
@@ -942,26 +994,26 @@ export default function Home() {
                 </li>
                 <li>
                   <Link
-                    href="#"
+                    href="/login?type=candidate"
                     className="inline-flex items-center gap-1 transition-colors hover:text-primary"
                   >
-                    <span>Career Resources</span>
+                    <span>Candidate Login</span>
                   </Link>
                 </li>
                 <li>
                   <Link
-                    href="#"
+                    href="/register?type=candidate"
                     className="inline-flex items-center gap-1 transition-colors hover:text-primary"
                   >
-                    <span>Interview Tips</span>
+                    <span>Register as Candidate</span>
                   </Link>
                 </li>
                 <li>
                   <Link
-                    href="#"
+                    href="/wishlist"
                     className="inline-flex items-center gap-1 transition-colors hover:text-primary"
                   >
-                    <span>Resume Builder</span>
+                    <span>My Wishlist</span>
                   </Link>
                 </li>
               </ul>
