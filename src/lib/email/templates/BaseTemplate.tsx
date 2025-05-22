@@ -30,7 +30,7 @@ export const BaseEmailTemplate = ({
         <Container style={container}>
           <Section style={header}>
             <Img
-              src="https://hirelytics-media.s3.ap-south-1.amazonaws.com/logo.png"
+              src="https://hirelytics.app/images/hirelytics-full-logo.svg"
               width="120"
               height="36"
               alt="Hirelytics"
