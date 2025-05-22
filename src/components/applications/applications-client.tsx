@@ -266,7 +266,7 @@ export function ApplicationsClient() {
               size="sm"
               onClick={() =>
                 window.open(
-                  `/dashboard/applications/${application._id}/analyze`,
+                  `/dashboard/applications/${application._id}`,
                   "_blank",
                 )
               }
