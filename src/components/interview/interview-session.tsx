@@ -63,7 +63,7 @@ export function InterviewSession({
   applicationId,
   jobTitle = "Position",
   companyName = "Company",
-  cameraMonitoring = false,
+  cameraMonitoring = true,
   monitoringInterval = 30000, // Default 30 seconds
 }: InterviewSessionProps) {
   const [videoEnabled, setVideoEnabled] = useState(true);
@@ -756,8 +756,8 @@ export function InterviewSession({
                     message.sender === "system"
                       ? "justify-center"
                       : message.sender === "ai"
-                      ? "justify-start"
-                      : "justify-end"
+                        ? "justify-start"
+                        : "justify-end"
                   }`}
                 >
                   {message.sender === "system" ? (
@@ -862,8 +862,8 @@ export function InterviewSession({
                   isInitializing
                     ? "Initializing interview..."
                     : isUserTurn
-                    ? "Type your message or speak..."
-                    : "Please wait for the AI to respond..."
+                      ? "Type your message or speak..."
+                      : "Please wait for the AI to respond..."
                 }
                 value={messageInput}
                 onChange={setMessageInput}
