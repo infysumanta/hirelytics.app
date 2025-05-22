@@ -21,10 +21,7 @@ export const metadata: Metadata = {
   description:
     "Our AI-driven platform transforms the recruitment process from job posting to candidate selection. Automate interviews, analyze resumes, and make data-driven hiring decisions.",
   icons: {
-    icon: [
-      { url: "/favicon.ico", sizes: "any" },
-      { url: "/favicon.svg", type: "image/svg+xml" },
-    ],
+    icon: [{ url: "/favicon.svg", type: "image/svg+xml", sizes: "any" }],
     apple: "/images/favicon.svg",
   },
   manifest: "/manifest.json",
