@@ -40,6 +40,8 @@ import {
 import { AIInterviewBackground } from "./ai-interview-background";
 import { AIInterviewerIcon } from "./ai-interviewer-icon";
 import { useAIAgentState } from "@/hooks/use-ai-agent-state";
+import { useAutoSpeechFlow } from "@/hooks/use-auto-speech-flow";
+import { AutoSpeechFlowSettings } from "./auto-speech-flow-settings";
 import { MediaDeviceSelector } from "./media-device-selector";
 import { AudioPlayer } from "./audio-player";
 import { useAudioAutoplay } from "@/hooks/use-audio-autoplay";
@@ -437,6 +439,14 @@ export function InterviewSession({
   // Track AI agent state for enhanced visual feedback
   const { agentState } = useAIAgentState(isLoading);
 
+  // Auto speech flow management
+  const autoSpeechFlow = useAutoSpeechFlow(isUserTurn, sendChatMessage, {
+    autoMicEnabled: true,
+    autoSendEnabled: true,
+    autoSendDelay: 5000, // 5 seconds
+    minSpeechDuration: 1000, // 1 second
+  });
+
   // Listen for speech recognition status events
   useEffect(() => {
     const handleSpeechStatus = (event: CustomEvent) => {
@@ -728,24 +738,35 @@ export function InterviewSession({
             </DropdownMenu>
           </div>
 
-          <div className="flex gap-1">
-            {isInitializing && (
-              <div className="text-xs px-2 py-1 bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400 rounded-full">
-                Initializing...
-              </div>
-            )}
+          <div className="flex items-center gap-2">
+            {/* Auto Speech Flow Settings */}
+            <AutoSpeechFlowSettings
+              config={autoSpeechFlow.config}
+              onConfigChange={autoSpeechFlow.updateConfig}
+              isAutoSendPending={autoSpeechFlow.isAutoSendPending}
+              autoSendCountdown={autoSpeechFlow.autoSendCountdown}
+              onCancelAutoSend={autoSpeechFlow.cancelAutoSend}
+            />
 
-            {!isUserTurn && !isInitializing && (
-              <div className="text-xs px-2 py-1 bg-primary/10 text-primary rounded-full">
-                AI is responding...
-              </div>
-            )}
+            <div className="flex gap-1">
+              {isInitializing && (
+                <div className="text-xs px-2 py-1 bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400 rounded-full">
+                  Initializing...
+                </div>
+              )}
 
-            {isUserTurn && messages.length > 0 && !isInitializing && (
-              <div className="text-xs px-2 py-1 bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400 rounded-full whitespace-nowrap">
-                Your turn
-              </div>
-            )}
+              {!isUserTurn && !isInitializing && (
+                <div className="text-xs px-2 py-1 bg-primary/10 text-primary rounded-full">
+                  AI is responding...
+                </div>
+              )}
+
+              {isUserTurn && messages.length > 0 && !isInitializing && (
+                <div className="text-xs px-2 py-1 bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400 rounded-full whitespace-nowrap">
+                  Your turn
+                </div>
+              )}
+            </div>
           </div>
         </div>
 
