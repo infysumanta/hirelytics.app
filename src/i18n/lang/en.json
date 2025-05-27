@@ -85,53 +85,82 @@
 			"title": "Streamlined Process",
 			"subtitle": "How Hirelytics Works",
 			"description": "Our AI-powered platform streamlines the entire recruitment journey from job posting to final selection.",
-			"step1": {
-				"title": "Create Job Posting",
-				"description": "Recruiters create detailed job postings with requirements, responsibilities, and qualifications.",
-				"role": "Recruiter",
-				"subtitle": "Job Description Creation",
-				"detail": "The platform helps optimize job descriptions to attract the right candidates."
+			"steps": {
+				"step1": {
+					"title": "Create Job Posting",
+					"description": "Recruiters create detailed job postings with requirements, responsibilities, and qualifications.",
+					"cardTitle": "Job Description Creation",
+					"cardDescription": "The platform helps optimize job descriptions to attract the right candidates.",
+					"label": "Recruiter"
+				},
+				"step2": {
+					"title": "Generate Application URL",
+					"description": "The system automatically generates a unique application URL for each job posting.",
+					"cardTitle": "Unique Application Link",
+					"cardDescription": "Each job gets a custom URL that can be shared across platforms and social media.",
+					"label": "System"
+				},
+				"step3": {
+					"title": "Candidate Application",
+					"description": "Candidates apply through the unique URL, creating a streamlined application experience.",
+					"cardTitle": "Easy Application Process",
+					"cardDescription": "Candidates can apply with a simple, user-friendly interface designed for the best experience.",
+					"label": "Candidate"
+				},
+				"step4": {
+					"title": "Resume Analysis",
+					"description": "Our AI analyzes the candidate's resume to extract skills, experience, and qualifications.",
+					"cardTitle": "Intelligent Resume Parsing",
+					"cardDescription": "Advanced AI extracts and analyzes key information from resumes to match with job requirements.",
+					"label": "AI System"
+				},
+				"step5": {
+					"title": "AI-Powered Interview",
+					"description": "The AI conducts an adaptive interview, asking questions based on the candidate's resume and responses.",
+					"cardTitle": "Dynamic Conversation",
+					"cardDescription": "The AI adapts questions based on previous answers to thoroughly assess candidate skills.",
+					"label": "Interview"
+				},
+				"step6": {
+					"title": "Comprehensive Feedback",
+					"description": "Both recruiters and candidates receive detailed feedback and insights from the interview process.",
+					"cardTitle": "Actionable Insights",
+					"cardDescription": "Detailed reports help recruiters make informed decisions and candidates understand their performance.",
+					"label": "Results"
+				}
 			},
-			"step2": {
-				"title": "Generate Application URL",
-				"description": "The system automatically generates a unique application URL for each job posting.",
-				"role": "System",
-				"subtitle": "Unique Application Link",
-				"detail": "Each job gets a custom URL that can be shared across platforms and social media."
-			},
-			"step3": {
-				"title": "Candidate Application",
-				"description": "Candidates apply through the unique URL, creating a streamlined application experience.",
-				"role": "Candidate",
-				"subtitle": "Easy Application Process",
-				"detail": "Candidates can apply with a simple, user-friendly interface designed for the best experience."
-			},
-			"step4": {
-				"title": "Resume Analysis",
-				"description": "Our AI analyzes the candidate's resume to extract skills, experience, and qualifications.",
-				"role": "AI System",
-				"subtitle": "Intelligent Resume Parsing",
-				"detail": "Advanced AI extracts and analyzes key information from resumes to match with job requirements."
-			},
-			"step5": {
-				"title": "AI-Powered Interview",
-				"description": "The AI conducts an adaptive interview, asking questions based on the candidate's resume and responses.",
-				"role": "Interview",
-				"subtitle": "Dynamic Conversation",
-				"detail": "The AI adapts questions based on previous answers to thoroughly assess candidate skills."
-			},
-			"step6": {
-				"title": "Comprehensive Feedback",
-				"description": "Both recruiters and candidates receive detailed feedback and insights from the interview process.",
-				"role": "Results",
-				"subtitle": "Actionable Insights",
-				"detail": "Detailed reports help recruiters make informed decisions and candidates understand their performance."
-			}
+			"getStarted": "Get Started Now"
+		},
+		"userAccess": {
+			"candidateLogin": "Candidate Login",
+			"recruiterLogin": "Recruiter Login",
+			"wishlist": "Wishlist",
+			"findJobs": "Find Jobs"
 		},
 		"testimonials": {
 			"title": "Success Stories",
 			"subtitle": "What Our Users Say",
-			"description": "Hear from recruiters and candidates who have transformed their hiring experience with our AI-powered platform."
+			"description": "Hear from recruiters and candidates who have transformed their hiring experience with our AI-powered platform.",
+			"items": [
+				{
+					"quote": "Hirelytics has revolutionized our recruitment process. We've reduced our time-to-hire by 40% and found better quality candidates.",
+					"name": "Sarah Johnson",
+					"role": "HR Director",
+					"company": "TechCorp"
+				},
+				{
+					"quote": "The AI interview process is remarkably effective. It asks relevant questions and provides detailed feedback that helps us make better hiring decisions.",
+					"name": "David Rodriguez",
+					"role": "Talent Acquisition Manager",
+					"company": "InnovateX"
+				},
+				{
+					"quote": "As a candidate, I love how the platform matched me with jobs that truly aligned with my skills and career goals. The AI interview was surprisingly conversational.",
+					"name": "Michael Chen",
+					"role": "Software Engineer",
+					"company": "Hired via Hirelytics"
+				}
+			]
 		},
 		"cta": {
 			"title": "Ready to Transform Your Hiring Process?",
@@ -141,7 +170,44 @@
 			"noCreditCard": "No credit card required • Free trial available"
 		},
 		"footer": {
-			"description": "AI-powered recruitment platform that transforms hiring through intelligent matching, automated interviews, and data-driven insights."
+			"description": "AI-powered recruitment platform that transforms hiring through intelligent matching, automated interviews, and data-driven insights.",
+			"platform": {
+				"title": "Platform",
+				"features": "Features",
+				"howItWorks": "How It Works",
+				"learnMore": "Learn More",
+				"wishlist": "Wishlist"
+			},
+			"forRecruiters": {
+				"title": "For Recruiters",
+				"login": "Recruiter Login",
+				"register": "Register as Recruiter",
+				"learnMore": "Learn More",
+				"dashboard": "Dashboard"
+			},
+			"forCandidates": {
+				"title": "For Candidates",
+				"findJobs": "Find Jobs",
+				"login": "Candidate Login",
+				"register": "Register as Candidate",
+				"wishlist": "My Wishlist"
+			},
+			"company": {
+				"title": "Company",
+				"aboutUs": "About Us",
+				"contact": "Contact",
+				"privacyPolicy": "Privacy Policy",
+				"termsOfService": "Terms of Service"
+			},
+			"copyright": "© {year} Hirelytics. All rights reserved.",
+			"cta": {
+				"title": "AI-Powered Recruitment",
+				"heading": "Ready to Transform Your Hiring Process?",
+				"description": "Join thousands of companies using Hirelytics to find the perfect candidates faster and more efficiently.",
+				"getStarted": "Get Started",
+				"learnMore": "Learn More",
+				"noCreditCard": "No credit card required • Free trial available"
+			}
 		}
 	},
 	"Auth": {

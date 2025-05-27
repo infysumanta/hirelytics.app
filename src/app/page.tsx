@@ -179,7 +179,9 @@ export default function Home() {
               >
                 <span className="absolute inset-0 bg-gradient-to-r from-indigo-500/20 to-cyan-500/20 opacity-0 group-hover:opacity-100 transition-opacity"></span>
                 <BriefcaseIcon size={18} className="relative z-10" />
-                <span className="relative z-10">Find Jobs</span>
+                <span className="relative z-10">
+                  {t("userAccess.findJobs")}
+                </span>
               </Button>
             </Link>
             <Link href="/learn-more">
@@ -208,7 +210,7 @@ export default function Home() {
               >
                 <div className="inline-flex items-center gap-2 rounded-full border border-border px-3 py-1.5 text-xs font-medium backdrop-blur-sm hover:border-primary/30 hover:bg-primary/5">
                   <UserIcon size={14} />
-                  Candidate Login
+                  {t("userAccess.candidateLogin")}
                   <ChevronRight
                     size={14}
                     className="transition-transform group-hover:translate-x-0.5"
@@ -221,7 +223,7 @@ export default function Home() {
               >
                 <div className="inline-flex items-center gap-2 rounded-full border border-border px-3 py-1.5 text-xs font-medium backdrop-blur-sm hover:border-primary/30 hover:bg-primary/5">
                   <Building2 size={14} />
-                  Recruiter Login
+                  {t("userAccess.recruiterLogin")}
                   <ChevronRight
                     size={14}
                     className="transition-transform group-hover:translate-x-0.5"
@@ -234,7 +236,7 @@ export default function Home() {
               >
                 <div className="inline-flex items-center gap-2 rounded-full border border-border px-3 py-1.5 text-xs font-medium backdrop-blur-sm hover:border-primary/30 hover:bg-primary/5">
                   <Heart size={14} />
-                  Wishlist
+                  {t("userAccess.wishlist")}
                   <ChevronRight
                     size={14}
                     className="transition-transform group-hover:translate-x-0.5"
@@ -384,15 +386,14 @@ export default function Home() {
             <div className="mb-4 flex justify-center">
               <div className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/5 px-4 py-1.5 text-sm font-medium text-primary">
                 <Zap size={16} />
-                Streamlined Process
+                {t("howItWorks.title")}
               </div>
             </div>
             <h2 className="mb-4 text-3xl font-bold sm:text-4xl">
-              How Hirelytics Works
+              {t("howItWorks.subtitle")}
             </h2>
             <p className="mx-auto max-w-2xl text-muted-foreground">
-              Our AI-powered platform streamlines the entire recruitment journey
-              from job posting to final selection.
+              {t("howItWorks.description")}
             </p>
           </motion.div>
 
@@ -418,12 +419,11 @@ export default function Home() {
                       1
                     </div>
                     <h3 className="text-xl font-semibold">
-                      Create Job Posting
+                      {t("howItWorks.steps.step1.title")}
                     </h3>
                   </div>
                   <p className="text-muted-foreground">
-                    Recruiters create detailed job postings with requirements,
-                    responsibilities, and qualifications.
+                    {t("howItWorks.steps.step1.description")}
                   </p>
                 </div>
 
@@ -436,16 +436,15 @@ export default function Home() {
                   >
                     <div className="mb-3 flex justify-between">
                       <div className="rounded-md bg-blue-500/10 px-3 py-1 text-sm text-blue-500">
-                        Recruiter
+                        {t("howItWorks.steps.step1.label")}
                       </div>
                       <Building2 className="text-blue-500" size={20} />
                     </div>
                     <h4 className="mb-2 font-medium">
-                      Job Description Creation
+                      {t("howItWorks.steps.step1.cardTitle")}
                     </h4>
                     <p className="text-sm text-muted-foreground">
-                      The platform helps optimize job descriptions to attract
-                      the right candidates.
+                      {t("howItWorks.steps.step1.cardDescription")}
                     </p>
                   </motion.div>
                 </div>
@@ -462,12 +461,11 @@ export default function Home() {
                       2
                     </div>
                     <h3 className="text-xl font-semibold">
-                      Generate Application URL
+                      {t("howItWorks.steps.step2.title")}
                     </h3>
                   </div>
                   <p className="text-muted-foreground">
-                    The system automatically generates a unique application URL
-                    for each job posting.
+                    {t("howItWorks.steps.step2.description")}
                   </p>
                 </div>
 
@@ -480,16 +478,15 @@ export default function Home() {
                   >
                     <div className="mb-3 flex justify-between">
                       <div className="rounded-md bg-indigo-500/10 px-3 py-1 text-sm text-indigo-500">
-                        System
+                        {t("howItWorks.steps.step2.label")}
                       </div>
                       <LinkIcon className="text-indigo-500" size={20} />
                     </div>
                     <h4 className="mb-2 font-medium">
-                      Unique Application Link
+                      {t("howItWorks.steps.step2.cardTitle")}
                     </h4>
                     <p className="text-sm text-muted-foreground">
-                      Each job gets a custom URL that can be shared across
-                      platforms and social media.
+                      {t("howItWorks.steps.step2.cardDescription")}
                     </p>
                   </motion.div>
                 </div>
@@ -506,12 +503,11 @@ export default function Home() {
                       3
                     </div>
                     <h3 className="text-xl font-semibold">
-                      Candidate Application
+                      {t("howItWorks.steps.step3.title")}
                     </h3>
                   </div>
                   <p className="text-muted-foreground">
-                    Candidates apply through the unique URL, creating a
-                    streamlined application experience.
+                    {t("howItWorks.steps.step3.description")}
                   </p>
                 </div>
 
@@ -524,16 +520,15 @@ export default function Home() {
                   >
                     <div className="mb-3 flex justify-between">
                       <div className="rounded-md bg-purple-500/10 px-3 py-1 text-sm text-purple-500">
-                        Candidate
+                        {t("howItWorks.steps.step3.label")}
                       </div>
                       <GraduationCap className="text-purple-500" size={20} />
                     </div>
                     <h4 className="mb-2 font-medium">
-                      Easy Application Process
+                      {t("howItWorks.steps.step3.cardTitle")}
                     </h4>
                     <p className="text-sm text-muted-foreground">
-                      Candidates can apply with a simple, user-friendly
-                      interface designed for the best experience.
+                      {t("howItWorks.steps.step3.cardDescription")}
                     </p>
                   </motion.div>
                 </div>
@@ -549,11 +544,12 @@ export default function Home() {
                     <div className="flex h-8 w-8 items-center justify-center rounded-full bg-pink-500 text-white">
                       4
                     </div>
-                    <h3 className="text-xl font-semibold">Resume Analysis</h3>
+                    <h3 className="text-xl font-semibold">
+                      {t("howItWorks.steps.step4.title")}
+                    </h3>
                   </div>
                   <p className="text-muted-foreground">
-                    Our AI analyzes the candidate&apos;s resume to extract
-                    skills, experience, and qualifications.
+                    {t("howItWorks.steps.step4.description")}
                   </p>
                 </div>
 
@@ -566,16 +562,15 @@ export default function Home() {
                   >
                     <div className="mb-3 flex justify-between">
                       <div className="rounded-md bg-pink-500/10 px-3 py-1 text-sm text-pink-500">
-                        AI System
+                        {t("howItWorks.steps.step4.label")}
                       </div>
                       <Upload className="text-pink-500" size={20} />
                     </div>
                     <h4 className="mb-2 font-medium">
-                      Intelligent Resume Parsing
+                      {t("howItWorks.steps.step4.cardTitle")}
                     </h4>
                     <p className="text-sm text-muted-foreground">
-                      Advanced AI extracts and analyzes key information from
-                      resumes to match with job requirements.
+                      {t("howItWorks.steps.step4.cardDescription")}
                     </p>
                   </motion.div>
                 </div>
@@ -592,12 +587,11 @@ export default function Home() {
                       5
                     </div>
                     <h3 className="text-xl font-semibold">
-                      AI-Powered Interview
+                      {t("howItWorks.steps.step5.title")}
                     </h3>
                   </div>
                   <p className="text-muted-foreground">
-                    The AI conducts an adaptive interview, asking questions
-                    based on the candidate&apos;s resume and responses.
+                    {t("howItWorks.steps.step5.description")}
                   </p>
                 </div>
 
@@ -610,14 +604,15 @@ export default function Home() {
                   >
                     <div className="mb-3 flex justify-between">
                       <div className="rounded-md bg-blue-600/10 px-3 py-1 text-sm text-blue-600">
-                        Interview
+                        {t("howItWorks.steps.step5.label")}
                       </div>
                       <MessageSquareText className="text-blue-600" size={20} />
                     </div>
-                    <h4 className="mb-2 font-medium">Dynamic Conversation</h4>
+                    <h4 className="mb-2 font-medium">
+                      {t("howItWorks.steps.step5.cardTitle")}
+                    </h4>
                     <p className="text-sm text-muted-foreground">
-                      The AI adapts questions based on previous answers to
-                      thoroughly assess candidate skills.
+                      {t("howItWorks.steps.step5.cardDescription")}
                     </p>
                   </motion.div>
                 </div>
@@ -634,12 +629,11 @@ export default function Home() {
                       6
                     </div>
                     <h3 className="text-xl font-semibold">
-                      Comprehensive Feedback
+                      {t("howItWorks.steps.step6.title")}
                     </h3>
                   </div>
                   <p className="text-muted-foreground">
-                    Both recruiters and candidates receive detailed feedback and
-                    insights from the interview process.
+                    {t("howItWorks.steps.step6.description")}
                   </p>
                 </div>
 
@@ -652,14 +646,15 @@ export default function Home() {
                   >
                     <div className="mb-3 flex justify-between">
                       <div className="rounded-md bg-green-500/10 px-3 py-1 text-sm text-green-500">
-                        Results
+                        {t("howItWorks.steps.step6.label")}
                       </div>
                       <ClipboardCheck className="text-green-500" size={20} />
                     </div>
-                    <h4 className="mb-2 font-medium">Actionable Insights</h4>
+                    <h4 className="mb-2 font-medium">
+                      {t("howItWorks.steps.step6.cardTitle")}
+                    </h4>
                     <p className="text-sm text-muted-foreground">
-                      Detailed reports help recruiters make informed decisions
-                      and candidates understand their performance.
+                      {t("howItWorks.steps.step6.cardDescription")}
                     </p>
                   </motion.div>
                 </div>
@@ -677,7 +672,7 @@ export default function Home() {
             <Link href="/login">
               <Button size="lg" className="gap-2">
                 <ArrowRight size={18} />
-                Get Started Now
+                {t("howItWorks.getStarted")}
               </Button>
             </Link>
           </motion.div>
@@ -705,17 +700,17 @@ export default function Home() {
             variants={fadeIn}
           >
             <div className="mb-4 flex justify-center">
+              {" "}
               <div className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/5 px-4 py-1.5 text-sm font-medium text-primary">
                 <Users size={16} />
-                Success Stories
+                {t("testimonials.title")}
               </div>
             </div>
             <h2 className="mb-4 text-3xl font-bold sm:text-4xl">
-              What Our Users Say
+              {t("testimonials.subtitle")}
             </h2>
             <p className="mx-auto max-w-2xl text-muted-foreground">
-              Hear from recruiters and candidates who have transformed their
-              hiring experience with our AI-powered platform.
+              {t("testimonials.description")}
             </p>
           </motion.div>
 
@@ -841,15 +836,14 @@ export default function Home() {
               transition={{ duration: 0.4, delay: 0.2 }}
             >
               <Sparkles size={16} className="text-white" />
-              AI-Powered Recruitment
+              {t("footer.cta.title")}
             </motion.div>
 
             <h2 className="mb-6 text-3xl font-bold sm:text-4xl md:text-5xl">
-              Ready to Transform Your Hiring Process?
+              {t("footer.cta.heading")}
             </h2>
             <p className="mb-10 text-lg text-white/90 max-w-2xl mx-auto">
-              Join thousands of companies using Hirelytics to find the perfect
-              candidates faster and more efficiently.
+              {t("footer.cta.description")}
             </p>
 
             <div className="flex flex-wrap justify-center gap-6">
@@ -860,7 +854,9 @@ export default function Home() {
                   className="gap-2 bg-white text-primary hover:bg-white hover:shadow-lg hover:shadow-white/20 transition-all duration-300 transform hover:-translate-y-1"
                 >
                   <Zap size={18} className="text-primary" />
-                  <span className="font-medium">Get Started</span>
+                  <span className="font-medium">
+                    {t("footer.cta.getStarted")}
+                  </span>
                 </Button>
               </Link>
               <Link href="#how-it-works">
@@ -870,7 +866,7 @@ export default function Home() {
                   className="gap-2 border-white text-white hover:bg-white/20 transition-all duration-300 transform hover:-translate-y-1"
                 >
                   <Search size={18} />
-                  <span>Learn More</span>
+                  <span>{t("footer.cta.learnMore")}</span>
                   <ChevronRight
                     size={16}
                     className="ml-1 transition-transform group-hover:translate-x-1"
@@ -886,7 +882,7 @@ export default function Home() {
               viewport={{ once: true }}
               transition={{ duration: 0.4, delay: 0.6 }}
             >
-              No credit card required • Free trial available
+              {t("footer.cta.noCreditCard")}
             </motion.p>
           </motion.div>
         </div>
@@ -910,25 +906,25 @@ export default function Home() {
               <div className="mr-2 flex h-10 w-10 items-center justify-center rounded-full bg-primary/10">
                 <Sparkles className="text-primary" size={20} />
               </div>
-              <h2 className="text-2xl font-bold">Hirelytics</h2>
+              <h2 className="text-2xl font-bold">{t("title")}</h2>
             </div>
             <p className="max-w-md text-center text-muted-foreground">
-              AI-powered recruitment platform that transforms hiring through
-              intelligent matching, automated interviews, and data-driven
-              insights.
+              {t("footer.description")}
             </p>
           </div>
 
           <div className="grid gap-8 md:grid-cols-4">
             <div>
-              <h3 className="mb-4 text-lg font-semibold">Platform</h3>
+              <h3 className="mb-4 text-lg font-semibold">
+                {t("footer.platform.title")}
+              </h3>
               <ul className="space-y-3 text-sm text-muted-foreground">
                 <li>
                   <Link
                     href="#features"
                     className="inline-flex items-center gap-1 transition-colors hover:text-primary"
                   >
-                    <span>Features</span>
+                    <span>{t("footer.platform.features")}</span>
                   </Link>
                 </li>
                 <li>
@@ -936,7 +932,7 @@ export default function Home() {
                     href="#how-it-works"
                     className="inline-flex items-center gap-1 transition-colors hover:text-primary"
                   >
-                    <span>How It Works</span>
+                    <span>{t("footer.platform.howItWorks")}</span>
                   </Link>
                 </li>
                 <li>
@@ -944,7 +940,7 @@ export default function Home() {
                     href="/learn-more"
                     className="inline-flex items-center gap-1 transition-colors hover:text-primary"
                   >
-                    <span>Learn More</span>
+                    <span>{t("footer.platform.learnMore")}</span>
                   </Link>
                 </li>
                 <li>
@@ -952,20 +948,22 @@ export default function Home() {
                     href="/wishlist"
                     className="inline-flex items-center gap-1 transition-colors hover:text-primary"
                   >
-                    <span>Wishlist</span>
+                    <span>{t("footer.platform.wishlist")}</span>
                   </Link>
                 </li>
               </ul>
             </div>
             <div>
-              <h3 className="mb-4 text-lg font-semibold">For Recruiters</h3>
+              <h3 className="mb-4 text-lg font-semibold">
+                {t("footer.forRecruiters.title")}
+              </h3>
               <ul className="space-y-3 text-sm text-muted-foreground">
                 <li>
                   <Link
                     href="/login?type=recruiter"
                     className="inline-flex items-center gap-1 transition-colors hover:text-primary"
                   >
-                    <span>Recruiter Login</span>
+                    <span>{t("footer.forRecruiters.login")}</span>
                   </Link>
                 </li>
                 <li>
@@ -973,7 +971,7 @@ export default function Home() {
                     href="/register?type=recruiter"
                     className="inline-flex items-center gap-1 transition-colors hover:text-primary"
                   >
-                    <span>Register as Recruiter</span>
+                    <span>{t("footer.forRecruiters.register")}</span>
                   </Link>
                 </li>
                 <li>
@@ -981,7 +979,7 @@ export default function Home() {
                     href="/learn-more"
                     className="inline-flex items-center gap-1 transition-colors hover:text-primary"
                   >
-                    <span>Learn More</span>
+                    <span>{t("footer.forRecruiters.learnMore")}</span>
                   </Link>
                 </li>
                 <li>
@@ -989,20 +987,22 @@ export default function Home() {
                     href="/dashboard"
                     className="inline-flex items-center gap-1 transition-colors hover:text-primary"
                   >
-                    <span>Dashboard</span>
+                    <span>{t("footer.forRecruiters.dashboard")}</span>
                   </Link>
                 </li>
               </ul>
             </div>
             <div>
-              <h3 className="mb-4 text-lg font-semibold">For Candidates</h3>
+              <h3 className="mb-4 text-lg font-semibold">
+                {t("footer.forCandidates.title")}
+              </h3>
               <ul className="space-y-3 text-sm text-muted-foreground">
                 <li>
                   <Link
                     href="/jobs"
                     className="inline-flex items-center gap-1 transition-colors hover:text-primary"
                   >
-                    <span>Find Jobs</span>
+                    <span>{t("footer.forCandidates.findJobs")}</span>
                   </Link>
                 </li>
                 <li>
@@ -1010,7 +1010,7 @@ export default function Home() {
                     href="/login?type=candidate"
                     className="inline-flex items-center gap-1 transition-colors hover:text-primary"
                   >
-                    <span>Candidate Login</span>
+                    <span>{t("footer.forCandidates.login")}</span>
                   </Link>
                 </li>
                 <li>
@@ -1018,7 +1018,7 @@ export default function Home() {
                     href="/register?type=candidate"
                     className="inline-flex items-center gap-1 transition-colors hover:text-primary"
                   >
-                    <span>Register as Candidate</span>
+                    <span>{t("footer.forCandidates.register")}</span>
                   </Link>
                 </li>
                 <li>
@@ -1026,20 +1026,22 @@ export default function Home() {
                     href="/wishlist"
                     className="inline-flex items-center gap-1 transition-colors hover:text-primary"
                   >
-                    <span>My Wishlist</span>
+                    <span>{t("footer.forCandidates.wishlist")}</span>
                   </Link>
                 </li>
               </ul>
             </div>
             <div>
-              <h3 className="mb-4 text-lg font-semibold">Company</h3>
+              <h3 className="mb-4 text-lg font-semibold">
+                {t("footer.company.title")}
+              </h3>
               <ul className="space-y-3 text-sm text-muted-foreground">
                 <li>
                   <Link
                     href="#"
                     className="inline-flex items-center gap-1 transition-colors hover:text-primary"
                   >
-                    <span>About Us</span>
+                    <span>{t("footer.company.aboutUs")}</span>
                   </Link>
                 </li>
                 <li>
@@ -1047,7 +1049,7 @@ export default function Home() {
                     href="#"
                     className="inline-flex items-center gap-1 transition-colors hover:text-primary"
                   >
-                    <span>Contact</span>
+                    <span>{t("footer.company.contact")}</span>
                   </Link>
                 </li>
                 <li>
@@ -1055,7 +1057,7 @@ export default function Home() {
                     href="#"
                     className="inline-flex items-center gap-1 transition-colors hover:text-primary"
                   >
-                    <span>Privacy Policy</span>
+                    <span>{t("footer.company.privacyPolicy")}</span>
                   </Link>
                 </li>
                 <li>
@@ -1063,7 +1065,7 @@ export default function Home() {
                     href="#"
                     className="inline-flex items-center gap-1 transition-colors hover:text-primary"
                   >
-                    <span>Terms of Service</span>
+                    <span>{t("footer.company.termsOfService")}</span>
                   </Link>
                 </li>
               </ul>
@@ -1135,7 +1137,7 @@ export default function Home() {
               </Link>
             </div>
             <p className="text-sm text-muted-foreground">
-              © {new Date().getFullYear()} Hirelytics. All rights reserved.
+              {t("footer.copyright", { year: new Date().getFullYear() })}
             </p>
           </div>
         </div>
