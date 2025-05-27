@@ -39,6 +39,7 @@ import {
 } from "@/components/ui/dialog";
 import { AIInterviewBackground } from "./ai-interview-background";
 import { AIInterviewerIcon } from "./ai-interviewer-icon";
+import { useAIAgentState } from "@/hooks/use-ai-agent-state";
 import { MediaDeviceSelector } from "./media-device-selector";
 import { AudioPlayer } from "./audio-player";
 import { useAudioAutoplay } from "@/hooks/use-audio-autoplay";
@@ -433,6 +434,9 @@ export function InterviewSession({
   // Track global audio playback state
   const { isAudioPlaying } = useAudioPlaybackState();
 
+  // Track AI agent state for enhanced visual feedback
+  const { agentState } = useAIAgentState(isLoading);
+
   // Listen for speech recognition status events
   useEffect(() => {
     const handleSpeechStatus = (event: CustomEvent) => {
@@ -571,9 +575,9 @@ export function InterviewSession({
             <div className="flex flex-col items-center gap-3 z-10">
               <AIInterviewerIcon
                 size={96}
-                className={`shadow-lg shadow-primary/10 ${
-                  isLoading || isInitializing ? "animate-pulse" : ""
-                }`}
+                isLoading={isLoading || isInitializing}
+                agentState={agentState}
+                className="shadow-lg shadow-primary/10"
               />
               <div className="text-center">
                 <h3 className="font-semibold">Hirelytics AI</h3>
@@ -795,7 +799,11 @@ export function InterviewSession({
                       {message.sender === "ai" && (
                         <div className="flex-shrink-0 mr-2 self-end mb-1">
                           <div className="w-8 h-8 rounded-full bg-primary/10 border border-primary/20 overflow-hidden flex items-center justify-center">
-                            <AIInterviewerIcon size={28} />
+                            <AIInterviewerIcon
+                              size={28}
+                              isLoading={false}
+                              agentState="idle"
+                            />
                           </div>
                         </div>
                       )}
