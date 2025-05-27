@@ -6,8 +6,10 @@ import { motion } from "framer-motion";
 import { AnimatedBackground } from "@/components/ui/animated-background";
 import { AnimatedAuthCard } from "@/components/ui/auth-card";
 import { useSearchParams } from "next/navigation";
+import { useTranslations } from "next-intl";
 
 export default function CandidateLoginPage() {
+  const t = useTranslations("Auth");
   // Get redirect parameter from URL if present
   const searchParams = useSearchParams();
   const redirectUrl = searchParams.get("redirect");
@@ -21,12 +23,12 @@ export default function CandidateLoginPage() {
         transition={{ delay: 0.3 }}
         className="text-sm text-muted-foreground text-center"
       >
-        Don&apos;t have an account?{" "}
+        {t("noAccount")}{" "}
         <Link
           href="/register/candidate"
           className="text-primary underline underline-offset-4 hover:text-primary/90"
         >
-          Register as a candidate
+          {t("registerAs.candidate")}
         </Link>
       </motion.div>
       <motion.div
@@ -35,12 +37,12 @@ export default function CandidateLoginPage() {
         transition={{ delay: 0.4 }}
         className="text-sm text-muted-foreground text-center"
       >
-        Not a candidate? Login as a{" "}
+        {t("notCandidate")}{" "}
         <Link
           href="/login/recruiter"
           className="text-primary underline underline-offset-4 hover:text-primary/90"
         >
-          recruiter
+          {t("loginAs.recruiter")}
         </Link>
       </motion.div>
     </>
@@ -50,8 +52,8 @@ export default function CandidateLoginPage() {
     <AnimatedBackground patternColor="primary" colorScheme="blue">
       <div className="w-full max-w-md px-4">
         <AnimatedAuthCard
-          title="Candidate Login"
-          description="Enter your credentials to access your candidate dashboard"
+          title={t("candidateLogin.title")}
+          description={t("candidateLoginDescription")}
           colorScheme="blue"
           footer={footerContent}
         >

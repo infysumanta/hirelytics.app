@@ -8,8 +8,10 @@ import { AnimatedAuthCard } from "@/components/ui/auth-card";
 import { config } from "@/lib/config";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
+import { useTranslations } from "next-intl";
 
 export default function RecruiterRegisterPage() {
+  const t = useTranslations("Auth");
   const registrationEnabled = config.registrationEnabled;
   const router = useRouter();
 
@@ -26,8 +28,8 @@ export default function RecruiterRegisterPage() {
       <AnimatedBackground patternColor="primary" colorScheme="indigo">
         <div className="w-full max-w-md px-4">
           <AnimatedAuthCard
-            title="Redirecting..."
-            description="Please wait while we redirect you to the waitlist page."
+            title={t("redirecting")}
+            description={t("redirectingToWaitlist")}
             colorScheme="indigo"
             contentClassName="flex flex-col space-y-4 items-center justify-center"
           >
@@ -39,6 +41,7 @@ export default function RecruiterRegisterPage() {
       </AnimatedBackground>
     );
   }
+
   // Create footer content with animations
   const footerContent = (
     <>
@@ -48,12 +51,12 @@ export default function RecruiterRegisterPage() {
         transition={{ delay: 0.3 }}
         className="text-sm text-muted-foreground text-center"
       >
-        Already have an account?{" "}
+        {t("hasAccount")}{" "}
         <Link
           href="/login/recruiter"
           className="text-primary underline underline-offset-4 hover:text-primary/90"
         >
-          Login as a recruiter
+          {t("loginAs.recruiter")}
         </Link>
       </motion.div>
       <motion.div
@@ -62,12 +65,12 @@ export default function RecruiterRegisterPage() {
         transition={{ delay: 0.4 }}
         className="text-sm text-muted-foreground text-center"
       >
-        Are you a candidate?{" "}
+        {t("notRecruiter")}{" "}
         <Link
           href="/register/candidate"
           className="text-primary underline underline-offset-4 hover:text-primary/90"
         >
-          Register as a candidate
+          {t("registerAs.candidate")}
         </Link>
       </motion.div>
     </>
@@ -77,8 +80,8 @@ export default function RecruiterRegisterPage() {
     <AnimatedBackground patternColor="primary" colorScheme="purple">
       <div className="w-full max-w-md px-4">
         <AnimatedAuthCard
-          title="Recruiter Registration"
-          description="Create a recruiter account to post jobs and find candidates"
+          title={t("recruiterRegistration.title")}
+          description={t("recruiterRegistration.description")}
           colorScheme="purple"
           footer={footerContent}
         >

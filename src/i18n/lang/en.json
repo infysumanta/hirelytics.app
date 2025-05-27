@@ -233,10 +233,16 @@
 		"goBack": "Go Back",
 		"dashboard": "Dashboard",
 		"logout": "Logout",
+		"redirecting": "Redirecting...",
+		"redirectingToWaitlist": "Please wait while we redirect you to the waitlist page.",
+		"candidateLogin": {
+			"title": "Candidate Login",
+			"description": "Enter your credentials to access your candidate dashboard"
+		},
 		"loginAs": {
+			"admin": "Login as Admin",
 			"recruiter": "Login as Recruiter",
-			"candidate": "Login as Candidate",
-			"admin": "Login as Admin"
+			"candidate": "Login as Candidate"
 		},
 		"registerAs": {
 			"recruiter": "Register as Recruiter",
