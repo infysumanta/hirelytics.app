@@ -271,5 +271,123 @@
 		"contact": "Contact",
 		"jobNotFound": "Job not found",
 		"errorLoadingJob": "Failed to load job details. Please try again later."
+	},
+	"LearnMore": {
+		"backToHome": "Back to Home",
+		"discoverHirelytics": "Discover Hirelytics",
+		"learnMoreTitle": "Learn More About",
+		"learnMoreDescription": "Discover how our AI-powered recruitment platform is transforming the hiring process, making it more efficient, fair, and effective for both recruiters and candidates.",
+		"mission": {
+			"title": "Our Mission",
+			"heading": "Transforming Recruitment Through AI",
+			"description1": "At Hirelytics, we believe that recruiting should be more than just scanning resumes. Our mission is to leverage artificial intelligence to create meaningful connections between exceptional talent and forward-thinking organizations.",
+			"description2": "We're dedicated to removing bias from the hiring process, providing data-driven insights for better decision-making, and creating a seamless experience for both recruiters and candidates.",
+			"keyObjectives": {
+				"title": "Key Objectives",
+				"items": [
+					"Eliminate bias in the recruitment process",
+					"Reduce time-to-hire by 60%",
+					"Match candidates based on skills, not just keywords",
+					"Provide actionable insights for both employers and job seekers",
+					"Create a more engaging application experience"
+				]
+			}
+		},
+		"benefits": {
+			"title": "Platform Benefits",
+			"heading": "Why Choose Hirelytics?",
+			"description": "Our platform offers unique advantages for both recruiters and candidates, making the entire hiring process more efficient and effective.",
+			"sections": {
+				"recruiters": {
+					"title": "For Recruiters",
+					"items": [
+						"Automated preliminary candidate screening",
+						"AI-driven interview questions based on job requirements",
+						"Comprehensive candidate assessment reports",
+						"Bias reduction through objective skill evaluation",
+						"Analytics dashboard for hiring process optimization",
+						"Customizable job posting templates"
+					]
+				},
+				"candidates": {
+					"title": "For Candidates",
+					"items": [
+						"Flexible, on-demand interview scheduling",
+						"Personalized feedback on interview performance",
+						"Skills-based matching to relevant positions",
+						"Elimination of unconscious bias in screening",
+						"Opportunity to showcase strengths beyond the resume",
+						"Streamlined application process"
+					]
+				},
+				"platform": {
+					"title": "Platform Features",
+					"items": [
+						"Advanced natural language processing",
+						"Multi-language support for global hiring",
+						"Seamless integration with existing HR systems",
+						"GDPR and privacy compliance built-in",
+						"Continuous learning from feedback loops",
+						"Regular feature updates based on user needs"
+					]
+				}
+			}
+		},
+		"technology": {
+			"title": "Technology",
+			"heading": "Powered by Advanced AI",
+			"description": "Hirelytics leverages cutting-edge artificial intelligence, machine learning, and natural language processing technologies to transform how organizations approach hiring.",
+			"features": {
+				"nlp": {
+					"title": "Natural Language Processing",
+					"description": "Our AI understands context, nuance, and sentiment in candidate responses, providing deeper insights than keyword matching alone."
+				},
+				"ml": {
+					"title": "Machine Learning Algorithms",
+					"description": "Our systems continuously improve through feedback loops, becoming more accurate at predicting candidate-job fit over time."
+				},
+				"cv": {
+					"title": "Computer Vision",
+					"description": "Advanced document parsing extracts and structures information from resumes and portfolios with high accuracy."
+				},
+				"conversationalAi": {
+					"title": "Conversational AI",
+					"description": "Dynamic interview system adjusts questions based on previous answers, creating a more natural and informative conversation."
+				}
+			}
+		},
+		"faq": {
+			"title": "Common Questions",
+			"heading": "Frequently Asked Questions",
+			"description": "Get answers to common questions about Hirelytics and how it can transform your recruitment process.",
+			"questions": [
+				{
+					"question": "How does Hirelytics ensure fairness in the hiring process?",
+					"answer": "Hirelytics reduces bias through structured evaluations that focus on skills and competencies rather than demographic factors. Our AI models are regularly audited for fairness and trained on diverse datasets to ensure they don't perpetuate existing biases."
+				},
+				{
+					"question": "Can Hirelytics integrate with our existing HR systems?",
+					"answer": "Yes, Hirelytics offers API integrations with major HR information systems, applicant tracking systems, and job boards. Our team can provide custom integration solutions for enterprise clients with specific requirements."
+				},
+				{
+					"question": "How secure is candidate data on the platform?",
+					"answer": "Hirelytics employs bank-level encryption for data both in transit and at rest. We are fully GDPR compliant and follow SOC 2 security practices, with regular penetration testing and security audits."
+				},
+				{
+					"question": "What makes Hirelytics different from traditional ATS systems?",
+					"answer": "Unlike traditional ATS systems that simply track applications, Hirelytics actively evaluates candidates through AI interviews, provides data-driven insights, and offers a more engaging experience for both recruiters and candidates."
+				},
+				{
+					"question": "How long does it take to set up Hirelytics for my company?",
+					"answer": "Most companies can get started with Hirelytics in less than a day. Our onboarding team provides comprehensive support, including template creation, system integration, and training for your recruitment team."
+				}
+			]
+		},
+		"cta": {
+			"readyToStart": "Ready to Get Started?",
+			"heading": "Transform Your Recruitment Process Today",
+			"description": "Join thousands of companies using Hirelytics to find the perfect candidates faster, more efficiently, and with better results.",
+			"getStarted": "Get Started"
+		}
 	}
 }

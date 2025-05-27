@@ -1,4 +1,5 @@
 "use client";
+
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import {
@@ -13,6 +14,8 @@ import {
 } from "lucide-react";
 import { motion } from "framer-motion";
 import Image from "next/image";
+import { useTranslations } from "next-intl";
+import React from "react";
 
 const fadeIn = {
   hidden: { opacity: 0, y: 20 },
@@ -30,10 +33,80 @@ const staggerContainer = {
   },
 };
 
+interface FAQ {
+  question: string;
+  answer: string;
+}
+
+interface TechFeature {
+  title: string;
+  description: string;
+}
+
+interface BenefitColumn {
+  title: string;
+  icon: React.ReactNode;
+  benefits: string[];
+  gradient: string;
+  iconBg: string;
+  border: string;
+}
+
 export default function LearnMorePage() {
+  const t = useTranslations("LearnMore");
+
+  const keyObjectives = t.raw("mission.keyObjectives.items") as string[];
+  const faqs = t.raw("faq.questions") as FAQ[];
+
+  const benefitColumns: BenefitColumn[] = [
+    {
+      title: t("benefits.sections.recruiters.title"),
+      icon: <Zap className="text-blue-500" size={24} />,
+      benefits: t.raw("benefits.sections.recruiters.items") as string[],
+      gradient: "from-blue-500/20 via-blue-400/20 to-blue-300/20",
+      iconBg: "bg-blue-500/10",
+      border: "border-blue-500/20",
+    },
+    {
+      title: t("benefits.sections.candidates.title"),
+      icon: <Trophy className="text-purple-500" size={24} />,
+      benefits: t.raw("benefits.sections.candidates.items") as string[],
+      gradient: "from-purple-500/20 via-purple-400/20 to-purple-300/20",
+      iconBg: "bg-purple-500/10",
+      border: "border-purple-500/20",
+    },
+    {
+      title: t("benefits.sections.platform.title"),
+      icon: <Sparkles className="text-primary" size={24} />,
+      benefits: t.raw("benefits.sections.platform.items") as string[],
+      gradient: "from-primary/20 via-primary/15 to-primary/10",
+      iconBg: "bg-primary/10",
+      border: "border-primary/20",
+    },
+  ];
+
+  const techFeatures: TechFeature[] = [
+    {
+      title: t("technology.features.nlp.title"),
+      description: t("technology.features.nlp.description"),
+    },
+    {
+      title: t("technology.features.ml.title"),
+      description: t("technology.features.ml.description"),
+    },
+    {
+      title: t("technology.features.cv.title"),
+      description: t("technology.features.cv.description"),
+    },
+    {
+      title: t("technology.features.conversationalAi.title"),
+      description: t("technology.features.conversationalAi.description"),
+    },
+  ];
+
   return (
     <div className="flex min-h-screen flex-col">
-      {/* Hero Section with Gradient Background */}
+      {/* Hero Section */}
       <section className="relative py-10 overflow-hidden">
         {/* Animated background */}
         <div className="absolute inset-0 z-0 opacity-40">
@@ -67,7 +140,7 @@ export default function LearnMorePage() {
                   size={18}
                   className="mr-2 group-hover:-translate-x-1 transition-transform"
                 />
-                Back to Home
+                {t("backToHome")}
               </Button>
             </Link>
 
@@ -82,14 +155,14 @@ export default function LearnMorePage() {
                 className="inline-flex items-center gap-2 rounded-full bg-primary/10 px-4 py-1.5 mb-4 text-sm font-medium text-primary"
               >
                 <BookOpen size={16} />
-                Discover Hirelytics
+                {t("discoverHirelytics")}
               </motion.div>
 
               <motion.h1
                 variants={fadeIn}
                 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6"
               >
-                Learn More About{" "}
+                {t("learnMoreTitle")}{" "}
                 <span className="bg-gradient-to-r from-primary via-blue-500 to-purple-500 bg-clip-text text-transparent animate-gradient">
                   Hirelytics
                 </span>
@@ -99,9 +172,7 @@ export default function LearnMorePage() {
                 variants={fadeIn}
                 className="text-xl text-muted-foreground mb-8 max-w-3xl"
               >
-                Discover how our AI-powered recruitment platform is transforming
-                the hiring process, making it more efficient, fair, and
-                effective for both recruiters and candidates.
+                {t("learnMoreDescription")}
               </motion.p>
             </motion.div>
           </div>
@@ -124,25 +195,19 @@ export default function LearnMorePage() {
             >
               <div className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/5 px-4 py-1.5 mb-4 text-sm font-medium text-primary">
                 <Lightbulb size={16} />
-                Our Mission
+                {t("mission.title")}
               </div>
 
               <h2 className="text-3xl md:text-4xl font-bold mb-6">
-                Transforming Recruitment Through AI
+                {t("mission.heading")}
               </h2>
 
               <p className="text-lg mb-6 text-muted-foreground">
-                At Hirelytics, we believe that recruiting should be more than
-                just scanning resumes. Our mission is to leverage artificial
-                intelligence to create meaningful connections between
-                exceptional talent and forward-thinking organizations.
+                {t("mission.description1")}
               </p>
 
               <p className="text-lg text-muted-foreground">
-                We&apos;re dedicated to removing bias from the hiring process,
-                providing data-driven insights for better decision-making, and
-                creating a seamless experience for both recruiters and
-                candidates.
+                {t("mission.description2")}
               </p>
             </motion.div>
 
@@ -156,17 +221,11 @@ export default function LearnMorePage() {
               <div className="bg-card rounded-lg p-8 h-full">
                 <h3 className="text-2xl font-bold mb-6 flex items-center">
                   <Sparkles className="text-primary mr-2" size={24} />
-                  Key Objectives
+                  {t("mission.keyObjectives.title")}
                 </h3>
 
                 <ul className="space-y-4">
-                  {[
-                    "Eliminate bias in the recruitment process",
-                    "Reduce time-to-hire by 60%",
-                    "Match candidates based on skills, not just keywords",
-                    "Provide actionable insights for both employers and job seekers",
-                    "Create a more engaging application experience",
-                  ].map((item, i) => (
+                  {keyObjectives.map((item: string, i: number) => (
                     <li key={i} className="flex items-start">
                       <Check
                         className="text-primary shrink-0 mr-2 mt-1"
@@ -202,69 +261,20 @@ export default function LearnMorePage() {
           >
             <div className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/5 px-4 py-1.5 mb-4 text-sm font-medium text-primary">
               <Rocket size={16} />
-              Platform Benefits
+              {t("benefits.title")}
             </div>
 
             <h2 className="text-3xl md:text-4xl font-bold mb-6">
-              Why Choose Hirelytics?
+              {t("benefits.heading")}
             </h2>
 
             <p className="text-lg text-muted-foreground">
-              Our platform offers unique advantages for both recruiters and
-              candidates, making the entire hiring process more efficient and
-              effective.
+              {t("benefits.description")}
             </p>
           </motion.div>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {[
-              {
-                title: "For Recruiters",
-                icon: <Zap className="text-blue-500" size={24} />,
-                benefits: [
-                  "Automated preliminary candidate screening",
-                  "AI-driven interview questions based on job requirements",
-                  "Comprehensive candidate assessment reports",
-                  "Bias reduction through objective skill evaluation",
-                  "Analytics dashboard for hiring process optimization",
-                  "Customizable job posting templates",
-                ],
-                gradient: "from-blue-500/20 via-blue-400/20 to-blue-300/20",
-                iconBg: "bg-blue-500/10",
-                border: "border-blue-500/20",
-              },
-              {
-                title: "For Candidates",
-                icon: <Trophy className="text-purple-500" size={24} />,
-                benefits: [
-                  "Flexible, on-demand interview scheduling",
-                  "Personalized feedback on interview performance",
-                  "Skills-based matching to relevant positions",
-                  "Elimination of unconscious bias in screening",
-                  "Opportunity to showcase strengths beyond the resume",
-                  "Streamlined application process",
-                ],
-                gradient:
-                  "from-purple-500/20 via-purple-400/20 to-purple-300/20",
-                iconBg: "bg-purple-500/10",
-                border: "border-purple-500/20",
-              },
-              {
-                title: "Platform Features",
-                icon: <Sparkles className="text-primary" size={24} />,
-                benefits: [
-                  "Advanced natural language processing",
-                  "Multi-language support for global hiring",
-                  "Seamless integration with existing HR systems",
-                  "GDPR and privacy compliance built-in",
-                  "Continuous learning from feedback loops",
-                  "Regular feature updates based on user needs",
-                ],
-                gradient: "from-primary/20 via-primary/15 to-primary/10",
-                iconBg: "bg-primary/10",
-                border: "border-primary/20",
-              },
-            ].map((column, i) => (
+            {benefitColumns.map((column: BenefitColumn, i: number) => (
               <motion.div
                 key={i}
                 className={`rounded-xl bg-gradient-to-br ${column.gradient} p-1 h-full`}
@@ -283,7 +293,7 @@ export default function LearnMorePage() {
                   <h3 className="text-2xl font-bold mb-6">{column.title}</h3>
 
                   <ul className="space-y-3">
-                    {column.benefits.map((benefit, j) => (
+                    {column.benefits.map((benefit: string, j: number) => (
                       <li key={j} className="flex items-start">
                         <Check
                           className="text-primary shrink-0 mr-2 mt-1"
@@ -316,42 +326,19 @@ export default function LearnMorePage() {
           >
             <div className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/5 px-4 py-1.5 mb-4 text-sm font-medium text-primary">
               <Zap size={16} />
-              Technology
+              {t("technology.title")}
             </div>
 
             <h2 className="text-3xl md:text-4xl font-bold mb-6">
-              Powered by Advanced AI
+              {t("technology.heading")}
             </h2>
 
             <p className="text-lg text-muted-foreground mb-8">
-              Hirelytics leverages cutting-edge artificial intelligence, machine
-              learning, and natural language processing technologies to
-              transform how organizations approach hiring.
+              {t("technology.description")}
             </p>
 
             <div className="grid md:grid-cols-2 gap-6 mt-10">
-              {[
-                {
-                  title: "Natural Language Processing",
-                  description:
-                    "Our AI understands context, nuance, and sentiment in candidate responses, providing deeper insights than keyword matching alone.",
-                },
-                {
-                  title: "Machine Learning Algorithms",
-                  description:
-                    "Our systems continuously improve through feedback loops, becoming more accurate at predicting candidate-job fit over time.",
-                },
-                {
-                  title: "Computer Vision",
-                  description:
-                    "Advanced document parsing extracts and structures information from resumes and portfolios with high accuracy.",
-                },
-                {
-                  title: "Conversational AI",
-                  description:
-                    "Dynamic interview system adjusts questions based on previous answers, creating a more natural and informative conversation.",
-                },
-              ].map((tech, i) => (
+              {techFeatures.map((tech: TechFeature, i: number) => (
                 <motion.div
                   key={i}
                   className="border border-border rounded-xl p-6 bg-card"
@@ -391,51 +378,20 @@ export default function LearnMorePage() {
           >
             <div className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/5 px-4 py-1.5 mb-4 text-sm font-medium text-primary">
               <Lightbulb size={16} />
-              Common Questions
+              {t("faq.title")}
             </div>
 
             <h2 className="text-3xl md:text-4xl font-bold mb-6">
-              Frequently Asked Questions
+              {t("faq.heading")}
             </h2>
 
             <p className="text-lg text-muted-foreground">
-              Get answers to common questions about Hirelytics and how it can
-              transform your recruitment process.
+              {t("faq.description")}
             </p>
           </motion.div>
 
           <div className="max-w-4xl mx-auto grid gap-6">
-            {[
-              {
-                question:
-                  "How does Hirelytics ensure fairness in the hiring process?",
-                answer:
-                  "Hirelytics reduces bias through structured evaluations that focus on skills and competencies rather than demographic factors. Our AI models are regularly audited for fairness and trained on diverse datasets to ensure they don't perpetuate existing biases.",
-              },
-              {
-                question:
-                  "Can Hirelytics integrate with our existing HR systems?",
-                answer:
-                  "Yes, Hirelytics offers API integrations with major HR information systems, applicant tracking systems, and job boards. Our team can provide custom integration solutions for enterprise clients with specific requirements.",
-              },
-              {
-                question: "How secure is candidate data on the platform?",
-                answer:
-                  "Hirelytics employs bank-level encryption for data both in transit and at rest. We are fully GDPR compliant and follow SOC 2 security practices, with regular penetration testing and security audits.",
-              },
-              {
-                question:
-                  "What makes Hirelytics different from traditional ATS systems?",
-                answer:
-                  "Unlike traditional ATS systems that simply track applications, Hirelytics actively evaluates candidates through AI interviews, provides data-driven insights, and offers a more engaging experience for both recruiters and candidates.",
-              },
-              {
-                question:
-                  "How long does it take to set up Hirelytics for my company?",
-                answer:
-                  "Most companies can get started with Hirelytics in less than a day. Our onboarding team provides comprehensive support, including template creation, system integration, and training for your recruitment team.",
-              },
-            ].map((faq, i) => (
+            {faqs.map((faq: FAQ, i: number) => (
               <motion.div
                 key={i}
                 className="border border-border rounded-xl p-6 bg-card"
@@ -454,7 +410,6 @@ export default function LearnMorePage() {
 
       {/* CTA Section */}
       <section className="py-16 bg-gradient-to-r from-primary/80 via-blue-500/80 to-purple-500/80 text-white relative overflow-hidden">
-        {/* Background elements */}
         <div className="absolute inset-0 bg-grid-white/10 bg-[length:20px_20px] opacity-10"></div>
         <div className="absolute inset-0 opacity-20">
           <div className="absolute top-0 left-0 h-full w-full bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.2)_0%,transparent_50%)]"></div>
@@ -471,16 +426,15 @@ export default function LearnMorePage() {
           >
             <div className="mb-6 inline-flex items-center gap-2 rounded-full bg-white/10 backdrop-blur-sm px-4 py-1.5 text-sm font-medium">
               <Sparkles size={16} className="text-white" />
-              Ready to Get Started?
+              {t("cta.readyToStart")}
             </div>
 
             <h2 className="text-3xl md:text-4xl font-bold mb-6">
-              Transform Your Recruitment Process Today
+              {t("cta.heading")}
             </h2>
 
             <p className="text-lg text-white/90 mb-10">
-              Join thousands of companies using Hirelytics to find the perfect
-              candidates faster, more efficiently, and with better results.
+              {t("cta.description")}
             </p>
 
             <div className="flex flex-wrap justify-center gap-6">
@@ -491,17 +445,7 @@ export default function LearnMorePage() {
                   className="gap-2 bg-white text-primary hover:bg-white hover:shadow-lg hover:shadow-white/20 transition-all duration-300 transform hover:-translate-y-1"
                 >
                   <Zap size={18} className="text-primary" />
-                  <span className="font-medium">Get Started</span>
-                </Button>
-              </Link>
-              <Link href="/">
-                <Button
-                  size="lg"
-                  variant="outline"
-                  className="gap-2 border-white text-white hover:bg-white/20 transition-all duration-300 transform hover:-translate-y-1"
-                >
-                  <ArrowLeft size={18} />
-                  <span>Back to Home</span>
+                  <span className="font-medium">{t("cta.getStarted")}</span>
                 </Button>
               </Link>
             </div>
