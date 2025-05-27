@@ -162,6 +162,11 @@
 		"registrationSuccess": "Registration successful! You can now log in.",
 		"registrationError": "Something went wrong. Please try again.",
 		"registrationFailed": "Registration failed.",
+		"unauthorized": "Access Denied",
+		"unauthorizedMessage": "You don't have permission to access this page. Please contact your administrator if you believe this is an error.",
+		"goBack": "Go Back",
+		"dashboard": "Dashboard",
+		"logout": "Logout",
 		"loginAs": {
 			"recruiter": "Login as Recruiter",
 			"candidate": "Login as Candidate",

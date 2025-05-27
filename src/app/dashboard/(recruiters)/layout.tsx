@@ -1,4 +1,5 @@
 import { auth } from "@/auth";
+import { redirect } from "next/navigation";
 
 export default async function RecruiterDashboardLayout({
   children,
@@ -9,8 +10,8 @@ export default async function RecruiterDashboardLayout({
   const user = session?.user;
   const role = user?.role;
 
-  if (role !== "recruiter") {
-    return <div>Unauthorized</div>;
+  if (role !== "recruiter" && role !== "admin") {
+    redirect("/unauthorized");
   }
 
   return <>{children}</>;

@@ -45,11 +45,12 @@ export const {
       const user = auth?.user;
       const isLoggedIn = !!user;
       const isActive = user?.isActive !== false; // Consider undefined as active for backward compatibility
+      const userRole = user?.role as UserRole | undefined;
 
       const { pathname } = request.nextUrl;
 
       // Public routes that don't require authentication
-      const publicRoutes = ["/", "/login", "/register"];
+      const publicRoutes = ["/", "/login", "/register", "/learn-more"];
       const isPublicRoute = publicRoutes.some(
         (route) => pathname === route || pathname.startsWith(`${route}/`),
       );
@@ -70,7 +71,11 @@ export const {
 
       // If user is not logged in, redirect to login
       if (!isLoggedIn) {
-        return Response.redirect(new URL("/login", request.nextUrl));
+        // Store the original URL to redirect back after login
+        const redirectUrl = encodeURIComponent(request.nextUrl.pathname);
+        return Response.redirect(
+          new URL(`/login?callbackUrl=${redirectUrl}`, request.nextUrl),
+        );
       }
 
       // If user is logged in but account is disabled, redirect to login with error
@@ -78,6 +83,49 @@ export const {
         return Response.redirect(
           new URL("/login?error=Account+is+disabled", request.nextUrl),
         );
+      }
+
+      // Define role-based access rules
+      const adminOnlyRoutes = ["/admin", "/dashboard/admin"];
+      const isAdminOnlyRoute = adminOnlyRoutes.some(
+        (route) => pathname === route || pathname.startsWith(`${route}/`),
+      );
+
+      const recruiterOnlyRoutes = [
+        "/dashboard/recruiters",
+        "/jobs/create",
+        "/jobs/manage",
+      ];
+      const isRecruiterOnlyRoute = recruiterOnlyRoutes.some(
+        (route) => pathname === route || pathname.startsWith(`${route}/`),
+      );
+
+      const candidateOnlyRoutes = ["/dashboard/candidates", "/applications/my"];
+      const isCandidateOnlyRoute = candidateOnlyRoutes.some(
+        (route) => pathname === route || pathname.startsWith(`${route}/`),
+      );
+
+      // Admin access check
+      if (isAdminOnlyRoute && userRole !== "admin") {
+        return Response.redirect(new URL("/unauthorized", request.nextUrl));
+      }
+
+      // Recruiter access check
+      if (
+        isRecruiterOnlyRoute &&
+        userRole !== "recruiter" &&
+        userRole !== "admin"
+      ) {
+        return Response.redirect(new URL("/unauthorized", request.nextUrl));
+      }
+
+      // Candidate access check
+      if (
+        isCandidateOnlyRoute &&
+        userRole !== "candidate" &&
+        userRole !== "admin"
+      ) {
+        return Response.redirect(new URL("/unauthorized", request.nextUrl));
       }
 
       // Dashboard is accessible to all authenticated and active users

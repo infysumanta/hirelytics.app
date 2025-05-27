@@ -2,10 +2,10 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import RootProvider from "@/provider/root-provider";
-import { Toaster } from "sonner";
 import NextTopLoader from "nextjs-toploader";
 import { getLocale } from "next-intl/server";
 import { FloatingControls } from "@/components/floating-controls";
+import { Toaster } from "sonner";
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -24,21 +24,21 @@ export const metadata: Metadata = {
     icon: [{ url: "/favicon.svg", type: "image/svg+xml", sizes: "any" }],
     apple: "/images/favicon.svg",
   },
-  manifest: "/manifest.json",
-  themeColor: "#0C4A6E",
-  openGraph: {
-    title: "Hirelytics - AI Interview Platform for Modern Hiring",
-    description:
-      "Transform your hiring process with AI-powered interviews and candidate analysis",
-    images: ["/images/hirelytics-logo.svg"],
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: "Hirelytics - AI Interview Platform for Modern Hiring",
-    description:
-      "Transform your hiring process with AI-powered interviews and candidate analysis",
-    images: ["/images/hirelytics-logo.svg"],
-  },
+  // manifest: "/manifest.json",
+  // themeColor: "#0C4A6E",
+  // openGraph: {
+  //   title: "Hirelytics - AI Interview Platform for Modern Hiring",
+  //   description:
+  //     "Transform your hiring process with AI-powered interviews and candidate analysis",
+  //   images: ["/images/hirelytics-logo.svg"],
+  // },
+  // twitter: {
+  //   card: "summary_large_image",
+  //   title: "Hirelytics - AI Interview Platform for Modern Hiring",
+  //   description:
+  //     "Transform your hiring process with AI-powered interviews and candidate analysis",
+  //   images: ["/images/hirelytics-logo.svg"],
+  // },
 };
 
 export default async function RootLayout({
@@ -53,12 +53,12 @@ export default async function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <NextTopLoader color="hsl(var(--primary))" />
-        <Toaster richColors closeButton />
         <RootProvider>
           <div className="relative flex min-h-screen flex-col">
             <FloatingControls position="top-right" />
             <div className="flex-1">{children}</div>
           </div>
+          <Toaster />
         </RootProvider>
       </body>
     </html>
