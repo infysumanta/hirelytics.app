@@ -455,5 +455,21 @@
 			"description": "Join thousands of companies using Hirelytics to find the perfect candidates faster, more efficiently, and with better results.",
 			"getStarted": "Get Started"
 		}
+	},
+	"Wishlist": {
+		"title": "Join Our Waitlist",
+		"description": "We're currently not accepting registrations. Join our waitlist to be notified when registration reopens and we will remind you to register.",
+		"form": {
+			"name": "Your name",
+			"email": "your.email@example.com",
+			"reason": "Why are you interested? (Optional)",
+			"reasonPlaceholder": "Tell us why you're interested in Hirelytics",
+			"submit": "Join Waitlist",
+			"submitting": "Submitting...",
+			"success": {
+				"title": "Thank you for your interest!",
+				"message": "We'll notify you when registration opens."
+			}
+		}
 	}
 }

@@ -30,7 +30,7 @@ type WishlistFormValues = z.infer<typeof wishlistSchema>;
 export function WishlistForm() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
-  const t = useTranslations("Auth");
+  const t = useTranslations("Wishlist");
 
   const form = useForm<WishlistFormValues>({
     resolver: zodResolver(wishlistSchema),
@@ -77,10 +77,8 @@ export function WishlistForm() {
   if (submitted) {
     return (
       <div className="bg-primary/10 p-6 rounded-lg text-center">
-        <h3 className="text-lg font-medium mb-2">
-          Thank you for your interest!
-        </h3>
-        <p>We&apos;ll notify you when registration opens.</p>
+        <h3 className="text-lg font-medium mb-2">{t("form.success.title")}</h3>
+        <p>{t("form.success.message")}</p>
       </div>
     );
   }
@@ -93,10 +91,10 @@ export function WishlistForm() {
           name="name"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>{t("name")}</FormLabel>
+              <FormLabel>{t("form.name")}</FormLabel>
               <FormControl>
                 <Input
-                  placeholder="Your name"
+                  placeholder={t("form.name")}
                   disabled={isSubmitting}
                   {...field}
                 />
@@ -111,10 +109,10 @@ export function WishlistForm() {
           name="email"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>{t("email")}</FormLabel>
+              <FormLabel>Email</FormLabel>
               <FormControl>
                 <Input
-                  placeholder="your.email@example.com"
+                  placeholder={t("form.email")}
                   type="email"
                   disabled={isSubmitting}
                   {...field}
@@ -130,10 +128,10 @@ export function WishlistForm() {
           name="reason"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Why are you interested? (Optional)</FormLabel>
+              <FormLabel>{t("form.reason")}</FormLabel>
               <FormControl>
                 <Textarea
-                  placeholder="Tell us why you're interested in Hirelytics"
+                  placeholder={t("form.reasonPlaceholder")}
                   disabled={isSubmitting}
                   className="resize-none"
                   {...field}
@@ -145,7 +143,7 @@ export function WishlistForm() {
         />
 
         <Button type="submit" className="w-full" disabled={isSubmitting}>
-          {isSubmitting ? "Submitting..." : "Join Waitlist"}
+          {isSubmitting ? t("form.submitting") : t("form.submit")}
         </Button>
       </form>
     </Form>
