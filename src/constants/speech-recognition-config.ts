@@ -2,14 +2,14 @@
  * Configuration constants for speech recognition functionality
  */
 
-// Default silence timeout in milliseconds - not currently used in manual mode
+// Default silence timeout in milliseconds - used for auto-send functionality
 export const DEFAULT_SILENCE_TIMEOUT = process.env
   .NEXT_PUBLIC_SPEECH_SILENCE_TIMEOUT
   ? parseInt(process.env.NEXT_PUBLIC_SPEECH_SILENCE_TIMEOUT)
-  : 10000; // Default: 10 seconds
+  : 5000; // Default: 5 seconds for auto-send
 
 // Whether to enable automatic speech detection and stopping
-export const AUTO_STOP_ENABLED = false;
+export const AUTO_STOP_ENABLED = true;
 
 // Language setting for speech recognition
 export const SPEECH_RECOGNITION_LANGUAGE = "en-US";

@@ -43,10 +43,10 @@ const DEFAULT_CONFIG: AutoSpeechFlowConfig = {
 export function useAutoSpeechFlow(
   isUserTurn: boolean,
   onSendMessage: () => void,
-  initialConfig?: Partial<AutoSpeechFlowConfig>
+  initialConfig?: Partial<AutoSpeechFlowConfig>,
 ): AutoSpeechFlowHook {
   const { isAudioPlaying } = useAudioPlaybackState();
-  
+
   // Configuration state
   const [config, setConfig] = useState<AutoSpeechFlowConfig>({
     ...DEFAULT_CONFIG,
@@ -68,9 +68,12 @@ export function useAutoSpeechFlow(
   const wasAudioPlayingRef = useRef(false);
 
   // Update configuration
-  const updateConfig = useCallback((newConfig: Partial<AutoSpeechFlowConfig>) => {
-    setConfig(prev => ({ ...prev, ...newConfig }));
-  }, []);
+  const updateConfig = useCallback(
+    (newConfig: Partial<AutoSpeechFlowConfig>) => {
+      setConfig((prev) => ({ ...prev, ...newConfig }));
+    },
+    [],
+  );
 
   // Cancel auto-send
   const cancelAutoSend = useCallback(() => {
@@ -82,7 +85,7 @@ export function useAutoSpeechFlow(
       clearInterval(countdownTimerRef.current);
       countdownTimerRef.current = null;
     }
-    setFlowState(prev => ({
+    setFlowState((prev) => ({
       ...prev,
       isAutoSendPending: false,
       autoSendCountdown: 0,
@@ -108,18 +111,18 @@ export function useAutoSpeechFlow(
     // Track when audio was playing
     if (isAudioPlaying) {
       wasAudioPlayingRef.current = true;
-      setFlowState(prev => ({ ...prev, isAutoMicActive: false }));
+      setFlowState((prev) => ({ ...prev, isAutoMicActive: false }));
       return;
     }
 
     // If audio just stopped and it's user's turn, auto-activate microphone
     if (wasAudioPlayingRef.current && !isAudioPlaying && isUserTurn) {
       console.log("[Auto Speech Flow] Audio ended, auto-activating microphone");
-      
+
       // Small delay to ensure audio has fully stopped
       setTimeout(() => {
-        setFlowState(prev => ({ ...prev, isAutoMicActive: true }));
-        
+        setFlowState((prev) => ({ ...prev, isAutoMicActive: true }));
+
         // Trigger microphone activation
         document.dispatchEvent(new CustomEvent("auto-activate-microphone"));
       }, 500);
@@ -128,7 +131,7 @@ export function useAutoSpeechFlow(
     }
   }, [isAudioPlaying, isUserTurn, config.autoMicEnabled]);
 
-  // Handle speech recognition events for auto-send
+  // Handle speech recognition events for auto-send (simplified approach)
   useEffect(() => {
     if (!config.autoSendEnabled) return;
 
@@ -141,17 +144,19 @@ export function useAutoSpeechFlow(
     const handleSpeechEnd = () => {
       console.log("[Auto Speech Flow] Speech ended");
       const speechEndTime = Date.now();
-      const speechDuration = speechStartTimeRef.current 
-        ? speechEndTime - speechStartTimeRef.current 
+      const speechDuration = speechStartTimeRef.current
+        ? speechEndTime - speechStartTimeRef.current
         : 0;
 
-      setFlowState(prev => ({ ...prev, lastSpeechEndTime: speechEndTime }));
+      setFlowState((prev) => ({ ...prev, lastSpeechEndTime: speechEndTime }));
 
       // Only trigger auto-send if speech was long enough
       if (speechDuration >= config.minSpeechDuration) {
-        console.log(`[Auto Speech Flow] Starting auto-send countdown (${config.autoSendDelay}ms)`);
-        
-        setFlowState(prev => ({
+        console.log(
+          `[Auto Speech Flow] Starting auto-send countdown (${config.autoSendDelay}ms)`,
+        );
+
+        setFlowState((prev) => ({
           ...prev,
           isAutoSendPending: true,
           autoSendCountdown: Math.ceil(config.autoSendDelay / 1000),
@@ -159,7 +164,7 @@ export function useAutoSpeechFlow(
 
         // Start countdown timer
         countdownTimerRef.current = setInterval(() => {
-          setFlowState(prev => {
+          setFlowState((prev) => {
             const newCountdown = prev.autoSendCountdown - 1;
             if (newCountdown <= 0) {
               if (countdownTimerRef.current) {
@@ -183,7 +188,9 @@ export function useAutoSpeechFlow(
           resetFlow();
         }, config.autoSendDelay);
       } else {
-        console.log(`[Auto Speech Flow] Speech too short (${speechDuration}ms), not auto-sending`);
+        console.log(
+          `[Auto Speech Flow] Speech too short (${speechDuration}ms), not auto-sending`,
+        );
       }
     };
 
@@ -196,13 +203,26 @@ export function useAutoSpeechFlow(
       }
     };
 
-    // Listen for speech recognition events
-    document.addEventListener("speech-recognition-status", handleSpeechRecognitionStatus as EventListener);
+    // Listen for speech recognition events (back to original approach for reliability)
+    document.addEventListener(
+      "speech-recognition-status",
+      handleSpeechRecognitionStatus as EventListener,
+    );
 
     return () => {
-      document.removeEventListener("speech-recognition-status", handleSpeechRecognitionStatus as EventListener);
+      document.removeEventListener(
+        "speech-recognition-status",
+        handleSpeechRecognitionStatus as EventListener,
+      );
     };
-  }, [config.autoSendEnabled, config.autoSendDelay, config.minSpeechDuration, onSendMessage, cancelAutoSend, resetFlow]);
+  }, [
+    config.autoSendEnabled,
+    config.autoSendDelay,
+    config.minSpeechDuration,
+    onSendMessage,
+    cancelAutoSend,
+    resetFlow,
+  ]);
 
   // Cleanup timers on unmount
   useEffect(() => {

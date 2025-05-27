@@ -207,36 +207,28 @@ export function SpeechRecognitionInput({
         // Check if the result is final
         const isFinalResult = event.results[event.results.length - 1].isFinal;
         if (isFinalResult) {
-          // If AUTO_STOP_ENABLED is true, set a timer to stop listening after silence
-          if (AUTO_STOP_ENABLED) {
-            console.log(
-              `Final result detected, setting silence timer (${DEFAULT_SILENCE_TIMEOUT}ms)`,
-            );
+          // Always set a timer to stop listening after silence for auto-send functionality
+          console.log(
+            `Final result detected, setting silence timer (${DEFAULT_SILENCE_TIMEOUT}ms)`,
+          );
 
-            // Clear any existing timer
-            if (silenceTimer) {
-              clearTimeout(silenceTimer);
-              setSilenceTimer(null);
-            }
-
-            // Set a new timer to stop listening after configured silence timeout
-            const timer = setTimeout(() => {
-              if (transcript.trim() !== "") {
-                console.log("Stopping listening after silence period");
-                stopListening();
-              }
-            }, DEFAULT_SILENCE_TIMEOUT);
-
-            setSilenceTimer(timer);
-          } else {
-            console.log(`Final result detected (will continue listening)`);
-
-            // Clear any existing timer to avoid unexpected behavior
-            if (silenceTimer) {
-              clearTimeout(silenceTimer);
-              setSilenceTimer(null);
-            }
+          // Clear any existing timer
+          if (silenceTimer) {
+            clearTimeout(silenceTimer);
+            setSilenceTimer(null);
           }
+
+          // Set a new timer to stop listening after configured silence timeout
+          const timer = setTimeout(() => {
+            if (transcript.trim() !== "") {
+              console.log(
+                "Stopping listening after silence period - auto-send will trigger",
+              );
+              stopListening();
+            }
+          }, DEFAULT_SILENCE_TIMEOUT);
+
+          setSilenceTimer(timer);
         }
       };
 
