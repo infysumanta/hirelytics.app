@@ -156,7 +156,7 @@ export function JobApplicationForm({
 
       // Prepare application data - Use the URL ID which is what's used in the database as jobId
       const applicationData = {
-        jobId: job._id,
+        jobId: job._id || job.id,
         userId: session?.user?.id || "",
         // Candidatename and email are now optional in the model
         resumeUrl: values.resumeUrl,
