@@ -574,14 +574,14 @@ export function SpeechRecognitionInput({
 
           {/* Voice visualizer above the textarea when listening */}
           {isListening && (
-            <div className="absolute -top-16 left-0 right-0 flex justify-center">
+            <div className="flex justify-center">
               <div className="bg-background/90 backdrop-blur-sm rounded-xl px-5 py-3 flex items-center gap-3 shadow-lg border border-primary/30">
                 <div className="bg-primary/10 p-2 rounded-full">
-                  <Volume2 className="h-4 w-4 text-primary" />
+                  <Volume2 className="h-2 w-2 text-primary" />
                 </div>
-                <div className="flex flex-col">
-                  <span className="text-xs font-medium text-primary">
-                    Listening to your voice
+                <div className="flex flex-row justify-between gap-2">
+                  <span className="text-sm font-medium text-primary">
+                    Listening...
                   </span>
                   <VoiceIndicator
                     isActive={true}
