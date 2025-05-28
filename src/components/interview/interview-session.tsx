@@ -426,6 +426,10 @@ export function InterviewSession({
 
   // State to track speech recognition status
   const [isSpeechListening, setIsSpeechListening] = useState<boolean>(false);
+  // State to track if user manually muted the microphone
+  const [isManuallyMuted, setIsManuallyMuted] = useState<boolean>(false);
+  // State to track if microphone should auto-enable (only after AI stops talking)
+  const [shouldAutoEnable, setShouldAutoEnable] = useState<boolean>(false);
 
   // Use audio autoplay hook to play the latest AI message automatically
   // Autoplay audio for AI messages and get the ID of the playing message
@@ -436,25 +440,6 @@ export function InterviewSession({
 
   // Track AI agent state for enhanced visual feedback
   const { agentState } = useAIAgentState(isLoading);
-
-  // Listen for speech recognition status events
-  useEffect(() => {
-    const handleSpeechStatus = (event: CustomEvent) => {
-      setIsSpeechListening(event.detail?.isListening || false);
-    };
-
-    document.addEventListener(
-      "speech-recognition-status",
-      handleSpeechStatus as EventListener,
-    );
-
-    return () => {
-      document.removeEventListener(
-        "speech-recognition-status",
-        handleSpeechStatus as EventListener,
-      );
-    };
-  }, []);
 
   // Wrapper for sendChatMessage that also turns off the mic
   const handleSendMessage = () => {
@@ -496,11 +481,63 @@ export function InterviewSession({
     // This allows the user to interrupt the audio by starting to speak
   }, [isAudioPlaying, forceMicOff]);
 
-  // Stop all audio playback when speech recognition starts
+  // Auto-disable microphone when AI starts talking and set flag for auto-enable when AI stops
   useEffect(() => {
-    const handleSpeechStarted = () => {
+    if (isAudioPlaying) {
+      console.log("[Interview Session] AI started talking");
+
+      // If microphone is currently listening, stop it
+      if (isSpeechListening) {
+        console.log(
+          "[Interview Session] Stopping microphone because AI is talking",
+        );
+        document.dispatchEvent(new CustomEvent("toggle-speech-recognition"));
+      }
+
+      // Reset manual mute state when AI starts talking so mic can auto-enable later
+      setIsManuallyMuted(false);
+      // Set flag to auto-enable microphone when AI stops talking
+      setShouldAutoEnable(true);
+    }
+  }, [isAudioPlaying, isSpeechListening]);
+
+  // Auto-enable microphone only when transitioning from AI talking to user's turn
+  useEffect(() => {
+    if (
+      isUserTurn &&
+      !isInitializing &&
+      !isAudioPlaying &&
+      !isManuallyMuted &&
+      !isSpeechListening &&
+      shouldAutoEnable // Only auto-enable if flag is set (AI just stopped talking)
+    ) {
+      console.log(
+        "[Interview Session] Auto-enabling microphone after AI stopped talking",
+      );
+      // Small delay to ensure audio has fully stopped
+      setTimeout(() => {
+        document.dispatchEvent(new CustomEvent("toggle-speech-recognition"));
+        // Reset the flag after auto-enabling
+        setShouldAutoEnable(false);
+      }, 500);
+    }
+  }, [
+    isUserTurn,
+    isInitializing,
+    isAudioPlaying,
+    isManuallyMuted,
+    isSpeechListening,
+    shouldAutoEnable,
+  ]);
+
+  // Listen for speech recognition status changes
+  useEffect(() => {
+    const handleSpeechRecognitionStatus = (event: CustomEvent) => {
+      const { isListening } = event.detail;
+      setIsSpeechListening(isListening);
+
       // If speech recognition starts, stop all audio playback
-      if (isSpeechListening && isAudioPlaying) {
+      if (isListening && isAudioPlaying) {
         console.log(
           "[Interview Session] User started speaking - stopping audio playback",
         );
@@ -511,11 +548,18 @@ export function InterviewSession({
       }
     };
 
-    // Listen for changes in speech recognition status
-    if (isSpeechListening) {
-      handleSpeechStarted();
-    }
-  }, [isSpeechListening, isAudioPlaying]);
+    document.addEventListener(
+      "speech-recognition-status",
+      handleSpeechRecognitionStatus as EventListener,
+    );
+
+    return () => {
+      document.removeEventListener(
+        "speech-recognition-status",
+        handleSpeechRecognitionStatus as EventListener,
+      );
+    };
+  }, [isAudioPlaying]);
 
   // We no longer need this as the SpeechRecognitionInput component handles key presses
 
@@ -918,6 +962,12 @@ export function InterviewSession({
                               : "border border-muted hover:bg-primary/10 hover:text-primary"
                           }`}
                         onClick={() => {
+                          // Track manual mute/unmute action
+                          if (isSpeechListening) {
+                            setIsManuallyMuted(true);
+                          } else {
+                            setIsManuallyMuted(false);
+                          }
                           document.dispatchEvent(
                             new CustomEvent("toggle-speech-recognition"),
                           );
@@ -941,12 +991,14 @@ export function InterviewSession({
                     </TooltipTrigger>
                     <TooltipContent side="top">
                       {isSpeechListening
-                        ? "Stop listening"
+                        ? "Stop listening (manual mute)"
                         : isAudioPlaying
                           ? "Microphone disabled while AI is talking"
                           : !isUserTurn
                             ? "Wait for your turn to speak"
-                            : "Start voice recognition"}
+                            : isManuallyMuted
+                              ? "Start voice recognition (manually muted)"
+                              : "Start voice recognition"}
                     </TooltipContent>
                   </Tooltip>
                 </TooltipProvider>
