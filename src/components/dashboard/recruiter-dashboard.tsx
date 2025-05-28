@@ -4,7 +4,7 @@
 import { useEffect, useState } from "react";
 import { BriefcaseIcon, Users, FileText } from "lucide-react";
 import { format } from "date-fns";
-import { StatCard } from "@/components/dashboard/stat-card";
+import { ClickableStatCard } from "@/components/dashboard/clickable-stat-card";
 import { PieChartCard } from "@/components/dashboard/pie-chart-card";
 import { ActivityFeed } from "@/components/dashboard/activity-feed";
 import { useDashboardStats } from "@/hooks/use-dashboard-stats";
@@ -94,19 +94,21 @@ export function RecruiterDashboard() {
 
       {/* Stats Overview */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-        <StatCard
+        <ClickableStatCard
           title="My Jobs"
           value={stats?.myJobs || 0}
           description="Active job listings you've posted"
           icon={<BriefcaseIcon className="h-4 w-4" />}
+          href="/dashboard/job-listing"
         />
-        <StatCard
+        <ClickableStatCard
           title="Total Applications"
           value={stats?.totalApplications || 0}
           description="Applications to your job listings"
           icon={<FileText className="h-4 w-4" />}
+          href="/dashboard/job-applications"
         />
-        <StatCard
+        <ClickableStatCard
           title="Acceptance Rate"
           value={`${calculateAcceptanceRate(stats?.applicationsByStatus || [])}%`}
           description="Percentage of applications accepted"

@@ -4,7 +4,7 @@
 import { useEffect, useState } from "react";
 import { BriefcaseIcon, FileCheck, Clock } from "lucide-react";
 import { format } from "date-fns";
-import { StatCard } from "@/components/dashboard/stat-card";
+import { ClickableStatCard } from "@/components/dashboard/clickable-stat-card";
 import { PieChartCard } from "@/components/dashboard/pie-chart-card";
 import { ActivityFeed } from "@/components/dashboard/activity-feed";
 import { useDashboardStats } from "@/hooks/use-dashboard-stats";
@@ -89,25 +89,37 @@ export function CandidateDashboard() {
 
       {/* Stats Overview */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-        <StatCard
+        <ClickableStatCard
           title="My Applications"
           value={stats?.myApplicationsCount || 0}
           description="Total jobs you've applied to"
           icon={<FileCheck className="h-4 w-4" />}
+          href="/dashboard/applications"
         />
-        <StatCard
+        <ClickableStatCard
           title="Application Success Rate"
           value={`${calculateSuccessRate(stats?.myApplicationsByStatus || [])}%`}
           description="Percentage of successful applications"
           icon={<BriefcaseIcon className="h-4 w-4" />}
         />
-        <StatCard
+        <ClickableStatCard
           title="Interview Opportunities"
           value={countInterviewOpportunities(
             stats?.myApplicationsByStatus || [],
           )}
           description="Applications in review or accepted status"
           icon={<Clock className="h-4 w-4" />}
+        />
+      </div>
+
+      {/* Browse Jobs Section */}
+      <div className="grid gap-4 md:grid-cols-1">
+        <ClickableStatCard
+          title="Browse Available Jobs"
+          value="Explore Opportunities"
+          description="Find and apply to new job openings"
+          icon={<BriefcaseIcon className="h-4 w-4" />}
+          href="/dashboard/jobs"
         />
       </div>
 

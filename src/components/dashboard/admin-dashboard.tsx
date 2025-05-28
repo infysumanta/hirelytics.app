@@ -4,7 +4,7 @@
 import { useEffect, useState } from "react";
 import { Activity, Users, BriefcaseIcon } from "lucide-react";
 import { format } from "date-fns";
-import { StatCard } from "@/components/dashboard/stat-card";
+import { ClickableStatCard } from "@/components/dashboard/clickable-stat-card";
 import { PieChartCard } from "@/components/dashboard/pie-chart-card";
 import { ActivityFeed } from "@/components/dashboard/activity-feed";
 import { useDashboardStats } from "@/hooks/use-dashboard-stats";
@@ -96,24 +96,34 @@ export function AdminDashboard() {
       <h1 className="text-3xl font-bold">Admin Dashboard</h1>
 
       {/* Stats Overview */}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-        <StatCard
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+        <ClickableStatCard
           title="Total Jobs"
           value={stats?.totalJobs || 0}
           description="Active job listings"
           icon={<BriefcaseIcon className="h-4 w-4" />}
+          href="/dashboard/jobs"
         />
-        <StatCard
+        <ClickableStatCard
           title="Total Candidates"
           value={stats?.totalCandidates || 0}
           description="Registered candidates"
           icon={<Users className="h-4 w-4" />}
+          href="/dashboard/candidates"
         />
-        <StatCard
+        <ClickableStatCard
           title="Total Recruiters"
           value={stats?.totalRecruiters || 0}
           description="Active recruiters"
           icon={<Activity className="h-4 w-4" />}
+          href="/dashboard/recruiters"
+        />
+        <ClickableStatCard
+          title="Wishlist Entries"
+          value="View All"
+          description="People interested in platform"
+          icon={<Users className="h-4 w-4" />}
+          href="/dashboard/wishlist"
         />
       </div>
 

@@ -3,6 +3,7 @@ import { connectToDatabase } from "@/lib/mongodb";
 import Wishlist from "@/models/wishlist";
 import { z } from "zod";
 import { Resend } from "resend";
+import { auth } from "@/auth";
 
 // Define wishlist schema for validation
 const wishlistSchema = z.object({
@@ -102,6 +103,75 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json(
       { error: "Something went wrong. Please try again." },
+      { status: 500 },
+    );
+  }
+}
+
+// GET endpoint for admin to fetch wishlist entries
+export async function GET(req: NextRequest) {
+  try {
+    // Check authentication and admin role
+    const session = await auth();
+    if (!session?.user || session.user.role !== "admin") {
+      return NextResponse.json(
+        { error: "Unauthorized. Admin access required." },
+        { status: 403 },
+      );
+    }
+
+    // Connect to database
+    await connectToDatabase();
+
+    // Get query parameters for pagination and search
+    const { searchParams } = new URL(req.url);
+    const page = parseInt(searchParams.get("page") || "1");
+    const limit = parseInt(searchParams.get("limit") || "10");
+    const search = searchParams.get("search") || "";
+
+    // Build query for search
+    const query = search
+      ? {
+          $or: [
+            { name: { $regex: search, $options: "i" } },
+            { email: { $regex: search, $options: "i" } },
+            { reason: { $regex: search, $options: "i" } },
+          ],
+        }
+      : {};
+
+    // Calculate pagination
+    const skip = (page - 1) * limit;
+
+    // Get total count for pagination
+    const total = await Wishlist.countDocuments(query);
+
+    // Get wishlist entries with pagination
+    const wishlistEntries = await Wishlist.find(query)
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit);
+
+    // Return wishlist entries with pagination metadata
+    return NextResponse.json({
+      wishlistEntries: wishlistEntries.map((entry) => ({
+        id: entry._id.toString(),
+        name: entry.name,
+        email: entry.email,
+        reason: entry.reason,
+        createdAt: entry.createdAt,
+      })),
+      pagination: {
+        total,
+        page,
+        limit,
+        totalPages: Math.ceil(total / limit),
+      },
+    });
+  } catch (error) {
+    console.error("Error fetching wishlist entries:", error);
+    return NextResponse.json(
+      { error: "Failed to fetch wishlist entries" },
       { status: 500 },
     );
   }

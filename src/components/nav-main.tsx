@@ -9,7 +9,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
-import { User2Icon, UserIcon, BriefcaseIcon } from "lucide-react";
+import { User2Icon, UserIcon, BriefcaseIcon, Heart } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 
@@ -25,6 +25,11 @@ export function NavMain() {
       icon: IconDashboard,
     },
     {
+      title: "Jobs",
+      url: "/dashboard/manage-jobs",
+      icon: BriefcaseIcon,
+    },
+    {
       title: "Candidates",
       url: "/dashboard/candidates",
       icon: UserIcon,
@@ -33,6 +38,11 @@ export function NavMain() {
       title: "Recruiters",
       url: "/dashboard/recruiters",
       icon: User2Icon,
+    },
+    {
+      title: "Wishlist",
+      url: "/dashboard/wishlist",
+      icon: Heart,
     },
   ];
 
