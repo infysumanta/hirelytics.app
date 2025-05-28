@@ -4,13 +4,13 @@ import { auth } from "@/auth";
 
 // Create S3 client for server-side operations
 const s3Client = new S3Client({
-  region: process.env.AWS_REGION || "auto",
+  region: process.env.AWS_REGION!,
   endpoint: process.env.AWS_ENDPOINT_URL_S3,
+  forcePathStyle: true,
   credentials: {
     accessKeyId: process.env.AWS_ACCESS_KEY_ID || "",
     secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY || "",
   },
-  forcePathStyle: false,
 });
 
 export async function POST(req: NextRequest) {
