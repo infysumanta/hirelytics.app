@@ -932,9 +932,7 @@ export function InterviewSession({
                 onChange={setMessageInput}
                 onSend={handleSendMessage}
                 forceMicOff={forceMicOff || isAudioPlaying}
-                disabled={
-                  !isUserTurn || isLoading || isInitializing || isAudioPlaying
-                }
+                disabled={!isUserTurn || isLoading || isInitializing}
                 className={`min-h-12 resize-none bg-background border-muted focus:border-primary/30 rounded-lg transition-all ${
                   !isUserTurn || isInitializing || isAudioPlaying
                     ? "opacity-50"
