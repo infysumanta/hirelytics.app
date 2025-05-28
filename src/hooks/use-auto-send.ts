@@ -15,6 +15,7 @@ interface UseAutoSendReturn {
   isCountdownActive: boolean;
   countdownSeconds: number;
   resetTimer: () => void;
+  cancelTimer: () => void;
 }
 
 export function useAutoSend({
@@ -56,13 +57,19 @@ export function useAutoSend({
     setCountdownSeconds(0);
   }, []);
 
+  // Cancel timer (same as reset but with different logging)
+  const cancelTimer = useCallback(() => {
+    console.log("[Auto-Send] Timer manually cancelled");
+    resetTimer();
+  }, [resetTimer]);
+
   // Start countdown display and timer
   const startCountdown = useCallback(() => {
     if (disabled || paused) return;
 
     console.log("[Auto-Send] Starting 10-second countdown");
     setIsCountdownActive(true);
-    setCountdownSeconds(10);
+    setCountdownSeconds(AUTO_SEND_COUNTDOWN_PERIOD / 1000);
 
     // Update countdown display every second
     countdownIntervalRef.current = setInterval(() => {
@@ -90,6 +97,7 @@ export function useAutoSend({
         onSend();
       }
     }, AUTO_SEND_COUNTDOWN_PERIOD);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [disabled, value, onSend]);
 
   // Start silent period timer
@@ -149,6 +157,7 @@ export function useAutoSend({
 
       lastValueRef.current = value;
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [value, disabled, resetTimer, startSilentPeriod]);
 
   // Effect to handle disabled state changes
@@ -169,5 +178,6 @@ export function useAutoSend({
     isCountdownActive,
     countdownSeconds,
     resetTimer,
+    cancelTimer,
   };
 }

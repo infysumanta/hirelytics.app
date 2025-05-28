@@ -113,12 +113,13 @@ export function SpeechRecognitionInput({
   const recognitionRef = useRef<SpeechRecognition | null>(null);
 
   // Auto-send functionality
-  const { isCountdownActive, countdownSeconds, resetTimer } = useAutoSend({
-    value,
-    onSend,
-    disabled,
-    paused: audioIsPlaying, // Pause auto-send when audio is playing
-  });
+  const { isCountdownActive, countdownSeconds, resetTimer, cancelTimer } =
+    useAutoSend({
+      value,
+      onSend,
+      disabled,
+      paused: audioIsPlaying, // Pause auto-send when audio is playing
+    });
 
   // Check if speech recognition is available
   useEffect(() => {
@@ -539,7 +540,11 @@ export function SpeechRecognitionInput({
   return (
     <div className="flex flex-col w-full">
       {/* Auto-send timer display */}
-      <AutoSendTimer isActive={isCountdownActive} seconds={countdownSeconds} />
+      <AutoSendTimer
+        isActive={isCountdownActive}
+        seconds={countdownSeconds}
+        onCancel={cancelTimer}
+      />
 
       <div className="flex gap-2 items-end">
         <div className="flex-1 relative">

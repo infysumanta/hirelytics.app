@@ -1,17 +1,20 @@
 "use client";
 
-import { Clock, Send } from "lucide-react";
+import { Clock, Send, X } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
 
 interface AutoSendTimerProps {
   isActive: boolean;
   seconds: number;
+  onCancel?: () => void;
   className?: string;
 }
 
 export function AutoSendTimer({
   isActive,
   seconds,
+  onCancel,
   className,
 }: AutoSendTimerProps) {
   if (!isActive || seconds <= 0) {
@@ -21,11 +24,21 @@ export function AutoSendTimer({
   return (
     <div
       className={cn(
-        "fixed top-4 right-4 z-50 bg-background/95 backdrop-blur-sm border border-primary/30 rounded-xl px-4 py-3 shadow-lg",
+        "fixed top-4 right-4 z-[9999] bg-background/95 backdrop-blur-sm border border-primary/30 rounded-xl px-4 py-3 shadow-lg",
         "animate-in slide-in-from-top-2 duration-300",
         className,
       )}
     >
+      {/* Cancel button in top-right corner */}
+      <Button
+        variant="ghost"
+        size="icon"
+        onClick={onCancel}
+        className="absolute -top-2 -right-2 h-6 w-6 rounded-full bg-background border border-border shadow-sm hover:bg-destructive hover:text-destructive-foreground"
+      >
+        <X className="h-3 w-3" />
+      </Button>
+
       <div className="flex items-center gap-3">
         {/* Icon with pulsing animation */}
         <div className="relative">
@@ -55,10 +68,7 @@ export function AutoSendTimer({
 
         {/* Progress indicator */}
         <div className="relative w-8 h-8">
-          <svg
-            className="w-8 h-8 transform -rotate-90"
-            viewBox="0 0 32 32"
-          >
+          <svg className="w-8 h-8 transform -rotate-90" viewBox="0 0 32 32">
             {/* Background circle */}
             <circle
               cx="16"
@@ -93,7 +103,7 @@ export function AutoSendTimer({
       {/* Subtle hint text */}
       <div className="mt-2 pt-2 border-t border-primary/10">
         <p className="text-xs text-muted-foreground text-center">
-          Start typing to cancel auto-send
+          Start typing or click × to cancel auto-send
         </p>
       </div>
     </div>
