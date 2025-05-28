@@ -735,17 +735,26 @@ export function InterviewSession({
               </div>
             )}
 
-            {!isUserTurn && !isInitializing && (
+            {isAudioPlaying && !isInitializing && (
+              <div className="text-xs px-2 py-1 bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-400 rounded-full">
+                AI is talking...
+              </div>
+            )}
+
+            {!isUserTurn && !isInitializing && !isAudioPlaying && (
               <div className="text-xs px-2 py-1 bg-primary/10 text-primary rounded-full">
                 AI is responding...
               </div>
             )}
 
-            {isUserTurn && messages.length > 0 && !isInitializing && (
-              <div className="text-xs px-2 py-1 bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400 rounded-full whitespace-nowrap">
-                Your turn
-              </div>
-            )}
+            {isUserTurn &&
+              messages.length > 0 &&
+              !isInitializing &&
+              !isAudioPlaying && (
+                <div className="text-xs px-2 py-1 bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400 rounded-full whitespace-nowrap animate-subtle-bounce">
+                  Your turn
+                </div>
+              )}
           </div>
         </div>
 
@@ -869,17 +878,23 @@ export function InterviewSession({
                 placeholder={
                   isInitializing
                     ? "Initializing interview..."
-                    : isUserTurn
-                      ? "Type your message or speak..."
-                      : "Please wait for the AI to respond..."
+                    : isAudioPlaying
+                      ? "AI is talking... Please wait..."
+                      : isUserTurn
+                        ? "Type your message or speak..."
+                        : "Please wait for the AI to respond..."
                 }
                 value={messageInput}
                 onChange={setMessageInput}
                 onSend={handleSendMessage}
-                forceMicOff={forceMicOff}
-                disabled={!isUserTurn || isLoading || isInitializing}
+                forceMicOff={forceMicOff || isAudioPlaying}
+                disabled={
+                  !isUserTurn || isLoading || isInitializing || isAudioPlaying
+                }
                 className={`min-h-12 resize-none bg-background border-muted focus:border-primary/30 rounded-lg transition-all ${
-                  !isUserTurn || isInitializing ? "opacity-50" : ""
+                  !isUserTurn || isInitializing || isAudioPlaying
+                    ? "opacity-50"
+                    : ""
                 }`}
                 rows={1}
                 hideButtons={
@@ -908,8 +923,10 @@ export function InterviewSession({
                           );
                         }}
                         disabled={
-                          !isUserTurn || isLoading || isInitializing
-                          // Removed isAudioPlaying to allow users to talk during audio playback
+                          !isUserTurn ||
+                          isLoading ||
+                          isInitializing ||
+                          isAudioPlaying
                         }
                       >
                         {isSpeechListening && (
@@ -925,7 +942,11 @@ export function InterviewSession({
                     <TooltipContent side="top">
                       {isSpeechListening
                         ? "Stop listening"
-                        : "Start voice recognition"}
+                        : isAudioPlaying
+                          ? "Microphone disabled while AI is talking"
+                          : !isUserTurn
+                            ? "Wait for your turn to speak"
+                            : "Start voice recognition"}
                     </TooltipContent>
                   </Tooltip>
                 </TooltipProvider>
