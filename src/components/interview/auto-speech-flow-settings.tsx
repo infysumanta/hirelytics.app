@@ -2,13 +2,7 @@
 
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Slider } from "@/components/ui/slider";
@@ -65,14 +59,14 @@ export function AutoSpeechFlowSettings({
 
   return (
     <>
-      {/* Auto-send countdown indicator - positioned at bottom-right */}
+      {/* Auto-send countdown indicator */}
       {isAutoSendPending && autoSendCountdown > 0 && (
-        <div className="fixed bottom-4 right-4 z-50">
-          <Card className="border-orange-200 bg-orange-50 dark:border-orange-800 dark:bg-orange-950 shadow-lg">
+        <div className="fixed top-4 right-4 z-50">
+          <Card className="border-orange-200 bg-orange-50 dark:border-orange-800 dark:bg-orange-950">
             <CardContent className="p-4">
               <div className="flex items-center gap-3">
                 <div className="flex items-center gap-2">
-                  <Timer className="h-4 w-4 text-orange-600 dark:text-orange-400 animate-pulse" />
+                  <Timer className="h-4 w-4 text-orange-600 dark:text-orange-400" />
                   <span className="text-sm font-medium text-orange-800 dark:text-orange-200">
                     Auto-sending in {autoSendCountdown}s
                   </span>
@@ -231,20 +225,14 @@ export function AutoSpeechFlowSettings({
                   <div className="flex items-center gap-1">
                     <Volume2 className="h-3 w-3" />
                     <span>Auto Mic:</span>
-                    <Badge
-                      variant={config.autoMicEnabled ? "default" : "secondary"}
-                      className="text-xs"
-                    >
+                    <Badge variant={config.autoMicEnabled ? "default" : "secondary"} className="text-xs">
                       {config.autoMicEnabled ? "On" : "Off"}
                     </Badge>
                   </div>
                   <div className="flex items-center gap-1">
                     <Send className="h-3 w-3" />
                     <span>Auto Send:</span>
-                    <Badge
-                      variant={config.autoSendEnabled ? "default" : "secondary"}
-                      className="text-xs"
-                    >
+                    <Badge variant={config.autoSendEnabled ? "default" : "secondary"} className="text-xs">
                       {config.autoSendEnabled ? "On" : "Off"}
                     </Badge>
                   </div>
