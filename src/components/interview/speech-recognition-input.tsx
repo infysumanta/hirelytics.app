@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
 import { VoiceIndicator } from "./voice-indicator";
+import { AutoSendTimer } from "./auto-send-timer";
 import {
   Tooltip,
   TooltipContent,
@@ -20,6 +21,7 @@ import {
   AUTO_STOP_ENABLED,
   DEFAULT_SILENCE_TIMEOUT,
 } from "@/constants/speech-recognition-config";
+import { useAutoSend } from "@/hooks/use-auto-send";
 
 interface SpeechRecognitionInputProps {
   value: string;
@@ -109,6 +111,15 @@ export function SpeechRecognitionInput({
   const [silenceTimer, setSilenceTimer] = useState<NodeJS.Timeout | null>(null);
   const [audioIsPlaying, setAudioIsPlaying] = useState(false);
   const recognitionRef = useRef<SpeechRecognition | null>(null);
+
+  // Auto-send functionality
+  const { isCountdownActive, countdownSeconds, resetTimer, cancelTimer } =
+    useAutoSend({
+      value,
+      onSend,
+      disabled,
+      paused: audioIsPlaying, // Pause auto-send when audio is playing
+    });
 
   // Check if speech recognition is available
   useEffect(() => {
@@ -207,6 +218,11 @@ export function SpeechRecognitionInput({
         // Check if the result is final
         const isFinalResult = event.results[event.results.length - 1].isFinal;
         if (isFinalResult) {
+          // Don't call resetTimer() here - let the auto-send hook handle value changes naturally
+          console.log(
+            "[Auto-Send] Speech recognition final result - auto-send will start automatically",
+          );
+
           // If AUTO_STOP_ENABLED is true, set a timer to stop listening after silence
           if (AUTO_STOP_ENABLED) {
             console.log(
@@ -398,6 +414,9 @@ export function SpeechRecognitionInput({
         stopListening();
       }
 
+      // Reset auto-send timer when user manually sends
+      resetTimer();
+
       // Log that Enter key was pressed to send message
       console.log("Enter key pressed to send message, current input:", value);
 
@@ -520,12 +539,22 @@ export function SpeechRecognitionInput({
 
   return (
     <div className="flex flex-col w-full">
+      {/* Auto-send timer display */}
+      <AutoSendTimer
+        isActive={isCountdownActive}
+        seconds={countdownSeconds}
+        onCancel={cancelTimer}
+      />
+
       <div className="flex gap-2 items-end">
         <div className="flex-1 relative">
           <Textarea
             placeholder={placeholder}
             value={value}
-            onChange={(e) => onChange(e.target.value)}
+            onChange={(e) => {
+              onChange(e.target.value);
+              // Auto-send hook will handle the value change automatically
+            }}
             onKeyDown={handleKeyPress}
             disabled={disabled}
             className={cn(
@@ -545,14 +574,14 @@ export function SpeechRecognitionInput({
 
           {/* Voice visualizer above the textarea when listening */}
           {isListening && (
-            <div className="absolute -top-16 left-0 right-0 flex justify-center">
+            <div className="flex justify-center">
               <div className="bg-background/90 backdrop-blur-sm rounded-xl px-5 py-3 flex items-center gap-3 shadow-lg border border-primary/30">
                 <div className="bg-primary/10 p-2 rounded-full">
-                  <Volume2 className="h-4 w-4 text-primary" />
+                  <Volume2 className="h-2 w-2 text-primary" />
                 </div>
-                <div className="flex flex-col">
-                  <span className="text-xs font-medium text-primary">
-                    Listening to your voice
+                <div className="flex flex-row justify-between gap-2">
+                  <span className="text-sm font-medium text-primary">
+                    Listening...
                   </span>
                   <VoiceIndicator
                     isActive={true}

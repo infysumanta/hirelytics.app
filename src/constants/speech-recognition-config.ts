@@ -22,3 +22,9 @@ export const SPEECH_RECOGNITION_CONTINUOUS = true;
 
 // Whether to show interim results during speech recognition
 export const SPEECH_RECOGNITION_INTERIM_RESULTS = true;
+
+// Auto-send configuration
+export const AUTO_SEND_SILENT_PERIOD = 5000; // 5 seconds silent period
+export const AUTO_SEND_COUNTDOWN_PERIOD = 5000; // 10 seconds countdown period
+export const AUTO_SEND_TOTAL_TIMEOUT =
+  AUTO_SEND_SILENT_PERIOD + AUTO_SEND_COUNTDOWN_PERIOD; // 15 seconds total
