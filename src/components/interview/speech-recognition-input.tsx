@@ -453,21 +453,9 @@ export function SpeechRecognitionInput({
       toggleListening();
     };
 
-    const handleAutoActivateMicrophone = () => {
-      console.log("[Speech Recognition] Auto-activating microphone");
-      if (!isListening && !disabled) {
-        startListening();
-      }
-    };
-
     document.addEventListener(
       "toggle-speech-recognition",
       handleToggleSpeechRecognition,
-    );
-
-    document.addEventListener(
-      "auto-activate-microphone",
-      handleAutoActivateMicrophone,
     );
 
     return () => {
@@ -475,12 +463,8 @@ export function SpeechRecognitionInput({
         "toggle-speech-recognition",
         handleToggleSpeechRecognition,
       );
-      document.removeEventListener(
-        "auto-activate-microphone",
-        handleAutoActivateMicrophone,
-      );
     };
-  }, [toggleListening, startListening, isListening, disabled]);
+  }, [toggleListening]);
 
   // Emit speech recognition status for external components when the listening state changes
   useEffect(() => {
