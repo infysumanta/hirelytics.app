@@ -70,6 +70,8 @@ export async function getAudioSignedUrl(
     const command = new GetObjectCommand({
       Bucket: bucketName,
       Key: s3Key,
+      ResponseContentType: "audio/mpeg",
+      ResponseContentDisposition: "inline",
     });
 
     const signedUrl = await getSignedUrl(s3Client, command, {
