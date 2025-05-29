@@ -1,5 +1,8 @@
 {
   "Common": {
+    "navigation": {
+      "back": "Back"
+    },
     "theme": {
       "dark": "Dark Mode",
       "light": "Light Mode",
@@ -343,6 +346,178 @@
     "contact": "Contact",
     "jobNotFound": "Job not found",
     "errorLoadingJob": "Failed to load job details. Please try again later."
+  },
+  "Pages": {
+    "about": {
+      "title": "About Hirelytics",
+      "subtitle": "Revolutionizing recruitment through AI-powered solutions",
+      "mission": {
+        "title": "Our Mission",
+        "description1": "At Hirelytics, we're on a mission to transform the recruitment landscape by leveraging cutting-edge AI technology. We believe in creating a more efficient, fair, and effective hiring process that benefits both employers and candidates.",
+        "description2": "Our platform combines advanced AI algorithms with human-centered design to streamline recruitment workflows, reduce bias, and help organizations find the best talent."
+      },
+      "values": {
+        "innovation": {
+          "title": "Innovation",
+          "description": "Pushing the boundaries of what's possible in recruitment through AI technology"
+        },
+        "fairness": {
+          "title": "Fairness",
+          "description": "Creating unbiased, equitable hiring processes for all candidates"
+        },
+        "efficiency": {
+          "title": "Efficiency",
+          "description": "Streamlining recruitment to save time and resources"
+        }
+      },
+      "cta": {
+        "title": "Ready to Transform Your Hiring Process?",
+        "description": "Experience the future of recruitment with Hirelytics. Our AI-powered platform is ready to revolutionize how you hire.",
+        "buttonText": "Get Started"
+      }
+    },
+    "contact": {
+      "title": "Contact Us",
+      "subtitle": "Get in touch with our team for any questions or support",
+      "getInTouch": {
+        "title": "Get in Touch",
+        "description": "Have questions about our platform? We'd love to hear from you. Send us a message and we'll respond as soon as possible."
+      },
+      "form": {
+        "name": "Name",
+        "namePlaceholder": "Your name",
+        "email": "Email",
+        "emailPlaceholder": "you@example.com",
+        "message": "Message",
+        "messagePlaceholder": "Your message",
+        "submit": "Send Message"
+      },
+      "contactInfo": {
+        "email": {
+          "label": "Email",
+          "value": "support@hirelytics.ai"
+        },
+        "phone": {
+          "label": "Phone",
+          "value": "+1 (555) 000-0000"
+        },
+        "office": {
+          "label": "Office",
+          "address": "123 Innovation Street\nTech City, TC 12345"
+        }
+      }
+    },
+    "privacy": {
+      "title": "Privacy Policy",
+      "lastUpdated": "Last updated: May 29, 2025",
+      "sections": {
+        "introduction": {
+          "title": "Introduction",
+          "content": "This Privacy Policy explains how Hirelytics collects, uses, and protects your personal information when you use our AI-powered recruitment platform."
+        },
+        "informationWeCollect": {
+          "title": "Information We Collect",
+          "items": [
+            "Personal identification information (name, email, phone number)",
+            "Professional information (resume, work history, skills)",
+            "Usage data from our platform",
+            "Communication preferences",
+            "Interview responses and assessments"
+          ]
+        },
+        "howWeUseYourInformation": {
+          "title": "How We Use Your Information",
+          "purpose": "We use the collected information for the following purposes:",
+          "items": [
+            "To provide and maintain our services",
+            "To match candidates with job opportunities",
+            "To improve our AI algorithms and platform features",
+            "To communicate with you about our services",
+            "To analyze and improve recruitment processes",
+            "To comply with legal obligations"
+          ]
+        },
+        "dataSecurity": {
+          "title": "Data Security",
+          "content": "We implement robust security measures to protect your information from unauthorized access, disclosure, alteration, and destruction."
+        },
+        "yourRights": {
+          "title": "Your Rights",
+          "intro": "You have certain rights regarding your personal information:",
+          "items": [
+            "Right to access your personal data",
+            "Right to request corrections",
+            "Right to delete your data",
+            "Right to data portability",
+            "Right to withdraw consent"
+          ]
+        },
+        "changesToThisPolicy": {
+          "title": "Changes to This Policy",
+          "content": "We may update this privacy policy from time to time. We will notify you of any changes by posting the new policy on this page."
+        },
+        "contactUs": {
+          "title": "Contact Us",
+          "content": "If you have any questions about this Privacy Policy, please contact us at"
+        }
+      }
+    },
+    "terms": {
+      "title": "Terms of Service",
+      "lastUpdated": "Last updated: May 29, 2025",
+      "sections": {
+        "agreement": {
+          "title": "Agreement to Terms",
+          "content": "By accessing or using the Hirelytics platform, you agree to be bound by these Terms of Service and all applicable laws and regulations. If you do not agree with any of these terms, you are prohibited from using or accessing this platform."
+        },
+        "useLicense": {
+          "title": "Use License",
+          "content": [
+            "Permission is granted to temporarily access the platform for personal or business use",
+            "This license does not include permission to modify, distribute, or create derivative works",
+            "Misuse of the platform may result in termination of access"
+          ]
+        },
+        "serviceDescription": {
+          "title": "Service Description",
+          "content": "Hirelytics provides an AI-powered recruitment platform designed to facilitate hiring processes between employers and job seekers."
+        },
+        "userObligations": {
+          "title": "User Obligations",
+          "content": [
+            "Provide accurate and complete information",
+            "Maintain the security of your account credentials",
+            "Comply with all applicable laws and regulations",
+            "Not interfere with the platform's functionality",
+            "Not use the platform for unauthorized purposes"
+          ]
+        },
+        "intellectualProperty": {
+          "title": "Intellectual Property",
+          "content": "All content, features, and functionality of the Hirelytics platform are owned by Hirelytics and are protected by international copyright, trademark, and other intellectual property laws."
+        },
+        "limitationOfLiability": {
+          "title": "Limitation of Liability",
+          "content": "Hirelytics shall not be liable for any indirect, incidental, special, consequential, or punitive damages resulting from your use of the platform."
+        },
+        "privacyPolicy": {
+          "title": "Privacy Policy",
+          "content": "Your use of Hirelytics is also governed by our Privacy Policy. Please review our Privacy Policy to understand our practices."
+        },
+        "governingLaw": {
+          "title": "Governing Law",
+          "content": "These terms shall be governed by and construed in accordance with the laws of the jurisdiction in which Hirelytics operates."
+        },
+        "changesToTerms": {
+          "title": "Changes to Terms",
+          "content": "We reserve the right to modify these terms at any time. We will notify users of any material changes to these terms."
+        },
+        "contactInformation": {
+          "title": "Contact Information",
+          "content": "For any questions about these Terms of Service, please contact us at legal@hirelytics.ai"
+        }
+      }
+    }
   },
   "LearnMore": {
     "backToHome": "Back to Home",
