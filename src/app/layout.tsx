@@ -1,5 +1,6 @@
 import './globals.css';
 
+import { Analytics } from '@vercel/analytics/next';
 import type { Metadata } from 'next';
 import { Geist, Geist_Mono } from 'next/font/google';
 import { getLocale } from 'next-intl/server';
@@ -60,6 +61,7 @@ export default async function RootLayout({
             <FloatingControls />
             <MicrosoftClarity />
             <PostHogScript />
+            <Analytics />
             <div className="flex-1">{children}</div>
           </div>
           <Toaster />
