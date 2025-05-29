@@ -118,36 +118,6 @@ export default function AdminWishlistPage() {
         </p>
       </div>
 
-      {/* Stats Overview */}
-      <div className="grid gap-4 md:grid-cols-3">
-        <div className="rounded-lg border bg-card text-card-foreground shadow-sm p-6">
-          <div className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <h3 className="tracking-tight text-sm font-medium">Total Entries</h3>
-            <User className="h-4 w-4 text-muted-foreground" />
-          </div>
-          <div className="text-2xl font-bold">{data?.pagination?.total || 0}</div>
-          <p className="text-xs text-muted-foreground">People interested in the platform</p>
-        </div>
-
-        <div className="rounded-lg border bg-card text-card-foreground shadow-sm p-6">
-          <div className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <h3 className="tracking-tight text-sm font-medium">This Page</h3>
-            <Mail className="h-4 w-4 text-muted-foreground" />
-          </div>
-          <div className="text-2xl font-bold">{data?.wishlistEntries?.length || 0}</div>
-          <p className="text-xs text-muted-foreground">Entries on current page</p>
-        </div>
-
-        <div className="rounded-lg border bg-card text-card-foreground shadow-sm p-6">
-          <div className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <h3 className="tracking-tight text-sm font-medium">Pages</h3>
-            <Calendar className="h-4 w-4 text-muted-foreground" />
-          </div>
-          <div className="text-2xl font-bold">{data?.pagination?.totalPages || 0}</div>
-          <p className="text-xs text-muted-foreground">Total pages available</p>
-        </div>
-      </div>
-
       <DataTable
         columns={columns}
         data={data?.wishlistEntries || []}

@@ -44,6 +44,11 @@ export function NavMain() {
       url: '/dashboard/wishlist',
       icon: Heart,
     },
+    {
+      title: 'Contact Submissions',
+      url: '/dashboard/contact-submissions',
+      icon: UserIcon, // You can import and use a different icon like MessageSquare if desired
+    },
   ];
 
   const recruiterMenu = [

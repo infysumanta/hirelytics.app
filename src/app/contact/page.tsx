@@ -1,11 +1,34 @@
 'use client';
 
+import { zodResolver } from '@hookform/resolvers/zod';
 import { motion } from 'framer-motion';
-import { ArrowLeft, Mail, MapPin, Phone, Sparkles } from 'lucide-react';
+import { ArrowLeft, Loader2, Mail, MapPin, Phone, Sparkles } from 'lucide-react';
 import { useTranslations } from 'next-intl';
+import { useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { toast } from 'sonner';
+import * as z from 'zod';
 
 import { Button } from '@/components/ui/button';
 import { Footer } from '@/components/ui/footer';
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+
+const contactFormSchema = z.object({
+  name: z.string().min(2, 'Name must be at least 2 characters'),
+  email: z.string().email('Please enter a valid email address'),
+  message: z.string().min(10, 'Message must be at least 10 characters'),
+});
+
+type ContactFormValues = z.infer<typeof contactFormSchema>;
 
 const fadeIn = {
   hidden: { opacity: 0, y: 20 },
@@ -15,6 +38,113 @@ const fadeIn = {
     transition: { duration: 0.6 },
   },
 };
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function ContactForm({ translations: t }: { translations: any }) {
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const form = useForm<ContactFormValues>({
+    resolver: zodResolver(contactFormSchema),
+    defaultValues: {
+      name: '',
+      email: '',
+      message: '',
+    },
+  });
+
+  async function onSubmit(values: ContactFormValues) {
+    try {
+      setIsSubmitting(true);
+      const response = await fetch('/api/contact', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(values),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to submit form');
+      }
+
+      form.reset();
+      toast.success('Message sent successfully!', {
+        description: 'We will get back to you as soon as possible.',
+      });
+    } catch {
+      toast.error('Failed to send message', {
+        description: 'Please try again later.',
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
+  }
+
+  return (
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+        <FormField
+          control={form.control}
+          name="name"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>{t('form.name')}</FormLabel>
+              <FormControl>
+                <Input placeholder={t('form.namePlaceholder')} {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="email"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>{t('form.email')}</FormLabel>
+              <FormControl>
+                <Input placeholder={t('form.emailPlaceholder')} {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="message"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>{t('form.message')}</FormLabel>
+              <FormControl>
+                <Textarea
+                  placeholder={t('form.messagePlaceholder')}
+                  className="min-h-[150px]"
+                  {...field}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <Button type="submit" className="w-full" disabled={isSubmitting}>
+          {isSubmitting ? (
+            <>
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              Sending...
+            </>
+          ) : (
+            <>
+              <Sparkles className="mr-2 h-4 w-4" />
+              {t('form.submit')}
+            </>
+          )}
+        </Button>
+      </form>
+    </Form>
+  );
+}
 
 export default function ContactPage() {
   const t = useTranslations('Pages.contact');
@@ -117,51 +247,7 @@ export default function ContactPage() {
             transition={{ delay: 0.4 }}
             className="bg-card rounded-lg p-6 shadow-sm"
           >
-            <form className="space-y-6">
-              <div>
-                <label htmlFor="name" className="block text-sm font-medium mb-2">
-                  {t('form.name')}
-                </label>
-                <input
-                  type="text"
-                  id="name"
-                  className="w-full rounded-md border border-input bg-background px-3 py-2"
-                  placeholder={t('form.namePlaceholder')}
-                />
-              </div>
-
-              <div>
-                <label htmlFor="email" className="block text-sm font-medium mb-2">
-                  {t('form.email')}
-                </label>
-                <input
-                  type="email"
-                  id="email"
-                  className="w-full rounded-md border border-input bg-background px-3 py-2"
-                  placeholder={t('form.emailPlaceholder')}
-                />
-              </div>
-
-              <div>
-                <label htmlFor="message" className="block text-sm font-medium mb-2">
-                  {t('form.message')}
-                </label>
-                <textarea
-                  id="message"
-                  rows={5}
-                  className="w-full rounded-md border border-input bg-background px-3 py-2"
-                  placeholder={t('form.messagePlaceholder')}
-                ></textarea>
-              </div>
-
-              <button
-                type="submit"
-                className="w-full inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow hover:bg-primary/90"
-              >
-                <Sparkles className="mr-2 h-4 w-4" />
-                {t('form.submit')}
-              </button>
-            </form>
+            <ContactForm translations={t} />
           </motion.div>
         </div>
       </div>
