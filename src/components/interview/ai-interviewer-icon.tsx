@@ -1,12 +1,14 @@
-"use client";
+'use client';
 
-import { cn } from "@/lib/utils";
-import Image from "next/image";
-import { useTheme } from "next-themes";
-import { useEffect, useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { useAIAgentState, type AIAgentState } from "@/hooks/use-ai-agent-state";
-import "./ai-interview.css";
+import './ai-interview.css';
+
+import { AnimatePresence, motion } from 'framer-motion';
+import Image from 'next/image';
+import { useTheme } from 'next-themes';
+import { useEffect, useState } from 'react';
+
+import { type AIAgentState, useAIAgentState } from '@/hooks/use-ai-agent-state';
+import { cn } from '@/lib/utils';
 
 interface AIInterviewerIconProps {
   className?: string;
@@ -36,10 +38,7 @@ export function AIInterviewerIcon({
   if (!mounted) {
     return (
       <div
-        className={cn(
-          "flex items-center justify-center rounded-full bg-primary/20",
-          className,
-        )}
+        className={cn('flex items-center justify-center rounded-full bg-primary/20', className)}
         style={{ width: size, height: size }}
       />
     );
@@ -49,14 +48,14 @@ export function AIInterviewerIcon({
   const containerVariants = {
     idle: {
       scale: 1,
-      transition: { duration: 0.3, ease: "easeOut" },
+      transition: { duration: 0.3, ease: 'easeOut' },
     },
     thinking: {
       scale: [1, 1.02, 1],
       transition: {
         duration: 2.5,
         repeat: Infinity,
-        ease: "easeInOut",
+        ease: 'easeInOut',
       },
     },
     speaking: {
@@ -64,7 +63,7 @@ export function AIInterviewerIcon({
       transition: {
         duration: 1.8,
         repeat: Infinity,
-        ease: "easeInOut",
+        ease: 'easeInOut',
       },
     },
   };
@@ -80,7 +79,7 @@ export function AIInterviewerIcon({
       transition: {
         duration: 3,
         repeat: Infinity,
-        ease: "easeInOut",
+        ease: 'easeInOut',
       },
     },
     speaking: {
@@ -89,14 +88,14 @@ export function AIInterviewerIcon({
       transition: {
         duration: 1.5,
         repeat: Infinity,
-        ease: "easeInOut",
+        ease: 'easeInOut',
       },
     },
   };
 
   return (
     <motion.div
-      className={cn("relative ai-interviewer-icon", className)}
+      className={cn('relative ai-interviewer-icon', className)}
       style={{ width: size, height: size }}
       variants={containerVariants}
       animate={currentState}
@@ -104,11 +103,11 @@ export function AIInterviewerIcon({
     >
       {/* Thinking state gradient background */}
       <AnimatePresence>
-        {currentState === "thinking" && (
+        {currentState === 'thinking' && (
           <motion.div
             className={cn(
-              "absolute inset-0 rounded-full ai-thinking-gradient",
-              "border border-primary/20",
+              'absolute inset-0 rounded-full ai-thinking-gradient',
+              'border border-primary/20'
             )}
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
@@ -120,7 +119,7 @@ export function AIInterviewerIcon({
 
       {/* Speaking state ripple effects */}
       <AnimatePresence>
-        {currentState === "speaking" && (
+        {currentState === 'speaking' && (
           <>
             <motion.div
               className="absolute inset-0 rounded-full border-2 border-primary/30"
@@ -129,7 +128,7 @@ export function AIInterviewerIcon({
               transition={{
                 duration: 1.5,
                 repeat: Infinity,
-                ease: "easeOut",
+                ease: 'easeOut',
               }}
             />
             <motion.div
@@ -139,7 +138,7 @@ export function AIInterviewerIcon({
               transition={{
                 duration: 1.5,
                 repeat: Infinity,
-                ease: "easeOut",
+                ease: 'easeOut',
                 delay: 0.3,
               }}
             />
@@ -150,13 +149,13 @@ export function AIInterviewerIcon({
       {/* Base background with state-based animation */}
       <motion.div
         className={cn(
-          "absolute inset-0 rounded-full",
-          currentState === "thinking"
-            ? "ai-thinking-breathe"
-            : currentState === "speaking"
-              ? "ai-speaking-glow"
-              : "ai-pulse-animation",
-          theme === "dark" ? "bg-primary/10" : "bg-primary/5",
+          'absolute inset-0 rounded-full',
+          currentState === 'thinking'
+            ? 'ai-thinking-breathe'
+            : currentState === 'speaking'
+              ? 'ai-speaking-glow'
+              : 'ai-pulse-animation',
+          theme === 'dark' ? 'bg-primary/10' : 'bg-primary/5'
         )}
         variants={backgroundVariants}
         animate={currentState}
@@ -167,24 +166,24 @@ export function AIInterviewerIcon({
       <motion.div
         className="relative z-10"
         animate={
-          currentState === "speaking"
+          currentState === 'speaking'
             ? {
                 filter: [
-                  "brightness(1) saturate(1)",
-                  "brightness(1.1) saturate(1.2)",
-                  "brightness(0.95) saturate(0.9)",
-                  "brightness(1.05) saturate(1.1)",
-                  "brightness(1) saturate(1)",
+                  'brightness(1) saturate(1)',
+                  'brightness(1.1) saturate(1.2)',
+                  'brightness(0.95) saturate(0.9)',
+                  'brightness(1.05) saturate(1.1)',
+                  'brightness(1) saturate(1)',
                 ],
               }
             : {}
         }
         transition={
-          currentState === "speaking"
+          currentState === 'speaking'
             ? {
                 duration: 1.2,
                 repeat: Infinity,
-                ease: "easeInOut",
+                ease: 'easeInOut',
               }
             : {}
         }
@@ -195,8 +194,8 @@ export function AIInterviewerIcon({
           width={size}
           height={size}
           className={cn(
-            "rounded-full shadow-md relative z-10",
-            theme === "dark" ? "brightness-110" : "brightness-90",
+            'rounded-full shadow-md relative z-10',
+            theme === 'dark' ? 'brightness-110' : 'brightness-90'
           )}
           priority
         />
@@ -204,7 +203,7 @@ export function AIInterviewerIcon({
 
       {/* Thinking state ripple effect */}
       <AnimatePresence>
-        {currentState === "thinking" && (
+        {currentState === 'thinking' && (
           <motion.div
             className="absolute inset-0 rounded-full border border-primary/10"
             initial={{ scale: 0.8, opacity: 0.8 }}
@@ -212,7 +211,7 @@ export function AIInterviewerIcon({
             transition={{
               duration: 2,
               repeat: Infinity,
-              ease: "easeOut",
+              ease: 'easeOut',
             }}
           />
         )}

@@ -1,5 +1,5 @@
-import { clsx, type ClassValue } from "clsx";
-import { twMerge } from "tailwind-merge";
+import { type ClassValue, clsx } from 'clsx';
+import { twMerge } from 'tailwind-merge';
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -14,9 +14,7 @@ export function safeStyle(styleObj: Record<string, any>): Record<string, any> {
   const safeObj: Record<string, any> = {};
   Object.entries(styleObj).forEach(([key, value]) => {
     // Convert any kebab-case to camelCase
-    const camelKey = key.replace(/-([a-z])/g, (_, letter) =>
-      letter.toUpperCase(),
-    );
+    const camelKey = key.replace(/-([a-z])/g, (_, letter) => letter.toUpperCase());
     safeObj[camelKey] = value;
   });
   return safeObj;

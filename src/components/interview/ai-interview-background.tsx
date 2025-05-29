@@ -1,18 +1,18 @@
-"use client";
+'use client';
 
-import { cn } from "@/lib/utils";
-import Image from "next/image";
-import { useTheme } from "next-themes";
-import { useEffect, useState } from "react";
-import "./ai-interview.css";
+import './ai-interview.css';
+
+import Image from 'next/image';
+import { useTheme } from 'next-themes';
+import { useEffect, useState } from 'react';
+
+import { cn } from '@/lib/utils';
 
 interface AIInterviewBackgroundProps {
   className?: string;
 }
 
-export function AIInterviewBackground({
-  className,
-}: AIInterviewBackgroundProps) {
+export function AIInterviewBackground({ className }: AIInterviewBackgroundProps) {
   const { theme } = useTheme();
   const [mounted, setMounted] = useState(false);
 
@@ -26,13 +26,11 @@ export function AIInterviewBackground({
   }
 
   return (
-    <div className={cn("absolute inset-0 overflow-hidden -z-10", className)}>
+    <div className={cn('absolute inset-0 overflow-hidden -z-10', className)}>
       <div
         className={cn(
-          "absolute inset-0 bg-gradient-to-br",
-          theme === "dark"
-            ? "from-blue-950/20 to-black/50"
-            : "from-blue-50/90 to-white/70",
+          'absolute inset-0 bg-gradient-to-br',
+          theme === 'dark' ? 'from-blue-950/20 to-black/50' : 'from-blue-50/90 to-white/70'
         )}
       />
       <Image
@@ -41,8 +39,8 @@ export function AIInterviewBackground({
         fill
         sizes="100vw"
         className={cn(
-          "object-cover ai-circuit-pattern",
-          theme === "dark" ? "invert-0" : "invert opacity-30",
+          'object-cover ai-circuit-pattern',
+          theme === 'dark' ? 'invert-0' : 'invert opacity-30'
         )}
         priority
       />

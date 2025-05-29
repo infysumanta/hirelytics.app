@@ -29,11 +29,7 @@
 
 /* Shared styles */
 .ai-interview-container {
-  background: linear-gradient(
-    135deg,
-    var(--ai-gradient-start),
-    var(--ai-gradient-end)
-  );
+  background: linear-gradient(135deg, var(--ai-gradient-start), var(--ai-gradient-end));
   border: 1px solid var(--ai-border);
   box-shadow: 0 8px 32px var(--ai-shadow);
   color: var(--ai-text);
@@ -254,7 +250,7 @@
 
 /* AI Interview background circuit patterns */
 .ai-circuit-pattern {
-  background-image: url("/ai-interview-background.svg");
+  background-image: url('/ai-interview-background.svg');
   background-size: cover;
   background-repeat: no-repeat;
   opacity: var(--ai-bg-pattern);

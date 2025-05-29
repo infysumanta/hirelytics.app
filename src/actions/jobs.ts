@@ -1,7 +1,7 @@
-"use server";
+'use server';
 
-import { connectToDatabase } from "@/lib/mongodb";
-import Job from "@/models/job";
+import { connectToDatabase } from '@/lib/mongodb';
+import Job from '@/models/job';
 
 export type JobFilter = {
   search?: string;
@@ -12,9 +12,9 @@ export type JobFilter = {
 };
 
 export async function getJobs({
-  search = "",
+  search = '',
   skills = [],
-  location = "",
+  location = '',
   page = 1,
   limit = 10,
 }: JobFilter) {
@@ -28,9 +28,9 @@ export async function getJobs({
     // Search in title, description and company name
     if (search) {
       query.$or = [
-        { title: { $regex: search, $options: "i" } },
-        { description: { $regex: search, $options: "i" } },
-        { companyName: { $regex: search, $options: "i" } },
+        { title: { $regex: search, $options: 'i' } },
+        { description: { $regex: search, $options: 'i' } },
+        { companyName: { $regex: search, $options: 'i' } },
       ];
     }
 
@@ -49,7 +49,7 @@ export async function getJobs({
 
     // Fetch jobs with pagination
     const jobs = await Job.find(query)
-      .populate("recruiter", "name email")
+      .populate('recruiter', 'name email')
       .sort({ createdAt: -1 })
       .skip(skip)
       .limit(limit + 1) // Get one extra to check if there are more results
@@ -68,9 +68,9 @@ export async function getJobs({
       nextPage: hasMore ? page + 1 : null,
     };
   } catch (error: unknown) {
-    console.error("Error fetching jobs:", error);
+    console.error('Error fetching jobs:', error);
     throw new Error(
-      `Failed to fetch jobs: ${error instanceof Error ? error.message : String(error)}`,
+      `Failed to fetch jobs: ${error instanceof Error ? error.message : String(error)}`
     );
   }
 }
@@ -78,20 +78,20 @@ export async function getJobs({
 export async function getJobById(id: string) {
   try {
     await connectToDatabase();
-    console.log("Fetching job with ID:", id);
+    console.log('Fetching job with ID:', id);
 
     const job = await Job.findOne({ _id: id }).lean();
 
     if (!job) {
-      throw new Error("Job not found");
+      throw new Error('Job not found');
     }
 
     // Serialize MongoDB document for passing to client components
     return JSON.parse(JSON.stringify(job));
   } catch (error: unknown) {
-    console.error("Error fetching job:", error);
+    console.error('Error fetching job:', error);
     throw new Error(
-      `Failed to fetch job: ${error instanceof Error ? error.message : String(error)}`,
+      `Failed to fetch job: ${error instanceof Error ? error.message : String(error)}`
     );
   }
 }
@@ -99,20 +99,20 @@ export async function getJobById(id: string) {
 export async function getJobByUrlId(id: string) {
   try {
     await connectToDatabase();
-    console.log("Fetching job with ID:", id);
+    console.log('Fetching job with ID:', id);
 
     const job = await Job.findOne({ urlId: id }).lean();
 
     if (!job) {
-      throw new Error("Job not found");
+      throw new Error('Job not found');
     }
 
     // Serialize MongoDB document for passing to client components
     return JSON.parse(JSON.stringify(job));
   } catch (error: unknown) {
-    console.error("Error fetching job:", error);
+    console.error('Error fetching job:', error);
     throw new Error(
-      `Failed to fetch job: ${error instanceof Error ? error.message : String(error)}`,
+      `Failed to fetch job: ${error instanceof Error ? error.message : String(error)}`
     );
   }
 }

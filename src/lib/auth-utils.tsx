@@ -1,9 +1,10 @@
-"use client";
+'use client';
 
-import { useEffect } from "react";
-import { useRouter } from "next/navigation";
-import { useSession } from "next-auth/react";
-import { UserRole } from "@/models/user";
+import { useRouter } from 'next/navigation';
+import { useSession } from 'next-auth/react';
+import { useEffect } from 'react';
+
+import { UserRole } from '@/models/user';
 
 type ProtectedRouteProps = {
   allowedRoles: UserRole[];
@@ -19,23 +20,23 @@ type ProtectedRouteProps = {
  */
 export function useRoleProtection({
   allowedRoles,
-  redirectTo = "/unauthorized",
+  redirectTo = '/unauthorized',
 }: ProtectedRouteProps) {
   const { data: session, status } = useSession();
   const router = useRouter();
-  const isLoading = status === "loading";
+  const isLoading = status === 'loading';
 
   useEffect(() => {
     // If session loaded and user is not authenticated, redirect to login
-    if (!isLoading && status === "unauthenticated") {
-      router.push("/login");
+    if (!isLoading && status === 'unauthenticated') {
+      router.push('/login');
       return;
     }
 
     // If session loaded and user doesn't have required role, redirect to unauthorized page
     if (
       !isLoading &&
-      status === "authenticated" &&
+      status === 'authenticated' &&
       session?.user?.role &&
       !allowedRoles.includes(session.user.role)
     ) {
@@ -45,9 +46,7 @@ export function useRoleProtection({
 
   // Return true if user is authorized, false otherwise
   const isAuthorized =
-    status === "authenticated" &&
-    session?.user?.role &&
-    allowedRoles.includes(session.user.role);
+    status === 'authenticated' && session?.user?.role && allowedRoles.includes(session.user.role);
 
   return { isLoading, isAuthorized };
 }
@@ -64,7 +63,7 @@ export function useRoleProtection({
 export function withRoleProtection<P extends object>(
   Component: React.ComponentType<P>,
   allowedRoles: UserRole[],
-  LoadingComponent: React.ComponentType = () => <div>Loading...</div>,
+  LoadingComponent: React.ComponentType = () => <div>Loading...</div>
 ): React.FC<P> {
   return function ProtectedComponent(props: P) {
     const { isLoading, isAuthorized } = useRoleProtection({ allowedRoles });

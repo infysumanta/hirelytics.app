@@ -1,9 +1,10 @@
-import { NextRequest, NextResponse } from "next/server";
-import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
-import { v4 as uuidv4 } from "uuid";
-import { auth } from "@/auth";
-import { connectToDatabase } from "@/lib/mongodb";
-import { JobApplication } from "@/models/job-application";
+import { PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
+import { NextRequest, NextResponse } from 'next/server';
+import { v4 as uuidv4 } from 'uuid';
+
+import { auth } from '@/auth';
+import { connectToDatabase } from '@/lib/mongodb';
+import { JobApplication } from '@/models/job-application';
 
 const s3Client = new S3Client({
   region: process.env.AWS_REGION!,
@@ -15,26 +16,20 @@ const s3Client = new S3Client({
   },
 });
 
-const bucketName = process.env.AWS_BUCKET_NAME || "hirelytics";
+const bucketName = process.env.AWS_BUCKET_NAME || 'hirelytics';
 
-export async function POST(
-  request: NextRequest,
-  { params }: { params: Promise<{ id: string }> },
-) {
+export async function POST(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   try {
     const session = await auth();
     if (!session) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     const { image, timestamp } = await request.json();
 
     // Convert base64 to buffer
-    const buffer = Buffer.from(
-      image.replace(/^data:image\/\w+;base64,/, ""),
-      "base64",
-    );
+    const buffer = Buffer.from(image.replace(/^data:image\/\w+;base64,/, ''), 'base64');
 
     // Generate unique key for S3
     const key = `monitoring/${id}/${uuidv4()}.jpg`;
@@ -45,8 +40,8 @@ export async function POST(
         Bucket: bucketName,
         Key: key,
         Body: buffer,
-        ContentType: "image/jpeg",
-      }),
+        ContentType: 'image/jpeg',
+      })
     );
 
     // Update application document
@@ -60,15 +55,12 @@ export async function POST(
             timestamp: new Date(timestamp),
           },
         },
-      },
+      }
     );
 
     return NextResponse.json({ success: true });
   } catch (error) {
-    console.error("Error uploading monitoring image:", error);
-    return NextResponse.json(
-      { error: "Failed to upload monitoring image" },
-      { status: 500 },
-    );
+    console.error('Error uploading monitoring image:', error);
+    return NextResponse.json({ error: 'Failed to upload monitoring image' }, { status: 500 });
   }
 }

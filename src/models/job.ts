@@ -1,5 +1,6 @@
-import mongoose, { Schema, Document, Model } from "mongoose";
-import { IUser } from "./user";
+import mongoose, { Document, Model, Schema } from 'mongoose';
+
+import { IUser } from './user';
 
 export interface IJob extends Document {
   _id: string;
@@ -25,32 +26,32 @@ const JobSchema = new Schema<IJob>(
   {
     title: {
       type: String,
-      required: [true, "Please provide a job title"],
-      maxlength: [100, "Title cannot be more than 100 characters"],
+      required: [true, 'Please provide a job title'],
+      maxlength: [100, 'Title cannot be more than 100 characters'],
     },
     description: {
       type: String,
-      required: [true, "Please provide a job description"],
+      required: [true, 'Please provide a job description'],
     },
     companyName: {
       type: String,
-      required: [true, "Please provide a company name"],
-      maxlength: [100, "Company name cannot be more than 100 characters"],
+      required: [true, 'Please provide a company name'],
+      maxlength: [100, 'Company name cannot be more than 100 characters'],
     },
     expiryDate: {
       type: Date,
-      required: [true, "Please provide an expiry date"],
+      required: [true, 'Please provide an expiry date'],
     },
     location: {
       type: String,
-      required: [true, "Please provide a location"],
+      required: [true, 'Please provide a location'],
     },
     salary: {
       type: String,
     },
     skills: {
       type: [String],
-      required: [true, "Please provide at least one skill"],
+      required: [true, 'Please provide at least one skill'],
     },
     requirements: {
       type: String,
@@ -65,7 +66,7 @@ const JobSchema = new Schema<IJob>(
     },
     recruiter: {
       type: Schema.Types.ObjectId,
-      ref: "User",
+      ref: 'User',
       required: true,
     },
     isActive: {
@@ -74,21 +75,19 @@ const JobSchema = new Schema<IJob>(
     },
     interviewDuration: {
       type: Number,
-      required: [true, "Interview duration is required"],
-      min: [5, "Interview duration must be at least 5 minutes"],
-      max: [120, "Interview duration cannot exceed 120 minutes"],
+      required: [true, 'Interview duration is required'],
+      min: [5, 'Interview duration must be at least 5 minutes'],
+      max: [120, 'Interview duration cannot exceed 120 minutes'],
     },
   },
-  { timestamps: true },
+  { timestamps: true }
 );
 
 // Only define the model in a Node.js environment, not in Edge runtime
 const Job: Model<IJob> =
   mongoose.models.Job ||
-  (typeof window === "undefined" &&
-  typeof global !== "undefined" &&
-  !("EdgeRuntime" in global)
-    ? mongoose.model<IJob>("Job", JobSchema)
+  (typeof window === 'undefined' && typeof global !== 'undefined' && !('EdgeRuntime' in global)
+    ? mongoose.model<IJob>('Job', JobSchema)
     : (null as unknown as Model<IJob>));
 
 export default Job;

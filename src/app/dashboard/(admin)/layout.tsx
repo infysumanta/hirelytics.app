@@ -1,17 +1,14 @@
-import { auth } from "@/auth";
-import { redirect } from "next/navigation";
+import { redirect } from 'next/navigation';
 
-export default async function AdminDashboardLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+import { auth } from '@/auth';
+
+export default async function AdminDashboardLayout({ children }: { children: React.ReactNode }) {
   const session = await auth();
   const user = session?.user;
   const role = user?.role;
 
-  if (role !== "admin") {
-    redirect("/unauthorized");
+  if (role !== 'admin') {
+    redirect('/unauthorized');
   }
 
   return <>{children}</>;

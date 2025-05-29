@@ -1,10 +1,11 @@
-"use client";
+'use client';
 
-import { AnimatedBackground } from "@/components/ui/animated-background";
-import { AnimatedAuthCard } from "@/components/ui/auth-card";
-import { WishlistForm } from "@/components/auth/wishlist-form";
-import { motion } from "framer-motion";
-import { useTranslations } from "next-intl";
+import { motion } from 'framer-motion';
+import { useTranslations } from 'next-intl';
+
+import { WishlistForm } from '@/components/auth/wishlist-form';
+import { AnimatedBackground } from '@/components/ui/animated-background';
+import { AnimatedAuthCard } from '@/components/ui/auth-card';
 
 // Animation variants for staggered children
 const fadeIn = {
@@ -27,22 +28,18 @@ const staggerContainer = {
 };
 
 export default function WishlistPage() {
-  const t = useTranslations("Wishlist");
+  const t = useTranslations('Wishlist');
 
   return (
     <AnimatedBackground patternColor="primary" colorScheme="indigo">
       <div className="w-full max-w-md px-4">
         <AnimatedAuthCard
-          title={t("title")}
-          description={t("description")}
+          title={t('title')}
+          description={t('description')}
           colorScheme="indigo"
           contentClassName="flex flex-col space-y-4"
         >
-          <motion.div
-            initial="hidden"
-            animate="visible"
-            variants={staggerContainer}
-          >
+          <motion.div initial="hidden" animate="visible" variants={staggerContainer}>
             <motion.div variants={fadeIn}>
               <WishlistForm />
             </motion.div>

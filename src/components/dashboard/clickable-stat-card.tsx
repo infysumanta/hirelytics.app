@@ -1,10 +1,11 @@
-"use client";
+'use client';
 
-import { ReactNode } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { cn } from "@/lib/utils";
-import Link from "next/link";
-import { ExternalLink } from "lucide-react";
+import { ExternalLink } from 'lucide-react';
+import Link from 'next/link';
+import { ReactNode } from 'react';
+
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { cn } from '@/lib/utils';
 
 interface ClickableStatCardProps {
   title: string;
@@ -29,11 +30,13 @@ export function ClickableStatCard({
   trend,
 }: ClickableStatCardProps) {
   const cardContent = (
-    <Card className={cn(
-      "overflow-hidden transition-all duration-200",
-      href && "hover:shadow-md hover:border-primary/30 cursor-pointer",
-      className
-    )}>
+    <Card
+      className={cn(
+        'overflow-hidden transition-all duration-200',
+        href && 'hover:shadow-md hover:border-primary/30 cursor-pointer',
+        className
+      )}
+    >
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
         <CardTitle className="text-sm font-medium">{title}</CardTitle>
         <div className="flex items-center gap-2">
@@ -43,17 +46,15 @@ export function ClickableStatCard({
       </CardHeader>
       <CardContent>
         <div className="text-2xl font-bold">{value}</div>
-        {description && (
-          <p className="text-xs text-muted-foreground">{description}</p>
-        )}
+        {description && <p className="text-xs text-muted-foreground">{description}</p>}
         {trend && (
           <div
             className={cn(
-              "mt-1 flex items-center text-xs font-medium",
-              trend.isPositive ? "text-green-500" : "text-red-500",
+              'mt-1 flex items-center text-xs font-medium',
+              trend.isPositive ? 'text-green-500' : 'text-red-500'
             )}
           >
-            {trend.isPositive ? "↑" : "↓"} {Math.abs(trend.value)}%{" "}
+            {trend.isPositive ? '↑' : '↓'} {Math.abs(trend.value)}%{' '}
             <span className="ml-1 text-muted-foreground">from last month</span>
           </div>
         )}

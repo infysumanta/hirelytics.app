@@ -1,9 +1,9 @@
-import mongoose from "mongoose";
+import mongoose from 'mongoose';
 
 const MONGODB_URI = process.env.MONGODB_URI;
 
 if (!MONGODB_URI) {
-  throw new Error("Please define the MONGODB_URI environment variable");
+  throw new Error('Please define the MONGODB_URI environment variable');
 }
 
 /**
@@ -47,7 +47,7 @@ export async function connectToDatabase() {
   try {
     cached.conn = await cached.promise;
   } catch (e) {
-    console.error("[MongoDB] Connection failed:", e);
+    console.error('[MongoDB] Connection failed:', e);
     cached.promise = null;
     throw e;
   }
@@ -62,8 +62,8 @@ export function getMongoConnectionStatus() {
     readyState: mongoose.connection.readyState,
     // 0 = disconnected, 1 = connected, 2 = connecting, 3 = disconnecting
     status:
-      ["disconnected", "connected", "connecting", "disconnecting"][
+      ['disconnected', 'connected', 'connecting', 'disconnecting'][
         mongoose.connection.readyState
-      ] || "unknown",
+      ] || 'unknown',
   };
 }

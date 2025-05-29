@@ -1,11 +1,13 @@
-"use client";
+'use client';
 
-import { useState } from "react";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import * as z from "zod";
-import { toast } from "sonner";
-import { Button } from "@/components/ui/button";
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useTranslations } from 'next-intl';
+import { useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { toast } from 'sonner';
+import * as z from 'zod';
+
+import { Button } from '@/components/ui/button';
 import {
   Form,
   FormControl,
@@ -13,15 +15,14 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { useTranslations } from "next-intl";
+} from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
 
 // Define form schema
 const wishlistSchema = z.object({
-  name: z.string().min(2, { message: "Name must be at least 2 characters" }),
-  email: z.string().email({ message: "Please enter a valid email address" }),
+  name: z.string().min(2, { message: 'Name must be at least 2 characters' }),
+  email: z.string().email({ message: 'Please enter a valid email address' }),
   reason: z.string().optional(),
 });
 
@@ -30,14 +31,14 @@ type WishlistFormValues = z.infer<typeof wishlistSchema>;
 export function WishlistForm() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
-  const t = useTranslations("Wishlist");
+  const t = useTranslations('Wishlist');
 
   const form = useForm<WishlistFormValues>({
     resolver: zodResolver(wishlistSchema),
     defaultValues: {
-      name: "",
-      email: "",
-      reason: "",
+      name: '',
+      email: '',
+      reason: '',
     },
   });
 
@@ -45,10 +46,10 @@ export function WishlistForm() {
     setIsSubmitting(true);
 
     try {
-      const response = await fetch("/api/wishlist", {
-        method: "POST",
+      const response = await fetch('/api/wishlist', {
+        method: 'POST',
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify(data),
       });
@@ -56,19 +57,15 @@ export function WishlistForm() {
       const result = await response.json();
 
       if (!response.ok) {
-        throw new Error(result.error || "Something went wrong");
+        throw new Error(result.error || 'Something went wrong');
       }
 
-      toast.success(result.message || "Successfully joined the waitlist!");
+      toast.success(result.message || 'Successfully joined the waitlist!');
       setSubmitted(true);
       form.reset();
     } catch (error) {
-      console.error("Wishlist submission error:", error);
-      toast.error(
-        error instanceof Error
-          ? error.message
-          : "Failed to submit. Please try again.",
-      );
+      console.error('Wishlist submission error:', error);
+      toast.error(error instanceof Error ? error.message : 'Failed to submit. Please try again.');
     } finally {
       setIsSubmitting(false);
     }
@@ -77,8 +74,8 @@ export function WishlistForm() {
   if (submitted) {
     return (
       <div className="bg-primary/10 p-6 rounded-lg text-center">
-        <h3 className="text-lg font-medium mb-2">{t("form.success.title")}</h3>
-        <p>{t("form.success.message")}</p>
+        <h3 className="text-lg font-medium mb-2">{t('form.success.title')}</h3>
+        <p>{t('form.success.message')}</p>
       </div>
     );
   }
@@ -91,13 +88,9 @@ export function WishlistForm() {
           name="name"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>{t("form.name")}</FormLabel>
+              <FormLabel>{t('form.name')}</FormLabel>
               <FormControl>
-                <Input
-                  placeholder={t("form.name")}
-                  disabled={isSubmitting}
-                  {...field}
-                />
+                <Input placeholder={t('form.name')} disabled={isSubmitting} {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -112,7 +105,7 @@ export function WishlistForm() {
               <FormLabel>Email</FormLabel>
               <FormControl>
                 <Input
-                  placeholder={t("form.email")}
+                  placeholder={t('form.email')}
                   type="email"
                   disabled={isSubmitting}
                   {...field}
@@ -128,10 +121,10 @@ export function WishlistForm() {
           name="reason"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>{t("form.reason")}</FormLabel>
+              <FormLabel>{t('form.reason')}</FormLabel>
               <FormControl>
                 <Textarea
-                  placeholder={t("form.reasonPlaceholder")}
+                  placeholder={t('form.reasonPlaceholder')}
                   disabled={isSubmitting}
                   className="resize-none"
                   {...field}
@@ -143,7 +136,7 @@ export function WishlistForm() {
         />
 
         <Button type="submit" className="w-full" disabled={isSubmitting}>
-          {isSubmitting ? t("form.submitting") : t("form.submit")}
+          {isSubmitting ? t('form.submitting') : t('form.submit')}
         </Button>
       </form>
     </Form>

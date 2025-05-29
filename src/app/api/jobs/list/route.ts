@@ -1,7 +1,8 @@
-import { NextRequest, NextResponse } from "next/server";
-import { connectToDatabase } from "@/lib/mongodb";
-import Job from "@/models/job";
-import User from "@/models/user";
+import { NextRequest, NextResponse } from 'next/server';
+
+import { connectToDatabase } from '@/lib/mongodb';
+import Job from '@/models/job';
+import User from '@/models/user';
 interface JobQuery {
   isActive: boolean;
   $or?: Array<{ [key: string]: { $regex: string; $options: string } }>;
@@ -16,22 +17,20 @@ export async function GET(req: NextRequest) {
 
     // Get query parameters
     const { searchParams } = new URL(req.url);
-    const page = parseInt(searchParams.get("page") || "1");
-    const limit = parseInt(searchParams.get("limit") || "12");
-    const search = searchParams.get("search") || "";
-    const skills = searchParams.get("skills")
-      ? searchParams.get("skills")!.split(",")
-      : [];
-    const location = searchParams.get("location") || "";
+    const page = parseInt(searchParams.get('page') || '1');
+    const limit = parseInt(searchParams.get('limit') || '12');
+    const search = searchParams.get('search') || '';
+    const skills = searchParams.get('skills') ? searchParams.get('skills')!.split(',') : [];
+    const location = searchParams.get('location') || '';
 
     const query: JobQuery = { isActive: true };
 
     // Add search functionality
     if (search) {
       query.$or = [
-        { title: { $regex: search, $options: "i" } },
-        { description: { $regex: search, $options: "i" } },
-        { companyName: { $regex: search, $options: "i" } },
+        { title: { $regex: search, $options: 'i' } },
+        { description: { $regex: search, $options: 'i' } },
+        { companyName: { $regex: search, $options: 'i' } },
       ];
     }
 
@@ -87,7 +86,7 @@ export async function GET(req: NextRequest) {
               }
             : null,
         };
-      }),
+      })
     );
 
     // Return jobs with pagination info
@@ -97,12 +96,8 @@ export async function GET(req: NextRequest) {
       nextPage: hasMore ? page + 1 : null,
     });
   } catch (error: Error | unknown) {
-    const errorMessage =
-      error instanceof Error ? error.message : "An unknown error occurred";
-    console.error("Error fetching jobs:", error);
-    return NextResponse.json(
-      { error: "Failed to fetch jobs: " + errorMessage },
-      { status: 500 },
-    );
+    const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred';
+    console.error('Error fetching jobs:', error);
+    return NextResponse.json({ error: 'Failed to fetch jobs: ' + errorMessage }, { status: 500 });
   }
 }

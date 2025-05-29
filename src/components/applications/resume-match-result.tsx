@@ -1,5 +1,5 @@
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
 interface MatchResultProps {
   score?: number;
@@ -85,10 +85,10 @@ export default function ResumeMatchResult({
                     <span
                       className={`text-4xl font-bold ${
                         score >= 70
-                          ? "text-green-500"
+                          ? 'text-green-500'
                           : score >= 50
-                            ? "text-amber-500"
-                            : "text-red-500"
+                            ? 'text-amber-500'
+                            : 'text-red-500'
                       }`}
                     >
                       {score}%
@@ -96,10 +96,10 @@ export default function ResumeMatchResult({
                     <span
                       className={`text-xs mt-1 ${
                         score >= 70
-                          ? "text-green-500"
+                          ? 'text-green-500'
                           : score >= 50
-                            ? "text-amber-500"
-                            : "text-red-500"
+                            ? 'text-amber-500'
+                            : 'text-red-500'
                       } flex items-center`}
                     >
                       {score >= 70 ? (
@@ -158,8 +158,7 @@ export default function ResumeMatchResult({
                   </div>
                 </div>
                 <div className="text-center mt-1 text-xs text-muted-foreground">
-                  {matchedAt &&
-                    `Updated: ${new Date(matchedAt).toLocaleString()}`}
+                  {matchedAt && `Updated: ${new Date(matchedAt).toLocaleString()}`}
                 </div>
               </div>
             </div>
@@ -175,11 +174,7 @@ export default function ResumeMatchResult({
             <div className="mt-4 w-full bg-[#333] rounded-full h-1">
               <div
                 className={`h-1 rounded-full ${
-                  score >= 70
-                    ? "bg-green-500"
-                    : score >= 50
-                      ? "bg-amber-500"
-                      : "bg-red-500"
+                  score >= 70 ? 'bg-green-500' : score >= 50 ? 'bg-amber-500' : 'bg-red-500'
                 }`}
                 style={{ width: `${score}%` }}
               ></div>
@@ -187,9 +182,7 @@ export default function ResumeMatchResult({
           </>
         ) : (
           <div className="text-center py-4">
-            <p className="text-muted-foreground mb-3 text-sm">
-              No match analysis available yet.
-            </p>
+            <p className="text-muted-foreground mb-3 text-sm">No match analysis available yet.</p>
             {onRefreshRequest && (
               <Button
                 onClick={onRefreshRequest}

@@ -1,12 +1,13 @@
-import { NextRequest, NextResponse } from "next/server";
-import { z } from "zod";
-import { generateGeminiText } from "@/lib/ai-utils";
-import { JobApplication } from "@/models/job-application";
-import { getJobById } from "@/actions/jobs";
-import { connectToDatabase } from "@/lib/mongodb-debug";
-import { safeMongoUpdate } from "@/lib/mongo-utils";
-import { serverTextToSpeech } from "@/lib/deepgram-tts";
-import { uploadAudioToS3 } from "@/lib/audio-utils";
+import { NextRequest, NextResponse } from 'next/server';
+import { z } from 'zod';
+
+import { getJobById } from '@/actions/jobs';
+import { generateGeminiText } from '@/lib/ai-utils';
+import { uploadAudioToS3 } from '@/lib/audio-utils';
+import { serverTextToSpeech } from '@/lib/deepgram-tts';
+import { safeMongoUpdate } from '@/lib/mongo-utils';
+import { connectToDatabase } from '@/lib/mongodb-debug';
+import { JobApplication } from '@/models/job-application';
 
 // Schema for validating the request body
 const interviewChatSchema = z.object({
@@ -15,9 +16,9 @@ const interviewChatSchema = z.object({
   history: z
     .array(
       z.object({
-        role: z.enum(["user", "system", "assistant"]),
+        role: z.enum(['user', 'system', 'assistant']),
         content: z.string(),
-      }),
+      })
     )
     .optional(),
 });
@@ -25,33 +26,31 @@ const interviewChatSchema = z.object({
 // Helper function to detect if message is a question rather than answer
 function isCandidateQuestion(message: string): boolean {
   // Check for question marks
-  if (message.includes("?")) {
+  if (message.includes('?')) {
     return true;
   }
 
   // Check for common question starters
   const questionStarters = [
-    "can you",
-    "what",
-    "how",
-    "why",
-    "when",
-    "where",
-    "who",
-    "which",
-    "could you",
-    "would you",
-    "do you",
-    "are you",
-    "is there",
-    "will you",
+    'can you',
+    'what',
+    'how',
+    'why',
+    'when',
+    'where',
+    'who',
+    'which',
+    'could you',
+    'would you',
+    'do you',
+    'are you',
+    'is there',
+    'will you',
   ];
 
   const lowerMessage = message.toLowerCase();
   return questionStarters.some(
-    (starter) =>
-      lowerMessage.startsWith(starter) ||
-      lowerMessage.includes(" " + starter + " "),
+    (starter) => lowerMessage.startsWith(starter) || lowerMessage.includes(' ' + starter + ' ')
   );
 }
 
@@ -60,32 +59,32 @@ function isClarificationRequest(message: string): boolean {
   const lowerMessage = message.toLowerCase().trim();
 
   const clarificationPhrases = [
-    "repeat",
-    "say again",
-    "explain again",
-    "clarify",
+    'repeat',
+    'say again',
+    'explain again',
+    'clarify',
     "don't understand",
     "didn't understand",
-    "not clear",
-    "unclear",
-    "what do you mean",
-    "can you repeat",
-    "please repeat",
-    "once more",
-    "one more time",
-    "could you repeat",
-    "repeat the question",
+    'not clear',
+    'unclear',
+    'what do you mean',
+    'can you repeat',
+    'please repeat',
+    'once more',
+    'one more time',
+    'could you repeat',
+    'repeat the question',
     "didn't hear",
     "didn't catch",
-    "come again",
-    "pardon me",
+    'come again',
+    'pardon me',
     "sorry i didn't catch that",
     "sorry i didn't hear",
-    "could you clarify",
-    "could you explain",
+    'could you clarify',
+    'could you explain',
     "i'm confused",
-    "i am confused",
-    "not sure i understand",
+    'i am confused',
+    'not sure i understand',
   ];
 
   return clarificationPhrases.some((phrase) => lowerMessage.includes(phrase));
@@ -95,11 +94,7 @@ export async function POST(req: NextRequest) {
   try {
     // Parse request body
     const body = await req.json();
-    const {
-      applicationId,
-      message,
-      history = [],
-    } = interviewChatSchema.parse(body);
+    const { applicationId, message, history = [] } = interviewChatSchema.parse(body);
 
     // Check if candidate is asking a question rather than answering
     const isQuestion = isCandidateQuestion(message);
@@ -108,27 +103,21 @@ export async function POST(req: NextRequest) {
     try {
       await connectToDatabase();
     } catch (dbError) {
-      console.error("[Chat API] MongoDB connection error:", dbError);
-      return NextResponse.json(
-        { error: "Database connection failed" },
-        { status: 500 },
-      );
+      console.error('[Chat API] MongoDB connection error:', dbError);
+      return NextResponse.json({ error: 'Database connection failed' }, { status: 500 });
     }
 
     // Get application details
-    console.log("[Chat API] Fetching application with ID:", applicationId);
+    console.log('[Chat API] Fetching application with ID:', applicationId);
     const application = await JobApplication.findById(applicationId);
     if (!application) {
-      return NextResponse.json(
-        { error: "Application not found" },
-        { status: 404 },
-      );
+      return NextResponse.json({ error: 'Application not found' }, { status: 404 });
     }
 
     // Get job details
     const job = await getJobById(application.jobId);
     if (!job) {
-      return NextResponse.json({ error: "Job not found" }, { status: 404 });
+      return NextResponse.json({ error: 'Job not found' }, { status: 404 });
     }
 
     // Create system prompt with job and resume context
@@ -137,10 +126,10 @@ export async function POST(req: NextRequest) {
         job.title
       } position at ${job.companyName}. 
       The candidate has applied with the following resume: "${
-        application.resume?.text || "No resume provided"
+        application.resume?.text || 'No resume provided'
       }".
       The job requires these skills: ${
-        job.skills?.join(", ") || "various technical and soft skills"
+        job.skills?.join(', ') || 'various technical and soft skills'
       }.
       
       INTERVIEW STRUCTURE:
@@ -219,7 +208,7 @@ export async function POST(req: NextRequest) {
 
     // Get the current interview state
     const interviewState = application.interviewState || {
-      currentPhase: "introduction",
+      currentPhase: 'introduction',
       technicalQuestionsAsked: 0,
       projectQuestionsAsked: 0,
       behavioralQuestionsAsked: 0,
@@ -236,61 +225,61 @@ export async function POST(req: NextRequest) {
       
       Your next action:
       ${
-        interviewState.currentPhase === "introduction"
+        interviewState.currentPhase === 'introduction'
           ? "Listen to candidate's introduction and then give feedback before asking first technical question."
-          : ""
+          : ''
       }
       ${
-        interviewState.currentPhase === "candidate_introduction"
+        interviewState.currentPhase === 'candidate_introduction'
           ? "Give brief feedback on the candidate's introduction and ask the first technical question."
-          : ""
+          : ''
       }
       ${
-        interviewState.currentPhase === "technical_questions" &&
+        interviewState.currentPhase === 'technical_questions' &&
         interviewState.technicalQuestionsAsked < 3
           ? `Give brief feedback on the previous answer and ask technical question #${
               interviewState.technicalQuestionsAsked + 1
             }.`
-          : ""
+          : ''
       }
       ${
-        interviewState.currentPhase === "technical_questions" &&
+        interviewState.currentPhase === 'technical_questions' &&
         interviewState.technicalQuestionsAsked >= 3
-          ? "Give brief feedback on the previous answer and transition to project discussion by asking about their most significant project."
-          : ""
+          ? 'Give brief feedback on the previous answer and transition to project discussion by asking about their most significant project.'
+          : ''
       }
       ${
-        interviewState.currentPhase === "project_discussion" &&
+        interviewState.currentPhase === 'project_discussion' &&
         interviewState.projectQuestionsAsked < 3
           ? `Give brief feedback and ask project question #${
               interviewState.projectQuestionsAsked + 1
             }.`
-          : ""
+          : ''
       }
       ${
-        interviewState.currentPhase === "project_discussion" &&
+        interviewState.currentPhase === 'project_discussion' &&
         interviewState.projectQuestionsAsked >= 3
-          ? "Give brief feedback and transition to behavioral questions."
-          : ""
+          ? 'Give brief feedback and transition to behavioral questions.'
+          : ''
       }
       ${
-        interviewState.currentPhase === "behavioral_questions" &&
+        interviewState.currentPhase === 'behavioral_questions' &&
         interviewState.behavioralQuestionsAsked < 3
           ? `Give brief feedback and ask behavioral question #${
               interviewState.behavioralQuestionsAsked + 1
             }.`
-          : ""
+          : ''
       }
       ${
-        interviewState.currentPhase === "behavioral_questions" &&
+        interviewState.currentPhase === 'behavioral_questions' &&
         interviewState.behavioralQuestionsAsked >= 3
-          ? "Give brief feedback and transition to conclusion phase. Let the candidate know that all planned questions have been asked."
-          : ""
+          ? 'Give brief feedback and transition to conclusion phase. Let the candidate know that all planned questions have been asked.'
+          : ''
       }
       ${
-        interviewState.currentPhase === "conclusion"
+        interviewState.currentPhase === 'conclusion'
           ? "Thank the candidate with a clear ending statement like: 'Thank you for participating in this interview. The interview is now complete, and your responses will be analyzed. The system will now redirect you to view your feedback. We wish you success in your job search.' Then wait for the candidate to acknowledge before finalizing the interview. If they have any final questions or comments, address them briefly and politely remind them that the interview is concluding."
-          : ""
+          : ''
       }
       
       After receiving the candidate's response, always include a brief assessment of their answer before asking the next question.
@@ -305,9 +294,7 @@ export async function POST(req: NextRequest) {
       
       ${interviewStatePrompt}
       
-      ${formattedHistory
-        .map((msg) => `${msg.role.toUpperCase()}: ${msg.content}`)
-        .join("\n\n")}
+      ${formattedHistory.map((msg) => `${msg.role.toUpperCase()}: ${msg.content}`).join('\n\n')}
       
       USER: ${message}
       
@@ -324,23 +311,17 @@ export async function POST(req: NextRequest) {
     const askedQuestions = [...(interviewState.askedQuestions || [])];
 
     // Special case: Force interview completion with debug commands "/complete" or "/end"
-    if (
-      message.toLowerCase().trim() === "/complete" ||
-      message.toLowerCase().trim() === "/end"
-    ) {
-      console.log(
-        "[API Debug] Forcing interview completion via debug command:",
-        message,
-      );
-      nextPhase = "completed";
+    if (message.toLowerCase().trim() === '/complete' || message.toLowerCase().trim() === '/end') {
+      console.log('[API Debug] Forcing interview completion via debug command:', message);
+      nextPhase = 'completed';
       response =
         "That concludes the interview. Thank you for your time and participation. Your responses are being analyzed, and you'll receive feedback shortly.";
-    } else if (isQuestion && interviewState.currentPhase !== "completed") {
+    } else if (isQuestion && interviewState.currentPhase !== 'completed') {
       // Check if the candidate is asking for clarification or repetition of the question
       if (isClarificationRequest(message)) {
         // Find the last question asked based on the current state
         const currentAskedQuestion = askedQuestions.find(
-          (q) => q.id === interviewState.lastQuestion,
+          (q) => q.id === interviewState.lastQuestion
         );
 
         if (currentAskedQuestion) {
@@ -348,13 +329,13 @@ export async function POST(req: NextRequest) {
         } else {
           // If we can't find the specific question, provide a more generic repetition
           response = `Let me repeat the question. ${
-            interviewState.currentPhase === "technical_questions"
-              ? "This is a technical question about your expertise in this field."
-              : interviewState.currentPhase === "project_discussion"
-              ? "I asked about your experience with a specific project."
-              : interviewState.currentPhase === "behavioral_questions"
-              ? "This question is about how you handle specific workplace situations."
-              : "Could you please respond to my previous question?"
+            interviewState.currentPhase === 'technical_questions'
+              ? 'This is a technical question about your expertise in this field.'
+              : interviewState.currentPhase === 'project_discussion'
+                ? 'I asked about your experience with a specific project.'
+                : interviewState.currentPhase === 'behavioral_questions'
+                  ? 'This question is about how you handle specific workplace situations.'
+                  : 'Could you please respond to my previous question?'
           } Would you like me to approach this question differently or provide more context?`;
         }
       } else {
@@ -363,137 +344,134 @@ export async function POST(req: NextRequest) {
           job.title
         } position. Let's continue with our structured interview process. ${
           interviewState.lastQuestion
-            ? "Could you please answer the question I asked?"
-            : "Let me ask you a relevant question."
+            ? 'Could you please answer the question I asked?'
+            : 'Let me ask you a relevant question.'
         }`;
       }
     } else {
       // Normal response flow
-      response = await generateGeminiText(finalPrompt, "gemini-2.0-flash-lite");
+      response = await generateGeminiText(finalPrompt, 'gemini-2.0-flash-lite');
     }
 
     // Determine next interview state based on AI response and current state
 
     // The AI's response indicates the phase transition
-    if (interviewState.currentPhase === "introduction") {
-      nextPhase = "candidate_introduction";
-    } else if (interviewState.currentPhase === "candidate_introduction") {
-      nextPhase = "technical_questions";
+    if (interviewState.currentPhase === 'introduction') {
+      nextPhase = 'candidate_introduction';
+    } else if (interviewState.currentPhase === 'candidate_introduction') {
+      nextPhase = 'technical_questions';
       technicalQuestionsAsked = 1;
       // Extract the question for tracking with more patterns to capture diverse question formats
       const questionMatch = response.match(
-        /(?:can you|could you|how would you|what|why|when|where|describe|explain|tell me about|share|have you|do you).*\?/i,
+        /(?:can you|could you|how would you|what|why|when|where|describe|explain|tell me about|share|have you|do you).*\?/i
       );
       if (questionMatch) {
         askedQuestions.push({
           id: `tech_${Date.now()}_${Math.floor(Math.random() * 1000)}`, // Add randomization to the ID
           question: questionMatch[0],
-          category: "technical",
+          category: 'technical',
         });
       }
-    } else if (interviewState.currentPhase === "technical_questions") {
+    } else if (interviewState.currentPhase === 'technical_questions') {
       if (technicalQuestionsAsked < 3) {
         technicalQuestionsAsked += 1;
         // Extract the question for tracking with enhanced pattern matching
         const questionMatch = response.match(
-          /(?:can you|could you|how would you|what|why|when|where|describe|explain|tell me about|share|have you|do you|in your experience).*\?/i,
+          /(?:can you|could you|how would you|what|why|when|where|describe|explain|tell me about|share|have you|do you|in your experience).*\?/i
         );
         if (questionMatch) {
           askedQuestions.push({
             id: `tech_${Date.now()}_${Math.floor(Math.random() * 1000)}`,
             question: questionMatch[0],
-            category: "technical",
+            category: 'technical',
           });
         }
       } else {
-        nextPhase = "project_discussion";
+        nextPhase = 'project_discussion';
         projectQuestionsAsked = 1;
         // Extract the project question with improved pattern matching
         const questionMatch = response.match(
-          /(?:can you|could you|how would you|what|why|when|where|describe|explain|tell me about|share|have you|do you|in your experience|how did you).*\?/i,
+          /(?:can you|could you|how would you|what|why|when|where|describe|explain|tell me about|share|have you|do you|in your experience|how did you).*\?/i
         );
         if (questionMatch) {
           askedQuestions.push({
             id: `proj_${Date.now()}_${Math.floor(Math.random() * 1000)}`,
             question: questionMatch[0],
-            category: "project",
+            category: 'project',
           });
         }
       }
-    } else if (interviewState.currentPhase === "project_discussion") {
+    } else if (interviewState.currentPhase === 'project_discussion') {
       if (projectQuestionsAsked < 3) {
         projectQuestionsAsked += 1;
         // Extract the project question with improved pattern matching
         const questionMatch = response.match(
-          /(?:can you|could you|how would you|what|why|when|where|describe|explain|tell me about|share|have you|do you|in your experience|how did you|what were|what was|which).*\?/i,
+          /(?:can you|could you|how would you|what|why|when|where|describe|explain|tell me about|share|have you|do you|in your experience|how did you|what were|what was|which).*\?/i
         );
         if (questionMatch) {
           askedQuestions.push({
             id: `proj_${Date.now()}_${Math.floor(Math.random() * 1000)}`,
             question: questionMatch[0],
-            category: "project",
+            category: 'project',
           });
         }
       } else {
-        nextPhase = "behavioral_questions";
+        nextPhase = 'behavioral_questions';
         behavioralQuestionsAsked = 1;
         // Extract behavioral questions with enhanced pattern matching
         const questionMatch = response.match(
-          /(?:can you|could you|how would you|what|why|when|where|describe|explain|tell me about|share|have you|do you|in your experience|how do you handle|tell me about a time|how did you).*\?/i,
+          /(?:can you|could you|how would you|what|why|when|where|describe|explain|tell me about|share|have you|do you|in your experience|how do you handle|tell me about a time|how did you).*\?/i
         );
         if (questionMatch) {
           askedQuestions.push({
             id: `behav_${Date.now()}_${Math.floor(Math.random() * 1000)}`,
             question: questionMatch[0],
-            category: "behavioral",
+            category: 'behavioral',
           });
         }
       }
-    } else if (interviewState.currentPhase === "behavioral_questions") {
+    } else if (interviewState.currentPhase === 'behavioral_questions') {
       if (behavioralQuestionsAsked < 3) {
         behavioralQuestionsAsked += 1;
         // Extract behavioral questions with enhanced pattern matching
         const questionMatch = response.match(
-          /(?:can you|could you|how would you|what|why|when|where|describe|explain|tell me about|share|have you|do you|in your experience|how do you handle|tell me about a time|how did you).*\?/i,
+          /(?:can you|could you|how would you|what|why|when|where|describe|explain|tell me about|share|have you|do you|in your experience|how do you handle|tell me about a time|how did you).*\?/i
         );
         if (questionMatch) {
           askedQuestions.push({
             id: `behav_${Date.now()}_${Math.floor(Math.random() * 1000)}`,
             question: questionMatch[0],
-            category: "behavioral",
+            category: 'behavioral',
           });
         }
       } else {
-        nextPhase = "conclusion";
+        nextPhase = 'conclusion';
       }
-    } else if (interviewState.currentPhase === "conclusion") {
+    } else if (interviewState.currentPhase === 'conclusion') {
       // Only transition to completed if the candidate's message indicates acknowledgement
       // This ensures we don't abruptly end the interview without proper closure
       const acknowledgmentPhrases = [
-        "thank you",
-        "thanks",
-        "okay",
-        "ok",
-        "alright",
-        "sounds good",
-        "understood",
-        "bye",
-        "goodbye",
-        "see you",
+        'thank you',
+        'thanks',
+        'okay',
+        'ok',
+        'alright',
+        'sounds good',
+        'understood',
+        'bye',
+        'goodbye',
+        'see you',
       ];
       const lowerMessage = message.toLowerCase().trim();
 
       const isAcknowledgment = acknowledgmentPhrases.some((phrase) =>
-        lowerMessage.includes(phrase),
+        lowerMessage.includes(phrase)
       );
       const isVeryShort = message.length < 15; // Consider very short messages as acknowledgments
 
       if (isAcknowledgment || isVeryShort) {
-        nextPhase = "completed";
-        console.log(
-          "[Chat API] Interview completion acknowledged by candidate:",
-          message,
-        );
+        nextPhase = 'completed';
+        console.log('[Chat API] Interview completion acknowledged by candidate:', message);
 
         // Automatically trigger interview evaluation
         try {
@@ -501,57 +479,46 @@ export async function POST(req: NextRequest) {
           const evaluateResponse = await fetch(
             new URL(`/api/ai/interview/evaluate`, req.url).toString(),
             {
-              method: "POST",
+              method: 'POST',
               headers: {
-                "Content-Type": "application/json",
+                'Content-Type': 'application/json',
               },
               body: JSON.stringify({ applicationId }),
-            },
+            }
           );
 
           if (!evaluateResponse.ok) {
-            console.error("Failed to automatically evaluate interview");
+            console.error('Failed to automatically evaluate interview');
           } else {
             const evalData = await evaluateResponse.json();
-            console.log(
-              "Interview evaluation triggered successfully:",
-              evalData.status,
-            );
+            console.log('Interview evaluation triggered successfully:', evalData.status);
           }
         } catch (evalError) {
-          console.error(
-            "Error triggering automatic interview evaluation:",
-            evalError,
-          );
+          console.error('Error triggering automatic interview evaluation:', evalError);
         }
       } else {
         // Stay in conclusion phase but indicate the interview is wrapping up
         response =
-          "I appreciate your final thoughts. This concludes our interview. Thank you for your time today. Do you have any brief closing comments before we finish?";
+          'I appreciate your final thoughts. This concludes our interview. Thank you for your time today. Do you have any brief closing comments before we finish?';
         console.log(
-          "[Chat API] Awaiting final acknowledgment from candidate before completing interview.",
+          '[Chat API] Awaiting final acknowledgment from candidate before completing interview.'
         );
       }
     }
 
     // Extract feedback from AI response (first sentence typically)
     const feedbackMatch = response.split(/[.!?]/)[0];
-    const feedback = feedbackMatch ? feedbackMatch.trim() : "";
+    const feedback = feedbackMatch ? feedbackMatch.trim() : '';
 
     // Get current question from tracked questions if available
     const currentQuestion =
-      askedQuestions.length > 0
-        ? askedQuestions[askedQuestions.length - 1]
-        : undefined;
+      askedQuestions.length > 0 ? askedQuestions[askedQuestions.length - 1] : undefined;
 
     // Save user message and AI response to database with question tracking
     // First verify the application still exists and get latest state
     const currentApplication = await JobApplication.findById(applicationId);
     if (!currentApplication) {
-      return NextResponse.json(
-        { error: "Application no longer exists" },
-        { status: 404 },
-      );
+      return NextResponse.json({ error: 'Application no longer exists' }, { status: 404 });
     }
 
     // Ensure we have the most current chat history
@@ -561,7 +528,7 @@ export async function POST(req: NextRequest) {
     const newMessages = [
       {
         text: message,
-        sender: "user",
+        sender: 'user',
         timestamp: new Date(),
         questionId: interviewState.lastQuestion || undefined,
         questionCategory: currentQuestion?.category,
@@ -571,14 +538,14 @@ export async function POST(req: NextRequest) {
     // Create AI message (separate to add audio)
     const aiMessage = {
       text: response,
-      sender: "ai",
+      sender: 'ai',
       timestamp: new Date(),
       questionId: currentQuestion?.id,
       questionCategory: currentQuestion?.category,
       feedback: feedback,
-      audioS3Key: "",
-      audioS3Bucket: "",
-      audioUrl: "",
+      audioS3Key: '',
+      audioS3Bucket: '',
+      audioUrl: '',
     };
 
     // Generate and save audio for AI response
@@ -595,24 +562,16 @@ export async function POST(req: NextRequest) {
         aiMessage.audioS3Bucket = audioS3Data.s3Bucket;
 
         // Generate signed URL for immediate playback
-        const { getAudioSignedUrl } = await import("@/lib/audio-utils");
-        const audioUrl = await getAudioSignedUrl(
-          audioS3Data.s3Key,
-          audioS3Data.s3Bucket,
-        );
+        const { getAudioSignedUrl } = await import('@/lib/audio-utils');
+        const audioUrl = await getAudioSignedUrl(audioS3Data.s3Key, audioS3Data.s3Bucket);
 
         // Add audio URL to the AI message for immediate playback
         aiMessage.audioUrl = audioUrl;
 
-        console.log(
-          `[Chat API] Audio generated and uploaded to ${audioS3Data.s3Key}`,
-        );
+        console.log(`[Chat API] Audio generated and uploaded to ${audioS3Data.s3Key}`);
       }
     } catch (audioError) {
-      console.error(
-        "[Chat API] Error generating or uploading audio:",
-        audioError,
-      );
+      console.error('[Chat API] Error generating or uploading audio:', audioError);
       // Continue with the flow even if audio generation fails
     }
 
@@ -634,7 +593,7 @@ export async function POST(req: NextRequest) {
             behavioralQuestionsAsked,
             lastQuestion: currentQuestion?.id,
             askedQuestions,
-            completedAt: nextPhase === "completed" ? new Date() : undefined,
+            completedAt: nextPhase === 'completed' ? new Date() : undefined,
           },
         },
       };
@@ -642,30 +601,30 @@ export async function POST(req: NextRequest) {
       // Use our enhanced safe MongoDB update function with retries
       updatedApplication = await safeMongoUpdate(applicationId, updateObject, {
         retries: 2,
-        logPrefix: "[Chat API]",
+        logPrefix: '[Chat API]',
       });
 
       if (!updatedApplication) {
-        console.error("[Chat API] Failed to update JobApplication", {
+        console.error('[Chat API] Failed to update JobApplication', {
           applicationId,
         });
       }
     } catch (error) {
       const err = error as Error;
-      console.error("[Chat API] Error updating JobApplication", {
+      console.error('[Chat API] Error updating JobApplication', {
         applicationId,
         error: err.message,
       });
     }
 
     // Add special completion flag if interview is completed
-    if (nextPhase === "completed") {
+    if (nextPhase === 'completed') {
       return NextResponse.json({
         response,
         applicationId,
         isCompleted: true,
         completionMessage:
-          "Your interview has been successfully completed! Your responses have been recorded and will be analyzed. Thank you for participating in this interview process with us.",
+          'Your interview has been successfully completed! Your responses have been recorded and will be analyzed. Thank you for participating in this interview process with us.',
         updatedChatHistory: updatedApplication?.interviewChatHistory || null,
         // Include the audioUrl directly in the response for immediate playback
         audioUrl: aiMessage.audioUrl,
@@ -680,10 +639,10 @@ export async function POST(req: NextRequest) {
       });
     }
   } catch (error) {
-    console.error("Error in interview chat:", error);
+    console.error('Error in interview chat:', error);
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : "An error occurred" },
-      { status: 500 },
+      { error: error instanceof Error ? error.message : 'An error occurred' },
+      { status: 500 }
     );
   }
 }

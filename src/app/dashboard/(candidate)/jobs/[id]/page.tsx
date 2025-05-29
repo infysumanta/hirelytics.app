@@ -1,21 +1,17 @@
-import { Metadata } from "next";
-import { getJobByUrlId } from "@/actions/jobs";
-import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import {
-  CalendarIcon,
-  MapPinIcon,
-  BriefcaseIcon,
-  ArrowLeftIcon,
-} from "lucide-react";
-import Link from "next/link";
-import { notFound } from "next/navigation";
-import { getSkillLabel } from "@/data/technical-skills";
-import { getCountryLabel } from "@/data/countries";
-import ReactMarkdown from "react-markdown";
-import remarkGfm from "remark-gfm";
-import rehypeRaw from "rehype-raw";
-import { JobApplyButton } from "@/components/jobs/job-apply-button";
+import { ArrowLeftIcon, BriefcaseIcon, CalendarIcon, MapPinIcon } from 'lucide-react';
+import { Metadata } from 'next';
+import Link from 'next/link';
+import { notFound } from 'next/navigation';
+import ReactMarkdown from 'react-markdown';
+import rehypeRaw from 'rehype-raw';
+import remarkGfm from 'remark-gfm';
+
+import { getJobByUrlId } from '@/actions/jobs';
+import { JobApplyButton } from '@/components/jobs/job-apply-button';
+import { Badge } from '@/components/ui/badge';
+import { Card, CardContent, CardHeader } from '@/components/ui/card';
+import { getCountryLabel } from '@/data/countries';
+import { getSkillLabel } from '@/data/technical-skills';
 
 type Props = {
   params: Promise<{ id: string }>;
@@ -33,9 +29,8 @@ export async function generateMetadata(props: Props): Promise<Metadata> {
     };
   } catch {
     return {
-      title: "Job Not Found | Candidate Dashboard | Hirelytics",
-      description:
-        "The job listing you're looking for doesn't exist or has been removed.",
+      title: 'Job Not Found | Candidate Dashboard | Hirelytics',
+      description: "The job listing you're looking for doesn't exist or has been removed.",
     };
   }
 }
@@ -52,16 +47,16 @@ export default async function CandidateJobDetailsPage(props: Props) {
   }
 
   // Format dates
-  const expiryDate = new Date(job.expiryDate).toLocaleDateString("en-US", {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
+  const expiryDate = new Date(job.expiryDate).toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
   });
 
-  const postedDate = new Date(job.createdAt).toLocaleDateString("en-US", {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
+  const postedDate = new Date(job.createdAt).toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
   });
 
   // Check if job is expired
@@ -80,9 +75,7 @@ export default async function CandidateJobDetailsPage(props: Props) {
         {/* Main content */}
         <div className="lg:col-span-2">
           <div className="mb-6">
-            <h1 className="text-3xl font-bold tracking-tight mb-2">
-              {job.title}
-            </h1>
+            <h1 className="text-3xl font-bold tracking-tight mb-2">{job.title}</h1>
             <div className="flex items-center text-lg text-muted-foreground">
               <BriefcaseIcon className="h-5 w-5 mr-1" />
               <span className="font-medium">{job.companyName}</span>
@@ -113,10 +106,7 @@ export default async function CandidateJobDetailsPage(props: Props) {
                       />
                     ),
                     code: (props) => (
-                      <code
-                        {...props}
-                        className="bg-muted px-1 py-0.5 rounded text-sm font-mono"
-                      />
+                      <code {...props} className="bg-muted px-1 py-0.5 rounded text-sm font-mono" />
                     ),
                   }}
                 >
@@ -133,10 +123,7 @@ export default async function CandidateJobDetailsPage(props: Props) {
               </CardHeader>
               <CardContent>
                 <div className="prose max-w-none prose-headings:text-foreground prose-p:text-foreground/90 prose-a:text-primary">
-                  <ReactMarkdown
-                    remarkPlugins={[remarkGfm]}
-                    rehypePlugins={[rehypeRaw]}
-                  >
+                  <ReactMarkdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeRaw]}>
                     {job.requirements}
                   </ReactMarkdown>
                 </div>
@@ -151,10 +138,7 @@ export default async function CandidateJobDetailsPage(props: Props) {
               </CardHeader>
               <CardContent>
                 <div className="prose max-w-none prose-headings:text-foreground prose-p:text-foreground/90 prose-a:text-primary">
-                  <ReactMarkdown
-                    remarkPlugins={[remarkGfm]}
-                    rehypePlugins={[rehypeRaw]}
-                  >
+                  <ReactMarkdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeRaw]}>
                     {job.benefits}
                   </ReactMarkdown>
                 </div>

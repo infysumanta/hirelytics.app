@@ -1,7 +1,7 @@
-"use client";
+'use client';
 
-import { useState, useEffect, useCallback } from "react";
-import dynamic from "next/dynamic";
+import dynamic from 'next/dynamic';
+import { useCallback, useEffect, useState } from 'react';
 
 // Define ReactMic component props type
 type ReactMicProps = {
@@ -24,14 +24,14 @@ type ReactMicProps = {
 // Use dynamic import with ssr: false to avoid window is not defined error
 const DynamicReactMic = dynamic<ReactMicProps>(
   () =>
-    import("react-mic").then((mod) => {
+    import('react-mic').then((mod) => {
       const { ReactMic } = mod;
       return ReactMic;
     }),
   {
     ssr: false,
     loading: () => <div className="h-24 bg-muted rounded-md" />,
-  },
+  }
 );
 
 interface CustomReactMicProps {
@@ -59,10 +59,10 @@ export function CustomReactMic({
   onStop,
   onData,
   onError,
-  strokeColor = "#09f",
-  backgroundColor = "#f0f0f0",
-  mimeType = "audio/webm",
-  visualSetting = "frequencyBars",
+  strokeColor = '#09f',
+  backgroundColor = '#f0f0f0',
+  mimeType = 'audio/webm',
+  visualSetting = 'frequencyBars',
 }: CustomReactMicProps) {
   const [key, setKey] = useState<number>(0);
   const [audioStream, setAudioStream] = useState<MediaStream | null>(null);

@@ -1,19 +1,29 @@
-"use client";
+'use client';
 
-import * as React from "react";
 import {
   ColumnDef,
   ColumnFiltersState,
-  SortingState,
-  VisibilityState,
   flexRender,
   getCoreRowModel,
   getFilteredRowModel,
   getPaginationRowModel,
   getSortedRowModel,
+  SortingState,
   useReactTable,
-} from "@tanstack/react-table";
+  VisibilityState,
+} from '@tanstack/react-table';
+import { ChevronLeft, ChevronRight, Search } from 'lucide-react';
+import * as React from 'react';
 
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import {
   Table,
   TableBody,
@@ -21,17 +31,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { ChevronLeft, ChevronRight, Search } from "lucide-react";
+} from '@/components/ui/table';
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -52,16 +52,13 @@ export function DataTable<TData, TValue>({
   columns,
   data,
   searchKey,
-  searchPlaceholder = "Search...",
+  searchPlaceholder = 'Search...',
   isLoading = false,
   pagination,
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
-  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
-    [],
-  );
-  const [columnVisibility, setColumnVisibility] =
-    React.useState<VisibilityState>({});
+  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
+  const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
 
   const table = useReactTable({
@@ -105,12 +102,8 @@ export function DataTable<TData, TValue>({
             <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
             <Input
               placeholder={searchPlaceholder}
-              value={
-                (table.getColumn(searchKey)?.getFilterValue() as string) ?? ""
-              }
-              onChange={(event) =>
-                table.getColumn(searchKey)?.setFilterValue(event.target.value)
-              }
+              value={(table.getColumn(searchKey)?.getFilterValue() as string) ?? ''}
+              onChange={(event) => table.getColumn(searchKey)?.setFilterValue(event.target.value)}
               className="pl-8"
             />
           </div>
@@ -126,10 +119,7 @@ export function DataTable<TData, TValue>({
                     <TableHead key={header.id}>
                       {header.isPlaceholder
                         ? null
-                        : flexRender(
-                            header.column.columnDef.header,
-                            header.getContext(),
-                          )}
+                        : flexRender(header.column.columnDef.header, header.getContext())}
                     </TableHead>
                   );
                 })}
@@ -139,10 +129,7 @@ export function DataTable<TData, TValue>({
           <TableBody>
             {isLoading ? (
               <TableRow>
-                <TableCell
-                  colSpan={columns.length}
-                  className="h-24 text-center"
-                >
+                <TableCell colSpan={columns.length} className="h-24 text-center">
                   <div className="flex justify-center items-center">
                     <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary"></div>
                     <span className="ml-2">Loading...</span>
@@ -151,26 +138,17 @@ export function DataTable<TData, TValue>({
               </TableRow>
             ) : table.getRowModel().rows?.length ? (
               table.getRowModel().rows.map((row) => (
-                <TableRow
-                  key={row.id}
-                  data-state={row.getIsSelected() && "selected"}
-                >
+                <TableRow key={row.id} data-state={row.getIsSelected() && 'selected'}>
                   {row.getVisibleCells().map((cell) => (
                     <TableCell key={cell.id}>
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext(),
-                      )}
+                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
                     </TableCell>
                   ))}
                 </TableRow>
               ))
             ) : (
               <TableRow>
-                <TableCell
-                  colSpan={columns.length}
-                  className="h-24 text-center"
-                >
+                <TableCell colSpan={columns.length} className="h-24 text-center">
                   No results.
                 </TableCell>
               </TableRow>
@@ -189,8 +167,7 @@ export function DataTable<TData, TValue>({
         <div className="flex items-center space-x-2">
           <Select
             value={
-              pagination?.pageSize.toString() ||
-              table.getState().pagination.pageSize.toString()
+              pagination?.pageSize.toString() || table.getState().pagination.pageSize.toString()
             }
             onValueChange={(value) => {
               if (pagination) {
@@ -203,8 +180,7 @@ export function DataTable<TData, TValue>({
             <SelectTrigger className="h-8 w-[70px]">
               <SelectValue
                 placeholder={
-                  pagination?.pageSize.toString() ||
-                  table.getState().pagination.pageSize.toString()
+                  pagination?.pageSize.toString() || table.getState().pagination.pageSize.toString()
                 }
               />
             </SelectTrigger>
@@ -226,11 +202,7 @@ export function DataTable<TData, TValue>({
                 table.previousPage();
               }
             }}
-            disabled={
-              pagination
-                ? pagination.pageIndex === 0
-                : !table.getCanPreviousPage()
-            }
+            disabled={pagination ? pagination.pageIndex === 0 : !table.getCanPreviousPage()}
           >
             <ChevronLeft className="h-4 w-4" />
           </Button>

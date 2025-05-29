@@ -1,6 +1,6 @@
-import { Skeleton } from "@/components/ui/skeleton";
-import { AIInterviewBackground } from "@/components/interview/ai-interview-background";
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { AIInterviewBackground } from '@/components/interview/ai-interview-background';
+import { Card, CardContent, CardHeader } from '@/components/ui/card';
+import { Skeleton } from '@/components/ui/skeleton';
 
 export default function InterviewFeedbackLoading() {
   return (

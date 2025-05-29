@@ -1,5 +1,5 @@
-import { google } from "@ai-sdk/google";
-import { generateText } from "ai";
+import { google } from '@ai-sdk/google';
+import { generateText } from 'ai';
 
 /**
  * Generates text using Google's Gemini model via Vercel AI SDK
@@ -10,19 +10,19 @@ import { generateText } from "ai";
  */
 export async function generateGeminiText(
   prompt: string,
-  model = "gemini-2.0-flash-lite",
+  model = 'gemini-2.0-flash-lite'
 ): Promise<string> {
   try {
     const { text } = await generateText({
-      model: google(model as "gemini-2.0-flash-lite"),
+      model: google(model as 'gemini-2.0-flash-lite'),
       prompt: prompt,
     });
 
     return text;
   } catch (error) {
-    console.error("Error generating text with Gemini:", error);
+    console.error('Error generating text with Gemini:', error);
     throw new Error(
-      `Failed to generate text: ${error instanceof Error ? error.message : String(error)}`,
+      `Failed to generate text: ${error instanceof Error ? error.message : String(error)}`
     );
   }
 }
@@ -58,7 +58,7 @@ export function parseGeminiMatchResponse(response: string): {
 
   // Extract analysis (assuming format "Analysis: text...")
   const analysisMatch = response.match(/Analysis:\s*([\s\S]+?)(?:\n\n|$)/i);
-  let analysis = "";
+  let analysis = '';
   if (analysisMatch && analysisMatch[1]) {
     analysis = analysisMatch[1].trim();
   } else {
@@ -69,7 +69,7 @@ export function parseGeminiMatchResponse(response: string): {
   // Extract any top matching skills if listed in response
   const topMatches: string[] = [];
   const matchingSkillsSection = response.match(
-    /(?:Top|Key|Matching) Skills?:?\s*([\s\S]+?)(?:\n\n|$)/i,
+    /(?:Top|Key|Matching) Skills?:?\s*([\s\S]+?)(?:\n\n|$)/i
   );
   if (matchingSkillsSection && matchingSkillsSection[1]) {
     // Extract skills from a list format (could be comma-separated or bullet points)
@@ -84,7 +84,7 @@ export function parseGeminiMatchResponse(response: string): {
   // Extract any missing skills if listed in response
   const missingSkills: string[] = [];
   const missingSkillsSection = response.match(
-    /(?:Missing|Gap|Lacking) Skills?:?\s*([\s\S]+?)(?:\n\n|$)/i,
+    /(?:Missing|Gap|Lacking) Skills?:?\s*([\s\S]+?)(?:\n\n|$)/i
   );
   if (missingSkillsSection && missingSkillsSection[1]) {
     const skillText = missingSkillsSection[1].trim();
@@ -100,9 +100,7 @@ export function parseGeminiMatchResponse(response: string): {
     years: 0,
     companies: [],
   };
-  const experienceSection = response.match(
-    /Experience:\s*([\s\S]+?)(?:\n\n|$)/i,
-  );
+  const experienceSection = response.match(/Experience:\s*([\s\S]+?)(?:\n\n|$)/i);
   if (experienceSection && experienceSection[1]) {
     // Try to extract years of experience
     const yearsMatch = experienceSection[1].match(/(\d+)\s*(?:years?|yrs?)/i);
@@ -116,7 +114,7 @@ export function parseGeminiMatchResponse(response: string): {
       .map((part) => {
         // Look for company names that are capitalized and followed by common identifiers
         const companyMatch = part.match(
-          /([A-Z][A-Za-z0-9\s\.\-&]+?)(?:\s+(?:as|at|where|from|until|to|\(|\)|-))/,
+          /([A-Z][A-Za-z0-9\s\.\-&]+?)(?:\s+(?:as|at|where|from|until|to|\(|\)|-))/
         );
         return companyMatch ? companyMatch[1].trim() : null;
       })
@@ -125,8 +123,8 @@ export function parseGeminiMatchResponse(response: string): {
           company !== null &&
           company.length > 2 &&
           !company.match(
-            /^(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec|January|February|March|April|May|June|July|August|September|October|November|December|Experience|Education)$/i,
-          ),
+            /^(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec|January|February|March|April|May|June|July|August|September|October|November|December|Experience|Education)$/i
+          )
       );
 
     enhancedExperience.companies = [...new Set(companies)]; // Remove duplicates
@@ -142,12 +140,8 @@ export function parseGeminiMatchResponse(response: string): {
     const entries = educationText.split(/[;]|\n/).filter(Boolean);
     for (const entry of entries) {
       // Look for patterns like "Degree from Institution" or "Institution - Degree"
-      const match1 = entry.match(
-        /([^,]+?)(?:from|at|in)\s+([A-Z][A-Za-z0-9\s\.\-&,]+)/i,
-      );
-      const match2 = entry.match(
-        /([A-Z][A-Za-z0-9\s\.\-&,]+?)[:\-]\s*([^,]+)/i,
-      );
+      const match1 = entry.match(/([^,]+?)(?:from|at|in)\s+([A-Z][A-Za-z0-9\s\.\-&,]+)/i);
+      const match2 = entry.match(/([A-Z][A-Za-z0-9\s\.\-&,]+?)[:\-]\s*([^,]+)/i);
 
       if (match1) {
         enhancedEducation.push({
@@ -172,7 +166,6 @@ export function parseGeminiMatchResponse(response: string): {
       enhancedExperience.years > 0 || enhancedExperience.companies.length > 0
         ? enhancedExperience
         : undefined,
-    enhancedEducation:
-      enhancedEducation.length > 0 ? enhancedEducation : undefined,
+    enhancedEducation: enhancedEducation.length > 0 ? enhancedEducation : undefined,
   };
 }

@@ -1,16 +1,11 @@
-"use client";
-import React, { useEffect, useState } from "react";
-import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { CircleCheck, Loader2 } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
-import { useRouter } from "next/navigation";
+'use client';
+import { CircleCheck, Loader2 } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import React, { useEffect, useState } from 'react';
+
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 
 interface InterviewCompletionProps {
   applicationId: string;
@@ -18,7 +13,7 @@ interface InterviewCompletionProps {
   companyName: string;
   redirectUrl?: string;
   isInterrupted?: boolean;
-  interruptionReason?: "timer_expired" | "technical_issue" | "user_action";
+  interruptionReason?: 'timer_expired' | 'technical_issue' | 'user_action';
 }
 
 export function InterviewCompletion({
@@ -34,10 +29,7 @@ export function InterviewCompletion({
 
   // Auto-close chat effect
   useEffect(() => {
-    console.log(
-      "[Completion UI] Initializing completion UI with timer:",
-      closingTimer,
-    );
+    console.log('[Completion UI] Initializing completion UI with timer:', closingTimer);
 
     // Immediately make sure the component is mounted to prevent any race conditions
     let isMounted = true;
@@ -45,7 +37,7 @@ export function InterviewCompletion({
     if (closingTimer > 0) {
       const timer = setTimeout(() => {
         if (isMounted) {
-          console.log("[Completion UI] Timer tick:", closingTimer - 1);
+          console.log('[Completion UI] Timer tick:', closingTimer - 1);
           setClosingTimer(closingTimer - 1);
         }
       }, 1000);
@@ -55,7 +47,7 @@ export function InterviewCompletion({
         clearTimeout(timer);
       };
     } else {
-      console.log("[Completion UI] Chat closed, showing feedback button");
+      console.log('[Completion UI] Chat closed, showing feedback button');
       setIsChatClosed(true);
     }
   }, [closingTimer]);
@@ -63,9 +55,7 @@ export function InterviewCompletion({
   // Force show feedback button after a maximum wait time (safety measure)
   useEffect(() => {
     const maxWaitTimer = setTimeout(() => {
-      console.log(
-        "[Completion UI] Maximum wait time reached, forcing feedback button",
-      );
+      console.log('[Completion UI] Maximum wait time reached, forcing feedback button');
       setIsChatClosed(true);
     }, 15000); // Increased from 10 to 15 seconds max wait to give users more time to read
 
@@ -81,36 +71,36 @@ export function InterviewCompletion({
   const getCompletionMessage = () => {
     if (isInterrupted) {
       switch (interruptionReason) {
-        case "timer_expired":
+        case 'timer_expired':
           return {
-            title: "Interview Time Expired",
-            message: "Your interview session has ended due to time limit.",
-            icon: "clock",
+            title: 'Interview Time Expired',
+            message: 'Your interview session has ended due to time limit.',
+            icon: 'clock',
           };
-        case "technical_issue":
+        case 'technical_issue':
           return {
-            title: "Interview Interrupted",
-            message: "Your interview was interrupted due to a technical issue.",
-            icon: "warning",
+            title: 'Interview Interrupted',
+            message: 'Your interview was interrupted due to a technical issue.',
+            icon: 'warning',
           };
-        case "user_action":
+        case 'user_action':
           return {
-            title: "Interview Ended",
-            message: "Your interview session has been ended.",
-            icon: "stop",
+            title: 'Interview Ended',
+            message: 'Your interview session has been ended.',
+            icon: 'stop',
           };
         default:
           return {
-            title: "Interview Interrupted",
-            message: "Your interview session was interrupted.",
-            icon: "warning",
+            title: 'Interview Interrupted',
+            message: 'Your interview session was interrupted.',
+            icon: 'warning',
           };
       }
     }
     return {
-      title: "Interview Completed",
-      message: "Thank you for completing your interview.",
-      icon: "check",
+      title: 'Interview Completed',
+      message: 'Thank you for completing your interview.',
+      icon: 'check',
     };
   };
 
@@ -129,11 +119,11 @@ export function InterviewCompletion({
 
         <CardContent className="space-y-4">
           <p>
-            {completionInfo.message} {!isInterrupted && "for the"}{" "}
+            {completionInfo.message} {!isInterrupted && 'for the'}{' '}
             <Badge variant="outline" className="font-semibold">
               {jobTitle}
-            </Badge>{" "}
-            position at{" "}
+            </Badge>{' '}
+            position at{' '}
             <Badge variant="outline" className="font-semibold">
               {companyName}
             </Badge>
@@ -168,9 +158,7 @@ export function InterviewCompletion({
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                 <span>Analyzing your interview responses...</span>
               </div>
-              <p className="text-xs text-muted-foreground">
-                This may take a moment to process
-              </p>
+              <p className="text-xs text-muted-foreground">This may take a moment to process</p>
             </div>
           )}
         </CardFooter>

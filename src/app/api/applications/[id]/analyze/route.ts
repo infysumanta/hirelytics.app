@@ -1,13 +1,14 @@
-import { NextRequest, NextResponse } from "next/server";
-import { connectToDatabase } from "@/lib/mongodb";
-import { JobApplication } from "@/models/job-application";
-import Job from "@/models/job";
-import { auth } from "@/auth";
-import { GetObjectCommand } from "@aws-sdk/client-s3";
-import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
-import { createS3Client } from "@/lib/s3-client";
-import pdf from "pdf-parse";
-import { generateGeminiText, parseGeminiMatchResponse } from "@/lib/ai-utils";
+import { GetObjectCommand } from '@aws-sdk/client-s3';
+import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
+import { NextRequest, NextResponse } from 'next/server';
+import pdf from 'pdf-parse';
+
+import { auth } from '@/auth';
+import { generateGeminiText, parseGeminiMatchResponse } from '@/lib/ai-utils';
+import { connectToDatabase } from '@/lib/mongodb';
+import { createS3Client } from '@/lib/s3-client';
+import Job from '@/models/job';
+import { JobApplication } from '@/models/job-application';
 
 // Create S3 client
 const s3Client = createS3Client();
@@ -18,8 +19,8 @@ async function extractTextFromPDF(pdfBuffer: Buffer): Promise<string> {
     const data = await pdf(pdfBuffer);
     return data.text;
   } catch (error) {
-    console.error("Error parsing PDF:", error);
-    throw new Error("Failed to extract text from PDF");
+    console.error('Error parsing PDF:', error);
+    throw new Error('Failed to extract text from PDF');
   }
 }
 
@@ -28,29 +29,29 @@ function extractSkills(text: string): string[] {
   // Simplistic approach - in a real application you'd want to use NLP
   // This is just a basic example to identify some common skills
   const skillsList = [
-    "javascript",
-    "typescript",
-    "react",
-    "node",
-    "python",
-    "java",
-    "c++",
-    "mongodb",
-    "sql",
-    "aws",
-    "docker",
-    "kubernetes",
-    "html",
-    "css",
-    "angular",
-    "vue",
-    "express",
-    "spring",
-    "django",
+    'javascript',
+    'typescript',
+    'react',
+    'node',
+    'python',
+    'java',
+    'c++',
+    'mongodb',
+    'sql',
+    'aws',
+    'docker',
+    'kubernetes',
+    'html',
+    'css',
+    'angular',
+    'vue',
+    'express',
+    'spring',
+    'django',
   ];
 
   const foundSkills = skillsList.filter((skill) =>
-    text.toLowerCase().includes(skill.toLowerCase()),
+    text.toLowerCase().includes(skill.toLowerCase())
   );
 
   return foundSkills;
@@ -89,7 +90,7 @@ function extractCandidateAbout(text: string): string {
     }
   }
 
-  return "";
+  return '';
 }
 
 function extractExperience(text: string): {
@@ -109,11 +110,7 @@ function extractExperience(text: string): {
     const yearsMatch = pattern.exec(text);
     if (yearsMatch) {
       // Find which capture group has the number
-      const captureIndex = yearsMatch[1].match(/\d+/)
-        ? 1
-        : yearsMatch[2].match(/\d+/)
-        ? 2
-        : 0;
+      const captureIndex = yearsMatch[1].match(/\d+/) ? 1 : yearsMatch[2].match(/\d+/) ? 2 : 0;
       if (captureIndex > 0) {
         years = parseInt(yearsMatch[captureIndex]);
         break;
@@ -140,7 +137,7 @@ function extractExperience(text: string): {
       if (
         company.length > 2 &&
         !company.match(
-          /^(Resume|CV|Name|Address|Email|Phone|City|State|Experience|Education|From|To|Skills|References|January|February|March|April|May|June|July|August|September|October|November|December)$/i,
+          /^(Resume|CV|Name|Address|Email|Phone|City|State|Experience|Education|From|To|Skills|References|January|February|March|April|May|June|July|August|September|October|November|December)$/i
         ) &&
         !processedCompanies.has(company.toLowerCase())
       ) {
@@ -154,38 +151,36 @@ function extractExperience(text: string): {
 }
 
 // Extract education from text
-function extractEducation(
-  text: string,
-): { degree: string; institution: string }[] {
+function extractEducation(text: string): { degree: string; institution: string }[] {
   // Enhanced list of degree types and abbreviations
   const degrees = [
-    "Bachelor",
-    "Master",
-    "PhD",
-    "Doctorate",
-    "BSc",
-    "MSc",
-    "BS",
-    "MS",
-    "BA",
-    "MA",
-    "MBA",
-    "BBA",
-    "BEng",
-    "MEng",
-    "B\\.S\\.",
-    "M\\.S\\.",
-    "B\\.A\\.",
-    "M\\.A\\.",
-    "B\\.B\\.A\\.",
-    "M\\.B\\.A\\.",
-    "B\\.E\\.",
-    "M\\.E\\.",
-    "B\\.Tech",
-    "M\\.Tech",
-    "Associate",
-    "Certificate",
-    "Diploma",
+    'Bachelor',
+    'Master',
+    'PhD',
+    'Doctorate',
+    'BSc',
+    'MSc',
+    'BS',
+    'MS',
+    'BA',
+    'MA',
+    'MBA',
+    'BBA',
+    'BEng',
+    'MEng',
+    'B\\.S\\.',
+    'M\\.S\\.',
+    'B\\.A\\.',
+    'M\\.A\\.',
+    'B\\.B\\.A\\.',
+    'M\\.B\\.A\\.',
+    'B\\.E\\.',
+    'M\\.E\\.',
+    'B\\.Tech',
+    'M\\.Tech',
+    'Associate',
+    'Certificate',
+    'Diploma',
   ];
 
   const education: { degree: string; institution: string }[] = [];
@@ -195,7 +190,7 @@ function extractEducation(
   for (const degree of degrees) {
     const pattern = new RegExp(
       `(${degree}[\\w\\s\\.]*(?:in|of)?\\s*[\\w\\s\\.]*)\\s+(?:from|at|in|degree|-)\\s+([A-Z][A-Za-z0-9\\s\\.\\-&,]+)`,
-      "gi",
+      'gi'
     );
     let match;
     while ((match = pattern.exec(text)) !== null) {
@@ -205,7 +200,7 @@ function extractEducation(
       // Filter out false positives
       if (
         !institution.match(
-          /^(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec|January|February|March|April|May|June|July|August|September|October|November|December|Resume|CV|Name|Address|Email|Phone|City|State|Experience|Education)$/i,
+          /^(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec|January|February|March|April|May|June|July|August|September|October|November|December|Resume|CV|Name|Address|Email|Phone|City|State|Experience|Education)$/i
         ) &&
         !processedInstitutions.has(institution.toLowerCase())
       ) {
@@ -230,7 +225,7 @@ function extractEducation(
     // Filter out false positives
     if (
       !institution.match(
-        /^(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec|January|February|March|April|May|June|July|August|September|October|November|December|Resume|CV|Name|Address|Email|Phone|City|State|Experience|Education)$/i,
+        /^(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec|January|February|March|April|May|June|July|August|September|October|November|December|Resume|CV|Name|Address|Email|Phone|City|State|Experience|Education)$/i
       ) &&
       !processedInstitutions.has(institution.toLowerCase())
     ) {
@@ -262,10 +257,7 @@ function extractEducation(
   return education;
 }
 
-export async function POST(
-  req: NextRequest,
-  { params }: { params: Promise<{ id: string }> },
-) {
+export async function POST(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     await connectToDatabase();
 
@@ -273,8 +265,8 @@ export async function POST(
     const session = await auth();
     if (!session) {
       return NextResponse.json(
-        { error: "Unauthorized", message: "Authentication required" },
-        { status: 401 },
+        { error: 'Unauthorized', message: 'Authentication required' },
+        { status: 401 }
       );
     }
 
@@ -286,10 +278,7 @@ export async function POST(
     const application = await JobApplication.findById(id);
 
     if (!application) {
-      return NextResponse.json(
-        { error: "Application not found" },
-        { status: 404 },
-      );
+      return NextResponse.json({ error: 'Application not found' }, { status: 404 });
     }
 
     // Get the PDF from S3 if we have s3Key and s3Bucket
@@ -317,28 +306,25 @@ export async function POST(
         const arrayBuffer = await response.arrayBuffer();
         pdfBuffer = Buffer.from(arrayBuffer);
       } catch (error) {
-        console.error("Error fetching PDF from S3:", error);
-        return NextResponse.json(
-          { error: "Failed to retrieve PDF from storage" },
-          { status: 500 },
-        );
+        console.error('Error fetching PDF from S3:', error);
+        return NextResponse.json({ error: 'Failed to retrieve PDF from storage' }, { status: 500 });
       }
     } else if (application.resumeBase64) {
       // Extract buffer from base64
       try {
-        const base64Data = application.resumeBase64.split(",")[1];
-        pdfBuffer = Buffer.from(base64Data, "base64");
+        const base64Data = application.resumeBase64.split(',')[1];
+        pdfBuffer = Buffer.from(base64Data, 'base64');
       } catch (error) {
-        console.error("Error extracting PDF from base64:", error);
+        console.error('Error extracting PDF from base64:', error);
         return NextResponse.json(
-          { error: "Failed to process PDF from base64 data" },
-          { status: 500 },
+          { error: 'Failed to process PDF from base64 data' },
+          { status: 500 }
         );
       }
     } else {
       return NextResponse.json(
-        { error: "No PDF data available for this application" },
-        { status: 400 },
+        { error: 'No PDF data available for this application' },
+        { status: 400 }
       );
     }
 
@@ -347,11 +333,8 @@ export async function POST(
     try {
       parsedText = await extractTextFromPDF(pdfBuffer);
     } catch (error) {
-      console.error("Error parsing PDF:", error);
-      return NextResponse.json(
-        { error: "Failed to parse resume PDF" },
-        { status: 500 },
-      );
+      console.error('Error parsing PDF:', error);
+      return NextResponse.json({ error: 'Failed to parse resume PDF' }, { status: 500 });
     }
 
     // Extract information from the text
@@ -393,23 +376,20 @@ export async function POST(
             Job Information:
             Title: ${title}
             Description: ${description}
-            Required Skills: ${jobSkills.join(", ")}
-            ${requirements ? `Additional Requirements: ${requirements}` : ""}
+            Required Skills: ${jobSkills.join(', ')}
+            ${requirements ? `Additional Requirements: ${requirements}` : ''}
 
             Candidate Information:
             Resume Text: ${parsedText.substring(0, 5000)} ${
-            parsedText.length > 5000 ? "...(truncated)" : ""
-          }
-            Identified Skills: ${skills.join(", ")}
-            Experience: ${
-              experience.years
-            } years at companies: ${experience.companies.join(", ")}
+              parsedText.length > 5000 ? '...(truncated)' : ''
+            }
+            Identified Skills: ${skills.join(', ')}
+            Experience: ${experience.years} years at companies: ${experience.companies.join(', ')}
             Education: ${education
               .map(
-                (e: { degree: string; institution: string }) =>
-                  `${e.degree} from ${e.institution}`,
+                (e: { degree: string; institution: string }) => `${e.degree} from ${e.institution}`
               )
-              .join("; ")}
+              .join('; ')}
 
             First, verify and enhance the extracted information:
             1. If the identified skills seem incomplete, extract additional relevant skills from the resume
@@ -454,10 +434,10 @@ export async function POST(
             if (enhancedExperience.companies.length > 0) {
               // Add any new companies found by AI that weren't in the original list
               const existingCompanies = new Set(
-                parsedResume.experience.companies.map((c) => c.toLowerCase()),
+                parsedResume.experience.companies.map((c) => c.toLowerCase())
               );
               const newCompanies = enhancedExperience.companies.filter(
-                (c) => !existingCompanies.has(c.toLowerCase()),
+                (c) => !existingCompanies.has(c.toLowerCase())
               );
               parsedResume.experience.companies.push(...newCompanies);
             }
@@ -468,15 +448,12 @@ export async function POST(
             // Only add new education entries that don't overlap with existing ones
             const existingEducation = new Set(
               parsedResume.education.map(
-                (e) =>
-                  `${e.degree.toLowerCase()}|${e.institution.toLowerCase()}`,
-              ),
+                (e) => `${e.degree.toLowerCase()}|${e.institution.toLowerCase()}`
+              )
             );
             const newEducation = enhancedEducation.filter(
               (e) =>
-                !existingEducation.has(
-                  `${e.degree.toLowerCase()}|${e.institution.toLowerCase()}`,
-                ),
+                !existingEducation.has(`${e.degree.toLowerCase()}|${e.institution.toLowerCase()}`)
             );
             parsedResume.education.push(...newEducation);
           }
@@ -496,10 +473,10 @@ export async function POST(
             },
           };
         } else {
-          console.error("Job not found for application:", application.jobId);
+          console.error('Job not found for application:', application.jobId);
         }
       } catch (matchError) {
-        console.error("Error during match process:", matchError);
+        console.error('Error during match process:', matchError);
       }
     }
 
@@ -509,18 +486,15 @@ export async function POST(
 
     return NextResponse.json({
       success: true,
-      message: "Resume analyzed successfully",
+      message: 'Resume analyzed successfully',
       application: {
         ...application.toJSON(),
-        resumeBase64: "**base64 data stored**", // Don't expose the full base64 data
+        resumeBase64: '**base64 data stored**', // Don't expose the full base64 data
       },
       matching: matchResult,
     });
   } catch (error) {
-    console.error("Error analyzing resume:", error);
-    return NextResponse.json(
-      { error: "Failed to analyze resume" },
-      { status: 500 },
-    );
+    console.error('Error analyzing resume:', error);
+    return NextResponse.json({ error: 'Failed to analyze resume' }, { status: 500 });
   }
 }

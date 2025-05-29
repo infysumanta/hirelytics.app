@@ -1,13 +1,11 @@
-import { NextRequest, NextResponse } from "next/server";
-import { connectToDatabase } from "@/lib/mongodb";
-import { JobApplication } from "@/models/job-application";
-import { auth } from "@/auth";
-import Job from "@/models/job";
+import { NextRequest, NextResponse } from 'next/server';
 
-export async function PUT(
-  req: NextRequest,
-  { params }: { params: Promise<{ id: string }> },
-) {
+import { auth } from '@/auth';
+import { connectToDatabase } from '@/lib/mongodb';
+import Job from '@/models/job';
+import { JobApplication } from '@/models/job-application';
+
+export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     await connectToDatabase();
 
@@ -16,18 +14,18 @@ export async function PUT(
     if (!session) {
       return NextResponse.json(
         {
-          error: "Unauthorized",
-          message: "You must be logged in to update application status",
+          error: 'Unauthorized',
+          message: 'You must be logged in to update application status',
         },
-        { status: 401 },
+        { status: 401 }
       );
     }
 
     // Only recruiters can update application status
-    if (session.user?.role !== "recruiter") {
+    if (session.user?.role !== 'recruiter') {
       return NextResponse.json(
-        { error: "Unauthorized. Recruiter access required." },
-        { status: 403 },
+        { error: 'Unauthorized. Recruiter access required.' },
+        { status: 403 }
       );
     }
 
@@ -37,8 +35,8 @@ export async function PUT(
     const application = await JobApplication.findById(id);
     if (!application) {
       return NextResponse.json(
-        { success: false, message: "Application not found" },
-        { status: 404 },
+        { success: false, message: 'Application not found' },
+        { status: 404 }
       );
     }
 
@@ -47,8 +45,8 @@ export async function PUT(
     const job = await Job.findById(application.jobId);
     if (!job) {
       return NextResponse.json(
-        { success: false, message: "Associated job not found" },
-        { status: 404 },
+        { success: false, message: 'Associated job not found' },
+        { status: 404 }
       );
     }
 
@@ -57,9 +55,9 @@ export async function PUT(
       return NextResponse.json(
         {
           success: false,
-          message: "Unauthorized. You are not the recruiter for this job.",
+          message: 'Unauthorized. You are not the recruiter for this job.',
         },
-        { status: 403 },
+        { status: 403 }
       );
     }
 
@@ -67,17 +65,13 @@ export async function PUT(
     const data = await req.json();
 
     // Validate status
-    if (
-      !data.status ||
-      !["pending", "reviewed", "accepted", "rejected"].includes(data.status)
-    ) {
+    if (!data.status || !['pending', 'reviewed', 'accepted', 'rejected'].includes(data.status)) {
       return NextResponse.json(
         {
           success: false,
-          message:
-            "Invalid status. Must be one of: pending, reviewed, accepted, rejected",
+          message: 'Invalid status. Must be one of: pending, reviewed, accepted, rejected',
         },
-        { status: 400 },
+        { status: 400 }
       );
     }
 
@@ -85,7 +79,7 @@ export async function PUT(
     const updatedApplication = await JobApplication.findByIdAndUpdate(
       id,
       { $set: { status: data.status } },
-      { new: true },
+      { new: true }
     );
 
     // Return updated application
@@ -94,14 +88,14 @@ export async function PUT(
       message: `Application status updated to ${data.status}`,
       application: {
         ...updatedApplication.toJSON(),
-        resumeBase64: "**base64 data stored**", // Don't expose the full base64 data
+        resumeBase64: '**base64 data stored**', // Don't expose the full base64 data
       },
     });
   } catch (error) {
-    console.error("Error updating application status:", error);
+    console.error('Error updating application status:', error);
     return NextResponse.json(
-      { success: false, message: "Failed to update application status" },
-      { status: 500 },
+      { success: false, message: 'Failed to update application status' },
+      { status: 500 }
     );
   }
 }

@@ -1,17 +1,18 @@
-import { NextRequest, NextResponse } from "next/server";
-import { connectToDatabase } from "@/lib/mongodb";
-import { JobApplication } from "@/models/job-application";
-import { auth } from "@/auth";
-import Job from "@/models/job";
+import { NextRequest, NextResponse } from 'next/server';
+
+import { auth } from '@/auth';
+import { connectToDatabase } from '@/lib/mongodb';
+import Job from '@/models/job';
+import { JobApplication } from '@/models/job-application';
 
 export async function GET(req: NextRequest) {
   try {
     // Check authentication
     const session = await auth();
-    if (!session || session.user?.role !== "recruiter") {
+    if (!session || session.user?.role !== 'recruiter') {
       return NextResponse.json(
-        { error: "Unauthorized. Recruiter access required." },
-        { status: 403 },
+        { error: 'Unauthorized. Recruiter access required.' },
+        { status: 403 }
       );
     }
 
@@ -22,18 +23,16 @@ export async function GET(req: NextRequest) {
 
     // Get query parameters for filtering
     const url = new URL(req.url);
-    const jobId = url.searchParams.get("jobId");
-    const page = parseInt(url.searchParams.get("page") || "1");
-    const limit = parseInt(url.searchParams.get("limit") || "10");
-    const search = url.searchParams.get("search") || "";
+    const jobId = url.searchParams.get('jobId');
+    const page = parseInt(url.searchParams.get('page') || '1');
+    const limit = parseInt(url.searchParams.get('limit') || '10');
+    const search = url.searchParams.get('search') || '';
 
     // Calculate pagination
     const skip = (page - 1) * limit;
 
     // Prepare filter - only get applications for jobs where the current user is the recruiter
-    const recruiterJobs = await Job.find({ recruiter: recruiterId }).select(
-      "_id",
-    );
+    const recruiterJobs = await Job.find({ recruiter: recruiterId }).select('_id');
     const recruiterJobIds = recruiterJobs.map((job) => job._id.toString());
 
     // Build the query filter
@@ -50,9 +49,9 @@ export async function GET(req: NextRequest) {
     // Add search if specified
     if (search) {
       filter.$or = [
-        { candidateName: { $regex: search, $options: "i" } },
-        { fileName: { $regex: search, $options: "i" } },
-        { "parsedResume.skills": { $regex: search, $options: "i" } },
+        { candidateName: { $regex: search, $options: 'i' } },
+        { fileName: { $regex: search, $options: 'i' } },
+        { 'parsedResume.skills': { $regex: search, $options: 'i' } },
       ];
     }
 
@@ -75,19 +74,17 @@ export async function GET(req: NextRequest) {
           if (!app.jobId) {
             return {
               ...app,
-              job: { title: "Unknown Job", companyName: "Unknown Company" },
+              job: { title: 'Unknown Job', companyName: 'Unknown Company' },
             };
           }
 
-          const job = await Job.findById(app.jobId)
-            .select("title companyName")
-            .lean();
+          const job = await Job.findById(app.jobId).select('title companyName').lean();
 
           // Check if job was found and has required fields
           if (!job || !job.title || !job.companyName) {
             return {
               ...app,
-              job: { title: "Unknown Job", companyName: "Unknown Company" },
+              job: { title: 'Unknown Job', companyName: 'Unknown Company' },
             };
           }
 
@@ -99,16 +96,13 @@ export async function GET(req: NextRequest) {
             },
           };
         } catch (error) {
-          console.error(
-            `Error fetching job details for application ${app._id}:`,
-            error,
-          );
+          console.error(`Error fetching job details for application ${app._id}:`, error);
           return {
             ...app,
-            job: { title: "Error Loading Job", companyName: "Error" },
+            job: { title: 'Error Loading Job', companyName: 'Error' },
           };
         }
-      }),
+      })
     );
 
     // Return the applications with pagination info
@@ -122,10 +116,7 @@ export async function GET(req: NextRequest) {
       },
     });
   } catch (error) {
-    console.error("Error fetching recruiter job applications:", error);
-    return NextResponse.json(
-      { error: "Failed to fetch applications" },
-      { status: 500 },
-    );
+    console.error('Error fetching recruiter job applications:', error);
+    return NextResponse.json({ error: 'Failed to fetch applications' }, { status: 500 });
   }
 }

@@ -1,7 +1,8 @@
-import { NextRequest, NextResponse } from "next/server";
-import { connectToDatabase } from "@/lib/mongodb";
-import { JobApplication } from "@/models/job-application";
-import { auth } from "@/auth";
+import { NextRequest, NextResponse } from 'next/server';
+
+import { auth } from '@/auth';
+import { connectToDatabase } from '@/lib/mongodb';
+import { JobApplication } from '@/models/job-application';
 
 export async function POST(req: NextRequest) {
   try {
@@ -10,7 +11,7 @@ export async function POST(req: NextRequest) {
     const data = await req.json();
 
     // Log received data for debugging (excluding large base64 content)
-    console.log("Received application data:", {
+    console.log('Received application data:', {
       jobId: data.jobId,
       userId: data.userId,
       fileName: data.fileName,
@@ -29,8 +30,8 @@ export async function POST(req: NextRequest) {
       !data.fileName
     ) {
       return NextResponse.json(
-        { success: false, message: "Missing required fields" },
-        { status: 400 },
+        { success: false, message: 'Missing required fields' },
+        { status: 400 }
       );
     }
 
@@ -47,10 +48,10 @@ export async function POST(req: NextRequest) {
       // Store S3 key and bucket if available for generating signed URLs later
       ...(data.s3Key ? { s3Key: data.s3Key } : {}),
       ...(data.s3Bucket ? { s3Bucket: data.s3Bucket } : {}),
-      preferredLanguage: data.preferredLanguage || "en",
+      preferredLanguage: data.preferredLanguage || 'en',
     };
 
-    console.log("Creating application with data:", {
+    console.log('Creating application with data:', {
       jobId: applicationData.jobId,
       userId: applicationData.userId,
       hasCandidateName: !!applicationData.candidateName,
@@ -66,16 +67,16 @@ export async function POST(req: NextRequest) {
         success: true,
         application: {
           ...jobApplication.toJSON(),
-          resumeBase64: "**base64 data stored**", // Don't return the full base64 string
+          resumeBase64: '**base64 data stored**', // Don't return the full base64 string
         },
       },
-      { status: 201 },
+      { status: 201 }
     );
   } catch (error) {
-    console.error("Error creating job application:", error);
+    console.error('Error creating job application:', error);
     return NextResponse.json(
-      { success: false, message: "Failed to submit application" },
-      { status: 500 },
+      { success: false, message: 'Failed to submit application' },
+      { status: 500 }
     );
   }
 }
@@ -89,18 +90,18 @@ export async function GET(req: NextRequest) {
     if (!session) {
       return NextResponse.json(
         {
-          error: "Unauthorized",
-          message: "You must be logged in to access applications",
+          error: 'Unauthorized',
+          message: 'You must be logged in to access applications',
         },
-        { status: 401 },
+        { status: 401 }
       );
     }
 
     // Get query parameters for filtering
     const url = new URL(req.url);
-    const jobId = url.searchParams.get("jobId");
-    const userId = url.searchParams.get("userId");
-    const id = url.searchParams.get("id"); // Get a specific application by ID
+    const jobId = url.searchParams.get('jobId');
+    const userId = url.searchParams.get('userId');
+    const id = url.searchParams.get('id'); // Get a specific application by ID
 
     // If requesting a specific application by ID
     if (id) {
@@ -108,8 +109,8 @@ export async function GET(req: NextRequest) {
 
       if (!application) {
         return NextResponse.json(
-          { success: false, message: "Application not found" },
-          { status: 404 },
+          { success: false, message: 'Application not found' },
+          { status: 404 }
         );
       }
 
@@ -117,7 +118,7 @@ export async function GET(req: NextRequest) {
         success: true,
         application: {
           ...application.toJSON(),
-          resumeBase64: "**base64 data stored**", // Don't return the full base64 data
+          resumeBase64: '**base64 data stored**', // Don't return the full base64 data
         },
       });
     }
@@ -140,20 +141,20 @@ export async function GET(req: NextRequest) {
         createdAt: 1,
         updatedAt: 1,
         // Include all match-related fields from parsedResume
-        "parsedResume.matchScore": 1,
-        "parsedResume.matchedAt": 1,
-        "parsedResume.skills": 1,
-        "parsedResume.topSkillMatches": 1,
-        "parsedResume.missingSkills": 1,
+        'parsedResume.matchScore': 1,
+        'parsedResume.matchedAt': 1,
+        'parsedResume.skills': 1,
+        'parsedResume.topSkillMatches': 1,
+        'parsedResume.missingSkills': 1,
       })
       .sort({ createdAt: -1 });
 
     return NextResponse.json({ success: true, applications: jobApplications });
   } catch (error) {
-    console.error("Error fetching job applications:", error);
+    console.error('Error fetching job applications:', error);
     return NextResponse.json(
-      { success: false, message: "Failed to fetch applications" },
-      { status: 500 },
+      { success: false, message: 'Failed to fetch applications' },
+      { status: 500 }
     );
   }
 }

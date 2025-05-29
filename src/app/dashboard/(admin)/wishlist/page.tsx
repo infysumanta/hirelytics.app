@@ -1,12 +1,13 @@
-"use client";
+'use client';
 
-import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
-import { ColumnDef } from "@tanstack/react-table";
-import { DataTable } from "@/components/ui/data-table";
-import { Badge } from "@/components/ui/badge";
-import { format } from "date-fns";
-import { Mail, Calendar, User } from "lucide-react";
+import { useQuery } from '@tanstack/react-query';
+import { ColumnDef } from '@tanstack/react-table';
+import { format } from 'date-fns';
+import { Calendar, Mail, User } from 'lucide-react';
+import { useState } from 'react';
+
+import { Badge } from '@/components/ui/badge';
+import { DataTable } from '@/components/ui/data-table';
 
 // Define wishlist entry type
 interface WishlistEntry {
@@ -23,13 +24,11 @@ export default function AdminWishlistPage() {
 
   // Fetch wishlist data
   const { data, isLoading, error } = useQuery({
-    queryKey: ["admin-wishlist", page, pageSize],
+    queryKey: ['admin-wishlist', page, pageSize],
     queryFn: async () => {
-      const response = await fetch(
-        `/api/wishlist?page=${page + 1}&limit=${pageSize}`,
-      );
+      const response = await fetch(`/api/wishlist?page=${page + 1}&limit=${pageSize}`);
       if (!response.ok) {
-        throw new Error("Failed to fetch wishlist entries");
+        throw new Error('Failed to fetch wishlist entries');
       }
       return response.json();
     },
@@ -38,10 +37,10 @@ export default function AdminWishlistPage() {
   // Define columns for the data table
   const columns: ColumnDef<WishlistEntry>[] = [
     {
-      accessorKey: "name",
-      header: "Name",
+      accessorKey: 'name',
+      header: 'Name',
       cell: ({ row }) => {
-        const name = row.getValue("name") as string;
+        const name = row.getValue('name') as string;
         return (
           <div className="flex items-center gap-2">
             <User className="h-4 w-4 text-muted-foreground" />
@@ -51,10 +50,10 @@ export default function AdminWishlistPage() {
       },
     },
     {
-      accessorKey: "email",
-      header: "Email",
+      accessorKey: 'email',
+      header: 'Email',
       cell: ({ row }) => {
-        const email = row.getValue("email") as string;
+        const email = row.getValue('email') as string;
         return (
           <div className="flex items-center gap-2">
             <Mail className="h-4 w-4 text-muted-foreground" />
@@ -64,16 +63,13 @@ export default function AdminWishlistPage() {
       },
     },
     {
-      accessorKey: "reason",
-      header: "Reason",
+      accessorKey: 'reason',
+      header: 'Reason',
       cell: ({ row }) => {
-        const reason = row.getValue("reason") as string;
+        const reason = row.getValue('reason') as string;
         return reason ? (
           <div className="max-w-xs">
-            <p
-              className="text-sm text-muted-foreground truncate"
-              title={reason}
-            >
+            <p className="text-sm text-muted-foreground truncate" title={reason}>
               {reason}
             </p>
           </div>
@@ -85,16 +81,14 @@ export default function AdminWishlistPage() {
       },
     },
     {
-      accessorKey: "createdAt",
-      header: "Joined Date",
+      accessorKey: 'createdAt',
+      header: 'Joined Date',
       cell: ({ row }) => {
-        const date = row.getValue("createdAt") as string;
+        const date = row.getValue('createdAt') as string;
         return (
           <div className="flex items-center gap-2">
             <Calendar className="h-4 w-4 text-muted-foreground" />
-            <span className="text-sm">
-              {format(new Date(date), "MMM dd, yyyy")}
-            </span>
+            <span className="text-sm">{format(new Date(date), 'MMM dd, yyyy')}</span>
           </div>
         );
       },
@@ -106,9 +100,7 @@ export default function AdminWishlistPage() {
       <div className="space-y-6">
         <div>
           <h1 className="text-3xl font-bold mb-2">Wishlist Management</h1>
-          <p className="text-muted-foreground">
-            Manage and view wishlist entries
-          </p>
+          <p className="text-muted-foreground">Manage and view wishlist entries</p>
         </div>
         <div className="flex items-center justify-center py-8">
           <p className="text-red-500">Failed to load wishlist entries</p>
@@ -130,17 +122,11 @@ export default function AdminWishlistPage() {
       <div className="grid gap-4 md:grid-cols-3">
         <div className="rounded-lg border bg-card text-card-foreground shadow-sm p-6">
           <div className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <h3 className="tracking-tight text-sm font-medium">
-              Total Entries
-            </h3>
+            <h3 className="tracking-tight text-sm font-medium">Total Entries</h3>
             <User className="h-4 w-4 text-muted-foreground" />
           </div>
-          <div className="text-2xl font-bold">
-            {data?.pagination?.total || 0}
-          </div>
-          <p className="text-xs text-muted-foreground">
-            People interested in the platform
-          </p>
+          <div className="text-2xl font-bold">{data?.pagination?.total || 0}</div>
+          <p className="text-xs text-muted-foreground">People interested in the platform</p>
         </div>
 
         <div className="rounded-lg border bg-card text-card-foreground shadow-sm p-6">
@@ -148,12 +134,8 @@ export default function AdminWishlistPage() {
             <h3 className="tracking-tight text-sm font-medium">This Page</h3>
             <Mail className="h-4 w-4 text-muted-foreground" />
           </div>
-          <div className="text-2xl font-bold">
-            {data?.wishlistEntries?.length || 0}
-          </div>
-          <p className="text-xs text-muted-foreground">
-            Entries on current page
-          </p>
+          <div className="text-2xl font-bold">{data?.wishlistEntries?.length || 0}</div>
+          <p className="text-xs text-muted-foreground">Entries on current page</p>
         </div>
 
         <div className="rounded-lg border bg-card text-card-foreground shadow-sm p-6">
@@ -161,9 +143,7 @@ export default function AdminWishlistPage() {
             <h3 className="tracking-tight text-sm font-medium">Pages</h3>
             <Calendar className="h-4 w-4 text-muted-foreground" />
           </div>
-          <div className="text-2xl font-bold">
-            {data?.pagination?.totalPages || 0}
-          </div>
+          <div className="text-2xl font-bold">{data?.pagination?.totalPages || 0}</div>
           <p className="text-xs text-muted-foreground">Total pages available</p>
         </div>
       </div>

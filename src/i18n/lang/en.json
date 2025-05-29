@@ -1,481 +1,481 @@
 {
-	"Common": {
-		"theme": {
-			"dark": "Dark Mode",
-			"light": "Light Mode",
-			"system": "System"
-		},
-		"language": {
-			"en": "English",
-			"hi": "Hindi"
-		},
-		"buttons": {
-			"getStarted": "Get Started",
-			"learnMore": "Learn More",
-			"howItWorks": "How It Works",
-			"signOut": "Sign Out"
-		},
-		"footer": {
-			"allRightsReserved": "All rights reserved",
-			"platform": "Platform",
-			"features": "Features",
-			"pricing": "Pricing",
-			"faq": "FAQ",
-			"forRecruiters": "For Recruiters",
-			"postJob": "Post a Job",
-			"findCandidates": "Find Candidates",
-			"recruitmentTools": "Recruitment Tools",
-			"successStories": "Success Stories",
-			"forCandidates": "For Candidates",
-			"findJobs": "Find Jobs",
-			"careerResources": "Career Resources",
-			"interviewTips": "Interview Tips",
-			"resumeBuilder": "Resume Builder",
-			"company": "Company",
-			"aboutUs": "About Us",
-			"contact": "Contact",
-			"privacyPolicy": "Privacy Policy",
-			"termsOfService": "Terms of Service"
-		}
-	},
-	"HomePage": {
-		"title": "Hirelytics",
-		"subtitle": "Role-Based Recruitment Platform",
-		"description": "A role-based recruitment platform for recruiters, candidates, and administrators",
-		"features": "AI-Powered Features",
-		"intelligentRecruitment": "Intelligent Recruitment Platform",
-		"platformDescription": "Our platform leverages cutting-edge AI to transform every step of the recruitment process, from job posting to final selection.",
-		"hero": {
-			"aiPoweredRecruitment": "AI-Powered Recruitment",
-			"revolutionizeHiring": "Revolutionize Your Hiring with",
-			"description": "Our AI-driven platform transforms the recruitment process from job posting to candidate selection. Automate interviews, analyze resumes, and make data-driven hiring decisions.",
-			"getStarted": "Get Started",
-			"howItWorks": "How It Works"
-		},
-		"featuresSection": {
-			"title": "AI-Powered Features",
-			"subtitle": "Intelligent Recruitment Platform",
-			"description": "Our platform leverages cutting-edge AI to transform every step of the recruitment process, from job posting to final selection.",
-			"smartJobPosting": {
-				"title": "Smart Job Posting",
-				"description": "Create optimized job listings that automatically generate unique application URLs."
-			},
-			"uniqueApplicationLinks": {
-				"title": "Unique Application Links",
-				"description": "Share custom application URLs for each position to streamline the candidate experience."
-			},
-			"resumeAnalysis": {
-				"title": "Resume Analysis",
-				"description": "Our AI analyzes resumes to identify the most qualified candidates based on skills and experience."
-			},
-			"aiPoweredInterviews": {
-				"title": "AI-Powered Interviews",
-				"description": "Automated interview process that adapts questions based on candidate responses and resume."
-			},
-			"comprehensiveFeedback": {
-				"title": "Comprehensive Feedback",
-				"description": "Provide detailed feedback to both recruiters and candidates after the interview process."
-			},
-			"dataDrivenInsights": {
-				"title": "Data-Driven Insights",
-				"description": "Get actionable insights and analytics to improve your hiring process over time."
-			}
-		},
-		"howItWorks": {
-			"title": "Streamlined Process",
-			"subtitle": "How Hirelytics Works",
-			"description": "Our AI-powered platform streamlines the entire recruitment journey from job posting to final selection.",
-			"steps": {
-				"step1": {
-					"title": "Create Job Posting",
-					"description": "Recruiters create detailed job postings with requirements, responsibilities, and qualifications.",
-					"cardTitle": "Job Description Creation",
-					"cardDescription": "The platform helps optimize job descriptions to attract the right candidates.",
-					"label": "Recruiter"
-				},
-				"step2": {
-					"title": "Generate Application URL",
-					"description": "The system automatically generates a unique application URL for each job posting.",
-					"cardTitle": "Unique Application Link",
-					"cardDescription": "Each job gets a custom URL that can be shared across platforms and social media.",
-					"label": "System"
-				},
-				"step3": {
-					"title": "Candidate Application",
-					"description": "Candidates apply through the unique URL, creating a streamlined application experience.",
-					"cardTitle": "Easy Application Process",
-					"cardDescription": "Candidates can apply with a simple, user-friendly interface designed for the best experience.",
-					"label": "Candidate"
-				},
-				"step4": {
-					"title": "Resume Analysis",
-					"description": "Our AI analyzes the candidate's resume to extract skills, experience, and qualifications.",
-					"cardTitle": "Intelligent Resume Parsing",
-					"cardDescription": "Advanced AI extracts and analyzes key information from resumes to match with job requirements.",
-					"label": "AI System"
-				},
-				"step5": {
-					"title": "AI-Powered Interview",
-					"description": "The AI conducts an adaptive interview, asking questions based on the candidate's resume and responses.",
-					"cardTitle": "Dynamic Conversation",
-					"cardDescription": "The AI adapts questions based on previous answers to thoroughly assess candidate skills.",
-					"label": "Interview"
-				},
-				"step6": {
-					"title": "Comprehensive Feedback",
-					"description": "Both recruiters and candidates receive detailed feedback and insights from the interview process.",
-					"cardTitle": "Actionable Insights",
-					"cardDescription": "Detailed reports help recruiters make informed decisions and candidates understand their performance.",
-					"label": "Results"
-				}
-			},
-			"getStarted": "Get Started Now"
-		},
-		"userAccess": {
-			"candidateLogin": "Candidate Login",
-			"recruiterLogin": "Recruiter Login",
-			"wishlist": "Wishlist",
-			"findJobs": "Find Jobs"
-		},
-		"testimonials": {
-			"title": "Success Stories",
-			"subtitle": "What Our Users Say",
-			"description": "Hear from recruiters and candidates who have transformed their hiring experience with our AI-powered platform.",
-			"items": [
-				{
-					"quote": "Hirelytics has revolutionized our recruitment process. We've reduced our time-to-hire by 40% and found better quality candidates.",
-					"name": "Sarah Johnson",
-					"role": "HR Director",
-					"company": "TechCorp"
-				},
-				{
-					"quote": "The AI interview process is remarkably effective. It asks relevant questions and provides detailed feedback that helps us make better hiring decisions.",
-					"name": "David Rodriguez",
-					"role": "Talent Acquisition Manager",
-					"company": "InnovateX"
-				},
-				{
-					"quote": "As a candidate, I love how the platform matched me with jobs that truly aligned with my skills and career goals. The AI interview was surprisingly conversational.",
-					"name": "Michael Chen",
-					"role": "Software Engineer",
-					"company": "Hired via Hirelytics"
-				}
-			]
-		},
-		"cta": {
-			"title": "Ready to Transform Your Hiring Process?",
-			"description": "Join thousands of companies using Hirelytics to find the perfect candidates faster and more efficiently.",
-			"getStarted": "Get Started",
-			"learnMore": "Learn More",
-			"noCreditCard": "No credit card required • Free trial available"
-		},
-		"footer": {
-			"description": "AI-powered recruitment platform that transforms hiring through intelligent matching, automated interviews, and data-driven insights.",
-			"platform": {
-				"title": "Platform",
-				"features": "Features",
-				"howItWorks": "How It Works",
-				"learnMore": "Learn More",
-				"wishlist": "Wishlist"
-			},
-			"forRecruiters": {
-				"title": "For Recruiters",
-				"login": "Recruiter Login",
-				"register": "Register as Recruiter",
-				"learnMore": "Learn More",
-				"dashboard": "Dashboard"
-			},
-			"forCandidates": {
-				"title": "For Candidates",
-				"findJobs": "Find Jobs",
-				"login": "Candidate Login",
-				"register": "Register as Candidate",
-				"wishlist": "My Wishlist"
-			},
-			"company": {
-				"title": "Company",
-				"aboutUs": "About Us",
-				"contact": "Contact",
-				"privacyPolicy": "Privacy Policy",
-				"termsOfService": "Terms of Service"
-			},
-			"copyright": "© {year} Hirelytics. All rights reserved.",
-			"cta": {
-				"title": "AI-Powered Recruitment",
-				"heading": "Ready to Transform Your Hiring Process?",
-				"description": "Join thousands of companies using Hirelytics to find the perfect candidates faster and more efficiently.",
-				"getStarted": "Get Started",
-				"learnMore": "Learn More",
-				"noCreditCard": "No credit card required • Free trial available"
-			}
-		}
-	},
-	"Auth": {
-		"login": "Login",
-		"register": "Register",
-		"email": "Email",
-		"password": "Password",
-		"name": "Name",
-		"forgotPassword": "Forgot password?",
-		"noAccount": "Don't have an account?",
-		"hasAccount": "Already have an account?",
-		"signIn": "Sign In",
-		"signUp": "Sign Up",
-		"signOut": "Sign Out",
-		"loggingIn": "Logging in...",
-		"loginSuccess": "Logged in successfully!",
-		"loginError": "Something went wrong. Please try again.",
-		"registrationSuccess": "Registration successful! You can now log in.",
-		"registrationError": "Something went wrong. Please try again.",
-		"registrationFailed": "Registration failed.",
-		"unauthorized": "Access Denied",
-		"unauthorizedMessage": "You don't have permission to access this page. Please contact your administrator if you believe this is an error.",
-		"goBack": "Go Back",
-		"dashboard": "Dashboard",
-		"logout": "Logout",
-		"redirecting": "Redirecting...",
-		"redirectingToWaitlist": "Please wait while we redirect you to the waitlist page.",
-		"candidateLogin": {
-			"title": "Candidate Login",
-			"description": "Enter your credentials to access your candidate dashboard"
-		},
-		"loginAs": {
-			"admin": "Login as Admin",
-			"recruiter": "Login as Recruiter",
-			"candidate": "Login as Candidate"
-		},
-		"registerAs": {
-			"recruiter": "Register as Recruiter",
-			"candidate": "Register as Candidate"
-		},
-		"recruiterRegistration": {
-			"title": "Recruiter Registration",
-			"description": "Create a recruiter account to post jobs and find candidates"
-		},
-		"candidateRegistration": {
-			"title": "Candidate Registration",
-			"description": "Create a candidate account to apply for jobs"
-		},
-		"creatingAccount": "Creating account...",
-		"registerButton": "Register",
-		"chooseRole": "Choose your role to login to the system",
-		"chooseRoleRegister": "Choose your role to register in the system",
-		"notRecruiter": "Not a recruiter? Login as a",
-		"notCandidate": "Not a candidate? Login as a",
-		"recruiterLoginDescription": "Enter your credentials to access the recruiter dashboard",
-		"candidateLoginDescription": "Enter your credentials to access the candidate dashboard",
-		"adminLoginDescription": "Enter your credentials to access the admin dashboard"
-	},
-	"Dashboard": {
-		"welcome": "Welcome, {name}",
-		"admin": "Admin Dashboard",
-		"recruiter": "Recruiter Dashboard",
-		"candidate": "Candidate Dashboard",
-		"loggedInAs": "You are logged in as a {role}.",
-		"userManagement": "User Management",
-		"manageUsers": "Manage system users",
-		"systemSettings": "System Settings",
-		"configureSettings": "Configure application settings and preferences.",
-		"jobPostings": "Job Postings",
-		"manageJobs": "Manage your job listings",
-		"candidateApplications": "Candidate Applications",
-		"reviewApplications": "Review and manage applications from candidates.",
-		"jobListings": "Job Listings",
-		"browseJobs": "Browse available jobs",
-		"myApplications": "My Applications",
-		"trackApplications": "View and manage your submitted applications.",
-		"loading": "Loading...",
-		"userManagementDescription": "Manage system users and their roles.",
-		"systemSettingsDescription": "Configure application settings and preferences.",
-		"jobPostingsDescription": "Manage your job listings and applications.",
-		"candidateApplicationsDescription": "Review and manage applications from candidates.",
-		"jobListingsDescription": "Browse available jobs and apply for them.",
-		"myApplicationsDescription": "View and manage your submitted applications.",
-		"jobManagement": "Job Management",
-		"createJob": "Create Job",
-		"editJob": "Edit Job",
-		"deleteJob": "Delete Job",
-		"viewJob": "View Job",
-		"copyJobUrl": "Copy Job URL",
-		"jobUrlCopied": "Job URL copied to clipboard",
-		"jobCreated": "Job created successfully",
-		"jobUpdated": "Job updated successfully",
-		"jobDeleted": "Job deleted successfully",
-		"confirmDeleteJob": "Are you sure you want to delete this job?",
-		"jobDetails": "Job Details",
-		"jobTitle": "Job Title",
-		"companyName": "Company Name",
-		"jobRole": "Job Role",
-		"location": "Location",
-		"salary": "Salary (Optional)",
-		"expiryDate": "Expiry Date",
-		"description": "Job Description",
-		"generateWithAI": "Generate with AI",
-		"generatingDescription": "Generating description...",
-		"descriptionGenerated": "Job description generated successfully",
-		"fillRequiredFields": "Please fill in job title, company name, and job role first",
-		"expired": "Expired",
-		"active": "Active",
-		"inactive": "Inactive",
-		"applyNow": "Apply Now"
-	},
-	"Jobs": {
-		"createJobTitle": "Create New Job",
-		"createJobDescription": "Fill in the details to create a new job posting.",
-		"editJobTitle": "Edit Job",
-		"editJobDescription": "Update the details of your job posting.",
-		"jobTitlePlaceholder": "e.g. Software Engineer",
-		"companyNamePlaceholder": "e.g. Acme Inc.",
-		"jobRolePlaceholder": "e.g. Frontend Developer",
-		"locationPlaceholder": "e.g. New York, NY",
-		"salaryPlaceholder": "e.g. $80,000 - $100,000",
-		"descriptionPlaceholder": "Enter job description or generate with AI",
-		"descriptionHelp": "You can manually enter the job description or use AI to generate one based on the job title, company, and role.",
-		"pickDate": "Pick a date",
-		"aboutCompany": "About the Company",
-		"jobOverview": "Job Overview",
-		"responsibilities": "Responsibilities",
-		"requirements": "Requirements",
-		"benefits": "Benefits",
-		"skills": "Skills",
-		"aboutRecruiter": "About the Recruiter",
-		"postedBy": "Posted by",
-		"contact": "Contact",
-		"jobNotFound": "Job not found",
-		"errorLoadingJob": "Failed to load job details. Please try again later."
-	},
-	"LearnMore": {
-		"backToHome": "Back to Home",
-		"discoverHirelytics": "Discover Hirelytics",
-		"learnMoreTitle": "Learn More About",
-		"learnMoreDescription": "Discover how our AI-powered recruitment platform is transforming the hiring process, making it more efficient, fair, and effective for both recruiters and candidates.",
-		"mission": {
-			"title": "Our Mission",
-			"heading": "Transforming Recruitment Through AI",
-			"description1": "At Hirelytics, we believe that recruiting should be more than just scanning resumes. Our mission is to leverage artificial intelligence to create meaningful connections between exceptional talent and forward-thinking organizations.",
-			"description2": "We're dedicated to removing bias from the hiring process, providing data-driven insights for better decision-making, and creating a seamless experience for both recruiters and candidates.",
-			"keyObjectives": {
-				"title": "Key Objectives",
-				"items": [
-					"Eliminate bias in the recruitment process",
-					"Reduce time-to-hire by 60%",
-					"Match candidates based on skills, not just keywords",
-					"Provide actionable insights for both employers and job seekers",
-					"Create a more engaging application experience"
-				]
-			}
-		},
-		"benefits": {
-			"title": "Platform Benefits",
-			"heading": "Why Choose Hirelytics?",
-			"description": "Our platform offers unique advantages for both recruiters and candidates, making the entire hiring process more efficient and effective.",
-			"sections": {
-				"recruiters": {
-					"title": "For Recruiters",
-					"items": [
-						"Automated preliminary candidate screening",
-						"AI-driven interview questions based on job requirements",
-						"Comprehensive candidate assessment reports",
-						"Bias reduction through objective skill evaluation",
-						"Analytics dashboard for hiring process optimization",
-						"Customizable job posting templates"
-					]
-				},
-				"candidates": {
-					"title": "For Candidates",
-					"items": [
-						"Flexible, on-demand interview scheduling",
-						"Personalized feedback on interview performance",
-						"Skills-based matching to relevant positions",
-						"Elimination of unconscious bias in screening",
-						"Opportunity to showcase strengths beyond the resume",
-						"Streamlined application process"
-					]
-				},
-				"platform": {
-					"title": "Platform Features",
-					"items": [
-						"Advanced natural language processing",
-						"Multi-language support for global hiring",
-						"Seamless integration with existing HR systems",
-						"GDPR and privacy compliance built-in",
-						"Continuous learning from feedback loops",
-						"Regular feature updates based on user needs"
-					]
-				}
-			}
-		},
-		"technology": {
-			"title": "Technology",
-			"heading": "Powered by Advanced AI",
-			"description": "Hirelytics leverages cutting-edge artificial intelligence, machine learning, and natural language processing technologies to transform how organizations approach hiring.",
-			"features": {
-				"nlp": {
-					"title": "Natural Language Processing",
-					"description": "Our AI understands context, nuance, and sentiment in candidate responses, providing deeper insights than keyword matching alone."
-				},
-				"ml": {
-					"title": "Machine Learning Algorithms",
-					"description": "Our systems continuously improve through feedback loops, becoming more accurate at predicting candidate-job fit over time."
-				},
-				"cv": {
-					"title": "Computer Vision",
-					"description": "Advanced document parsing extracts and structures information from resumes and portfolios with high accuracy."
-				},
-				"conversationalAi": {
-					"title": "Conversational AI",
-					"description": "Dynamic interview system adjusts questions based on previous answers, creating a more natural and informative conversation."
-				}
-			}
-		},
-		"faq": {
-			"title": "Common Questions",
-			"heading": "Frequently Asked Questions",
-			"description": "Get answers to common questions about Hirelytics and how it can transform your recruitment process.",
-			"questions": [
-				{
-					"question": "How does Hirelytics ensure fairness in the hiring process?",
-					"answer": "Hirelytics reduces bias through structured evaluations that focus on skills and competencies rather than demographic factors. Our AI models are regularly audited for fairness and trained on diverse datasets to ensure they don't perpetuate existing biases."
-				},
-				{
-					"question": "Can Hirelytics integrate with our existing HR systems?",
-					"answer": "Yes, Hirelytics offers API integrations with major HR information systems, applicant tracking systems, and job boards. Our team can provide custom integration solutions for enterprise clients with specific requirements."
-				},
-				{
-					"question": "How secure is candidate data on the platform?",
-					"answer": "Hirelytics employs bank-level encryption for data both in transit and at rest. We are fully GDPR compliant and follow SOC 2 security practices, with regular penetration testing and security audits."
-				},
-				{
-					"question": "What makes Hirelytics different from traditional ATS systems?",
-					"answer": "Unlike traditional ATS systems that simply track applications, Hirelytics actively evaluates candidates through AI interviews, provides data-driven insights, and offers a more engaging experience for both recruiters and candidates."
-				},
-				{
-					"question": "How long does it take to set up Hirelytics for my company?",
-					"answer": "Most companies can get started with Hirelytics in less than a day. Our onboarding team provides comprehensive support, including template creation, system integration, and training for your recruitment team."
-				}
-			]
-		},
-		"cta": {
-			"readyToStart": "Ready to Get Started?",
-			"heading": "Transform Your Recruitment Process Today",
-			"description": "Join thousands of companies using Hirelytics to find the perfect candidates faster, more efficiently, and with better results.",
-			"getStarted": "Get Started"
-		}
-	},
-	"Wishlist": {
-		"title": "Join Our Waitlist",
-		"description": "We're currently not accepting registrations. Join our waitlist to be notified when registration reopens and we will remind you to register.",
-		"form": {
-			"name": "Your name",
-			"email": "your.email@example.com",
-			"reason": "Why are you interested? (Optional)",
-			"reasonPlaceholder": "Tell us why you're interested in Hirelytics",
-			"submit": "Join Waitlist",
-			"submitting": "Submitting...",
-			"success": {
-				"title": "Thank you for your interest!",
-				"message": "We'll notify you when registration opens."
-			}
-		}
-	}
+  "Common": {
+    "theme": {
+      "dark": "Dark Mode",
+      "light": "Light Mode",
+      "system": "System"
+    },
+    "language": {
+      "en": "English",
+      "hi": "Hindi"
+    },
+    "buttons": {
+      "getStarted": "Get Started",
+      "learnMore": "Learn More",
+      "howItWorks": "How It Works",
+      "signOut": "Sign Out"
+    },
+    "footer": {
+      "allRightsReserved": "All rights reserved",
+      "platform": "Platform",
+      "features": "Features",
+      "pricing": "Pricing",
+      "faq": "FAQ",
+      "forRecruiters": "For Recruiters",
+      "postJob": "Post a Job",
+      "findCandidates": "Find Candidates",
+      "recruitmentTools": "Recruitment Tools",
+      "successStories": "Success Stories",
+      "forCandidates": "For Candidates",
+      "findJobs": "Find Jobs",
+      "careerResources": "Career Resources",
+      "interviewTips": "Interview Tips",
+      "resumeBuilder": "Resume Builder",
+      "company": "Company",
+      "aboutUs": "About Us",
+      "contact": "Contact",
+      "privacyPolicy": "Privacy Policy",
+      "termsOfService": "Terms of Service"
+    }
+  },
+  "HomePage": {
+    "title": "Hirelytics",
+    "subtitle": "Role-Based Recruitment Platform",
+    "description": "A role-based recruitment platform for recruiters, candidates, and administrators",
+    "features": "AI-Powered Features",
+    "intelligentRecruitment": "Intelligent Recruitment Platform",
+    "platformDescription": "Our platform leverages cutting-edge AI to transform every step of the recruitment process, from job posting to final selection.",
+    "hero": {
+      "aiPoweredRecruitment": "AI-Powered Recruitment",
+      "revolutionizeHiring": "Revolutionize Your Hiring with",
+      "description": "Our AI-driven platform transforms the recruitment process from job posting to candidate selection. Automate interviews, analyze resumes, and make data-driven hiring decisions.",
+      "getStarted": "Get Started",
+      "howItWorks": "How It Works"
+    },
+    "featuresSection": {
+      "title": "AI-Powered Features",
+      "subtitle": "Intelligent Recruitment Platform",
+      "description": "Our platform leverages cutting-edge AI to transform every step of the recruitment process, from job posting to final selection.",
+      "smartJobPosting": {
+        "title": "Smart Job Posting",
+        "description": "Create optimized job listings that automatically generate unique application URLs."
+      },
+      "uniqueApplicationLinks": {
+        "title": "Unique Application Links",
+        "description": "Share custom application URLs for each position to streamline the candidate experience."
+      },
+      "resumeAnalysis": {
+        "title": "Resume Analysis",
+        "description": "Our AI analyzes resumes to identify the most qualified candidates based on skills and experience."
+      },
+      "aiPoweredInterviews": {
+        "title": "AI-Powered Interviews",
+        "description": "Automated interview process that adapts questions based on candidate responses and resume."
+      },
+      "comprehensiveFeedback": {
+        "title": "Comprehensive Feedback",
+        "description": "Provide detailed feedback to both recruiters and candidates after the interview process."
+      },
+      "dataDrivenInsights": {
+        "title": "Data-Driven Insights",
+        "description": "Get actionable insights and analytics to improve your hiring process over time."
+      }
+    },
+    "howItWorks": {
+      "title": "Streamlined Process",
+      "subtitle": "How Hirelytics Works",
+      "description": "Our AI-powered platform streamlines the entire recruitment journey from job posting to final selection.",
+      "steps": {
+        "step1": {
+          "title": "Create Job Posting",
+          "description": "Recruiters create detailed job postings with requirements, responsibilities, and qualifications.",
+          "cardTitle": "Job Description Creation",
+          "cardDescription": "The platform helps optimize job descriptions to attract the right candidates.",
+          "label": "Recruiter"
+        },
+        "step2": {
+          "title": "Generate Application URL",
+          "description": "The system automatically generates a unique application URL for each job posting.",
+          "cardTitle": "Unique Application Link",
+          "cardDescription": "Each job gets a custom URL that can be shared across platforms and social media.",
+          "label": "System"
+        },
+        "step3": {
+          "title": "Candidate Application",
+          "description": "Candidates apply through the unique URL, creating a streamlined application experience.",
+          "cardTitle": "Easy Application Process",
+          "cardDescription": "Candidates can apply with a simple, user-friendly interface designed for the best experience.",
+          "label": "Candidate"
+        },
+        "step4": {
+          "title": "Resume Analysis",
+          "description": "Our AI analyzes the candidate's resume to extract skills, experience, and qualifications.",
+          "cardTitle": "Intelligent Resume Parsing",
+          "cardDescription": "Advanced AI extracts and analyzes key information from resumes to match with job requirements.",
+          "label": "AI System"
+        },
+        "step5": {
+          "title": "AI-Powered Interview",
+          "description": "The AI conducts an adaptive interview, asking questions based on the candidate's resume and responses.",
+          "cardTitle": "Dynamic Conversation",
+          "cardDescription": "The AI adapts questions based on previous answers to thoroughly assess candidate skills.",
+          "label": "Interview"
+        },
+        "step6": {
+          "title": "Comprehensive Feedback",
+          "description": "Both recruiters and candidates receive detailed feedback and insights from the interview process.",
+          "cardTitle": "Actionable Insights",
+          "cardDescription": "Detailed reports help recruiters make informed decisions and candidates understand their performance.",
+          "label": "Results"
+        }
+      },
+      "getStarted": "Get Started Now"
+    },
+    "userAccess": {
+      "candidateLogin": "Candidate Login",
+      "recruiterLogin": "Recruiter Login",
+      "wishlist": "Wishlist",
+      "findJobs": "Find Jobs"
+    },
+    "testimonials": {
+      "title": "Success Stories",
+      "subtitle": "What Our Users Say",
+      "description": "Hear from recruiters and candidates who have transformed their hiring experience with our AI-powered platform.",
+      "items": [
+        {
+          "quote": "Hirelytics has revolutionized our recruitment process. We've reduced our time-to-hire by 40% and found better quality candidates.",
+          "name": "Sarah Johnson",
+          "role": "HR Director",
+          "company": "TechCorp"
+        },
+        {
+          "quote": "The AI interview process is remarkably effective. It asks relevant questions and provides detailed feedback that helps us make better hiring decisions.",
+          "name": "David Rodriguez",
+          "role": "Talent Acquisition Manager",
+          "company": "InnovateX"
+        },
+        {
+          "quote": "As a candidate, I love how the platform matched me with jobs that truly aligned with my skills and career goals. The AI interview was surprisingly conversational.",
+          "name": "Michael Chen",
+          "role": "Software Engineer",
+          "company": "Hired via Hirelytics"
+        }
+      ]
+    },
+    "cta": {
+      "title": "Ready to Transform Your Hiring Process?",
+      "description": "Join thousands of companies using Hirelytics to find the perfect candidates faster and more efficiently.",
+      "getStarted": "Get Started",
+      "learnMore": "Learn More",
+      "noCreditCard": "No credit card required • Free trial available"
+    },
+    "footer": {
+      "description": "AI-powered recruitment platform that transforms hiring through intelligent matching, automated interviews, and data-driven insights.",
+      "platform": {
+        "title": "Platform",
+        "features": "Features",
+        "howItWorks": "How It Works",
+        "learnMore": "Learn More",
+        "wishlist": "Wishlist"
+      },
+      "forRecruiters": {
+        "title": "For Recruiters",
+        "login": "Recruiter Login",
+        "register": "Register as Recruiter",
+        "learnMore": "Learn More",
+        "dashboard": "Dashboard"
+      },
+      "forCandidates": {
+        "title": "For Candidates",
+        "findJobs": "Find Jobs",
+        "login": "Candidate Login",
+        "register": "Register as Candidate",
+        "wishlist": "My Wishlist"
+      },
+      "company": {
+        "title": "Company",
+        "aboutUs": "About Us",
+        "contact": "Contact",
+        "privacyPolicy": "Privacy Policy",
+        "termsOfService": "Terms of Service"
+      },
+      "copyright": "© {year} Hirelytics. All rights reserved.",
+      "cta": {
+        "title": "AI-Powered Recruitment",
+        "heading": "Ready to Transform Your Hiring Process?",
+        "description": "Join thousands of companies using Hirelytics to find the perfect candidates faster and more efficiently.",
+        "getStarted": "Get Started",
+        "learnMore": "Learn More",
+        "noCreditCard": "No credit card required • Free trial available"
+      }
+    }
+  },
+  "Auth": {
+    "login": "Login",
+    "register": "Register",
+    "email": "Email",
+    "password": "Password",
+    "name": "Name",
+    "forgotPassword": "Forgot password?",
+    "noAccount": "Don't have an account?",
+    "hasAccount": "Already have an account?",
+    "signIn": "Sign In",
+    "signUp": "Sign Up",
+    "signOut": "Sign Out",
+    "loggingIn": "Logging in...",
+    "loginSuccess": "Logged in successfully!",
+    "loginError": "Something went wrong. Please try again.",
+    "registrationSuccess": "Registration successful! You can now log in.",
+    "registrationError": "Something went wrong. Please try again.",
+    "registrationFailed": "Registration failed.",
+    "unauthorized": "Access Denied",
+    "unauthorizedMessage": "You don't have permission to access this page. Please contact your administrator if you believe this is an error.",
+    "goBack": "Go Back",
+    "dashboard": "Dashboard",
+    "logout": "Logout",
+    "redirecting": "Redirecting...",
+    "redirectingToWaitlist": "Please wait while we redirect you to the waitlist page.",
+    "candidateLogin": {
+      "title": "Candidate Login",
+      "description": "Enter your credentials to access your candidate dashboard"
+    },
+    "loginAs": {
+      "admin": "Login as Admin",
+      "recruiter": "Login as Recruiter",
+      "candidate": "Login as Candidate"
+    },
+    "registerAs": {
+      "recruiter": "Register as Recruiter",
+      "candidate": "Register as Candidate"
+    },
+    "recruiterRegistration": {
+      "title": "Recruiter Registration",
+      "description": "Create a recruiter account to post jobs and find candidates"
+    },
+    "candidateRegistration": {
+      "title": "Candidate Registration",
+      "description": "Create a candidate account to apply for jobs"
+    },
+    "creatingAccount": "Creating account...",
+    "registerButton": "Register",
+    "chooseRole": "Choose your role to login to the system",
+    "chooseRoleRegister": "Choose your role to register in the system",
+    "notRecruiter": "Not a recruiter? Login as a",
+    "notCandidate": "Not a candidate? Login as a",
+    "recruiterLoginDescription": "Enter your credentials to access the recruiter dashboard",
+    "candidateLoginDescription": "Enter your credentials to access the candidate dashboard",
+    "adminLoginDescription": "Enter your credentials to access the admin dashboard"
+  },
+  "Dashboard": {
+    "welcome": "Welcome, {name}",
+    "admin": "Admin Dashboard",
+    "recruiter": "Recruiter Dashboard",
+    "candidate": "Candidate Dashboard",
+    "loggedInAs": "You are logged in as a {role}.",
+    "userManagement": "User Management",
+    "manageUsers": "Manage system users",
+    "systemSettings": "System Settings",
+    "configureSettings": "Configure application settings and preferences.",
+    "jobPostings": "Job Postings",
+    "manageJobs": "Manage your job listings",
+    "candidateApplications": "Candidate Applications",
+    "reviewApplications": "Review and manage applications from candidates.",
+    "jobListings": "Job Listings",
+    "browseJobs": "Browse available jobs",
+    "myApplications": "My Applications",
+    "trackApplications": "View and manage your submitted applications.",
+    "loading": "Loading...",
+    "userManagementDescription": "Manage system users and their roles.",
+    "systemSettingsDescription": "Configure application settings and preferences.",
+    "jobPostingsDescription": "Manage your job listings and applications.",
+    "candidateApplicationsDescription": "Review and manage applications from candidates.",
+    "jobListingsDescription": "Browse available jobs and apply for them.",
+    "myApplicationsDescription": "View and manage your submitted applications.",
+    "jobManagement": "Job Management",
+    "createJob": "Create Job",
+    "editJob": "Edit Job",
+    "deleteJob": "Delete Job",
+    "viewJob": "View Job",
+    "copyJobUrl": "Copy Job URL",
+    "jobUrlCopied": "Job URL copied to clipboard",
+    "jobCreated": "Job created successfully",
+    "jobUpdated": "Job updated successfully",
+    "jobDeleted": "Job deleted successfully",
+    "confirmDeleteJob": "Are you sure you want to delete this job?",
+    "jobDetails": "Job Details",
+    "jobTitle": "Job Title",
+    "companyName": "Company Name",
+    "jobRole": "Job Role",
+    "location": "Location",
+    "salary": "Salary (Optional)",
+    "expiryDate": "Expiry Date",
+    "description": "Job Description",
+    "generateWithAI": "Generate with AI",
+    "generatingDescription": "Generating description...",
+    "descriptionGenerated": "Job description generated successfully",
+    "fillRequiredFields": "Please fill in job title, company name, and job role first",
+    "expired": "Expired",
+    "active": "Active",
+    "inactive": "Inactive",
+    "applyNow": "Apply Now"
+  },
+  "Jobs": {
+    "createJobTitle": "Create New Job",
+    "createJobDescription": "Fill in the details to create a new job posting.",
+    "editJobTitle": "Edit Job",
+    "editJobDescription": "Update the details of your job posting.",
+    "jobTitlePlaceholder": "e.g. Software Engineer",
+    "companyNamePlaceholder": "e.g. Acme Inc.",
+    "jobRolePlaceholder": "e.g. Frontend Developer",
+    "locationPlaceholder": "e.g. New York, NY",
+    "salaryPlaceholder": "e.g. $80,000 - $100,000",
+    "descriptionPlaceholder": "Enter job description or generate with AI",
+    "descriptionHelp": "You can manually enter the job description or use AI to generate one based on the job title, company, and role.",
+    "pickDate": "Pick a date",
+    "aboutCompany": "About the Company",
+    "jobOverview": "Job Overview",
+    "responsibilities": "Responsibilities",
+    "requirements": "Requirements",
+    "benefits": "Benefits",
+    "skills": "Skills",
+    "aboutRecruiter": "About the Recruiter",
+    "postedBy": "Posted by",
+    "contact": "Contact",
+    "jobNotFound": "Job not found",
+    "errorLoadingJob": "Failed to load job details. Please try again later."
+  },
+  "LearnMore": {
+    "backToHome": "Back to Home",
+    "discoverHirelytics": "Discover Hirelytics",
+    "learnMoreTitle": "Learn More About",
+    "learnMoreDescription": "Discover how our AI-powered recruitment platform is transforming the hiring process, making it more efficient, fair, and effective for both recruiters and candidates.",
+    "mission": {
+      "title": "Our Mission",
+      "heading": "Transforming Recruitment Through AI",
+      "description1": "At Hirelytics, we believe that recruiting should be more than just scanning resumes. Our mission is to leverage artificial intelligence to create meaningful connections between exceptional talent and forward-thinking organizations.",
+      "description2": "We're dedicated to removing bias from the hiring process, providing data-driven insights for better decision-making, and creating a seamless experience for both recruiters and candidates.",
+      "keyObjectives": {
+        "title": "Key Objectives",
+        "items": [
+          "Eliminate bias in the recruitment process",
+          "Reduce time-to-hire by 60%",
+          "Match candidates based on skills, not just keywords",
+          "Provide actionable insights for both employers and job seekers",
+          "Create a more engaging application experience"
+        ]
+      }
+    },
+    "benefits": {
+      "title": "Platform Benefits",
+      "heading": "Why Choose Hirelytics?",
+      "description": "Our platform offers unique advantages for both recruiters and candidates, making the entire hiring process more efficient and effective.",
+      "sections": {
+        "recruiters": {
+          "title": "For Recruiters",
+          "items": [
+            "Automated preliminary candidate screening",
+            "AI-driven interview questions based on job requirements",
+            "Comprehensive candidate assessment reports",
+            "Bias reduction through objective skill evaluation",
+            "Analytics dashboard for hiring process optimization",
+            "Customizable job posting templates"
+          ]
+        },
+        "candidates": {
+          "title": "For Candidates",
+          "items": [
+            "Flexible, on-demand interview scheduling",
+            "Personalized feedback on interview performance",
+            "Skills-based matching to relevant positions",
+            "Elimination of unconscious bias in screening",
+            "Opportunity to showcase strengths beyond the resume",
+            "Streamlined application process"
+          ]
+        },
+        "platform": {
+          "title": "Platform Features",
+          "items": [
+            "Advanced natural language processing",
+            "Multi-language support for global hiring",
+            "Seamless integration with existing HR systems",
+            "GDPR and privacy compliance built-in",
+            "Continuous learning from feedback loops",
+            "Regular feature updates based on user needs"
+          ]
+        }
+      }
+    },
+    "technology": {
+      "title": "Technology",
+      "heading": "Powered by Advanced AI",
+      "description": "Hirelytics leverages cutting-edge artificial intelligence, machine learning, and natural language processing technologies to transform how organizations approach hiring.",
+      "features": {
+        "nlp": {
+          "title": "Natural Language Processing",
+          "description": "Our AI understands context, nuance, and sentiment in candidate responses, providing deeper insights than keyword matching alone."
+        },
+        "ml": {
+          "title": "Machine Learning Algorithms",
+          "description": "Our systems continuously improve through feedback loops, becoming more accurate at predicting candidate-job fit over time."
+        },
+        "cv": {
+          "title": "Computer Vision",
+          "description": "Advanced document parsing extracts and structures information from resumes and portfolios with high accuracy."
+        },
+        "conversationalAi": {
+          "title": "Conversational AI",
+          "description": "Dynamic interview system adjusts questions based on previous answers, creating a more natural and informative conversation."
+        }
+      }
+    },
+    "faq": {
+      "title": "Common Questions",
+      "heading": "Frequently Asked Questions",
+      "description": "Get answers to common questions about Hirelytics and how it can transform your recruitment process.",
+      "questions": [
+        {
+          "question": "How does Hirelytics ensure fairness in the hiring process?",
+          "answer": "Hirelytics reduces bias through structured evaluations that focus on skills and competencies rather than demographic factors. Our AI models are regularly audited for fairness and trained on diverse datasets to ensure they don't perpetuate existing biases."
+        },
+        {
+          "question": "Can Hirelytics integrate with our existing HR systems?",
+          "answer": "Yes, Hirelytics offers API integrations with major HR information systems, applicant tracking systems, and job boards. Our team can provide custom integration solutions for enterprise clients with specific requirements."
+        },
+        {
+          "question": "How secure is candidate data on the platform?",
+          "answer": "Hirelytics employs bank-level encryption for data both in transit and at rest. We are fully GDPR compliant and follow SOC 2 security practices, with regular penetration testing and security audits."
+        },
+        {
+          "question": "What makes Hirelytics different from traditional ATS systems?",
+          "answer": "Unlike traditional ATS systems that simply track applications, Hirelytics actively evaluates candidates through AI interviews, provides data-driven insights, and offers a more engaging experience for both recruiters and candidates."
+        },
+        {
+          "question": "How long does it take to set up Hirelytics for my company?",
+          "answer": "Most companies can get started with Hirelytics in less than a day. Our onboarding team provides comprehensive support, including template creation, system integration, and training for your recruitment team."
+        }
+      ]
+    },
+    "cta": {
+      "readyToStart": "Ready to Get Started?",
+      "heading": "Transform Your Recruitment Process Today",
+      "description": "Join thousands of companies using Hirelytics to find the perfect candidates faster, more efficiently, and with better results.",
+      "getStarted": "Get Started"
+    }
+  },
+  "Wishlist": {
+    "title": "Join Our Waitlist",
+    "description": "We're currently not accepting registrations. Join our waitlist to be notified when registration reopens and we will remind you to register.",
+    "form": {
+      "name": "Your name",
+      "email": "your.email@example.com",
+      "reason": "Why are you interested? (Optional)",
+      "reasonPlaceholder": "Tell us why you're interested in Hirelytics",
+      "submit": "Join Waitlist",
+      "submitting": "Submitting...",
+      "success": {
+        "title": "Thank you for your interest!",
+        "message": "We'll notify you when registration opens."
+      }
+    }
+  }
 }

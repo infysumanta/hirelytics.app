@@ -1,21 +1,13 @@
-"use client";
+'use client';
 
-import { Button } from "@/components/ui/button";
-import Link from "next/link";
-import {
-  ArrowLeft,
-  Check,
-  Sparkles,
-  Zap,
-  Lightbulb,
-  BookOpen,
-  Rocket,
-  Trophy,
-} from "lucide-react";
-import { motion } from "framer-motion";
-import Image from "next/image";
-import { useTranslations } from "next-intl";
-import React from "react";
+import { motion } from 'framer-motion';
+import { ArrowLeft, BookOpen, Check, Lightbulb, Rocket, Sparkles, Trophy, Zap } from 'lucide-react';
+import Image from 'next/image';
+import Link from 'next/link';
+import { useTranslations } from 'next-intl';
+import React from 'react';
+
+import { Button } from '@/components/ui/button';
 
 const fadeIn = {
   hidden: { opacity: 0, y: 20 },
@@ -53,54 +45,54 @@ interface BenefitColumn {
 }
 
 export default function LearnMorePage() {
-  const t = useTranslations("LearnMore");
+  const t = useTranslations('LearnMore');
 
-  const keyObjectives = t.raw("mission.keyObjectives.items") as string[];
-  const faqs = t.raw("faq.questions") as FAQ[];
+  const keyObjectives = t.raw('mission.keyObjectives.items') as string[];
+  const faqs = t.raw('faq.questions') as FAQ[];
 
   const benefitColumns: BenefitColumn[] = [
     {
-      title: t("benefits.sections.recruiters.title"),
+      title: t('benefits.sections.recruiters.title'),
       icon: <Zap className="text-blue-500" size={24} />,
-      benefits: t.raw("benefits.sections.recruiters.items") as string[],
-      gradient: "from-blue-500/20 via-blue-400/20 to-blue-300/20",
-      iconBg: "bg-blue-500/10",
-      border: "border-blue-500/20",
+      benefits: t.raw('benefits.sections.recruiters.items') as string[],
+      gradient: 'from-blue-500/20 via-blue-400/20 to-blue-300/20',
+      iconBg: 'bg-blue-500/10',
+      border: 'border-blue-500/20',
     },
     {
-      title: t("benefits.sections.candidates.title"),
+      title: t('benefits.sections.candidates.title'),
       icon: <Trophy className="text-purple-500" size={24} />,
-      benefits: t.raw("benefits.sections.candidates.items") as string[],
-      gradient: "from-purple-500/20 via-purple-400/20 to-purple-300/20",
-      iconBg: "bg-purple-500/10",
-      border: "border-purple-500/20",
+      benefits: t.raw('benefits.sections.candidates.items') as string[],
+      gradient: 'from-purple-500/20 via-purple-400/20 to-purple-300/20',
+      iconBg: 'bg-purple-500/10',
+      border: 'border-purple-500/20',
     },
     {
-      title: t("benefits.sections.platform.title"),
+      title: t('benefits.sections.platform.title'),
       icon: <Sparkles className="text-primary" size={24} />,
-      benefits: t.raw("benefits.sections.platform.items") as string[],
-      gradient: "from-primary/20 via-primary/15 to-primary/10",
-      iconBg: "bg-primary/10",
-      border: "border-primary/20",
+      benefits: t.raw('benefits.sections.platform.items') as string[],
+      gradient: 'from-primary/20 via-primary/15 to-primary/10',
+      iconBg: 'bg-primary/10',
+      border: 'border-primary/20',
     },
   ];
 
   const techFeatures: TechFeature[] = [
     {
-      title: t("technology.features.nlp.title"),
-      description: t("technology.features.nlp.description"),
+      title: t('technology.features.nlp.title'),
+      description: t('technology.features.nlp.description'),
     },
     {
-      title: t("technology.features.ml.title"),
-      description: t("technology.features.ml.description"),
+      title: t('technology.features.ml.title'),
+      description: t('technology.features.ml.description'),
     },
     {
-      title: t("technology.features.cv.title"),
-      description: t("technology.features.cv.description"),
+      title: t('technology.features.cv.title'),
+      description: t('technology.features.cv.description'),
     },
     {
-      title: t("technology.features.conversationalAi.title"),
-      description: t("technology.features.conversationalAi.description"),
+      title: t('technology.features.conversationalAi.title'),
+      description: t('technology.features.conversationalAi.description'),
     },
   ];
 
@@ -113,7 +105,7 @@ export default function LearnMorePage() {
           <div className="absolute top-0 left-0 h-[500px] w-[500px] rounded-full bg-blue-600/30 dark:bg-blue-500/30 blur-[120px] animate-pulse-slow"></div>
           <div
             className="absolute bottom-0 right-0 h-[400px] w-[400px] rounded-full bg-purple-600/30 dark:bg-purple-500/30 blur-[120px] animate-pulse-slow"
-            style={{ animationDelay: "2s" }}
+            style={{ animationDelay: '2s' }}
           ></div>
         </div>
 
@@ -132,15 +124,12 @@ export default function LearnMorePage() {
           </motion.div>
           <div className="mb-12">
             <Link href="/">
-              <Button
-                variant="ghost"
-                className="group mb-8 hover:bg-transparent p-0"
-              >
+              <Button variant="ghost" className="group mb-8 hover:bg-transparent p-0">
                 <ArrowLeft
                   size={18}
                   className="mr-2 group-hover:-translate-x-1 transition-transform"
                 />
-                {t("backToHome")}
+                {t('backToHome')}
               </Button>
             </Link>
 
@@ -155,24 +144,21 @@ export default function LearnMorePage() {
                 className="inline-flex items-center gap-2 rounded-full bg-primary/10 px-4 py-1.5 mb-4 text-sm font-medium text-primary"
               >
                 <BookOpen size={16} />
-                {t("discoverHirelytics")}
+                {t('discoverHirelytics')}
               </motion.div>
 
               <motion.h1
                 variants={fadeIn}
                 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6"
               >
-                {t("learnMoreTitle")}{" "}
+                {t('learnMoreTitle')}{' '}
                 <span className="bg-gradient-to-r from-primary via-blue-500 to-purple-500 bg-clip-text text-transparent animate-gradient">
                   Hirelytics
                 </span>
               </motion.h1>
 
-              <motion.p
-                variants={fadeIn}
-                className="text-xl text-muted-foreground mb-8 max-w-3xl"
-              >
-                {t("learnMoreDescription")}
+              <motion.p variants={fadeIn} className="text-xl text-muted-foreground mb-8 max-w-3xl">
+                {t('learnMoreDescription')}
               </motion.p>
             </motion.div>
           </div>
@@ -195,20 +181,14 @@ export default function LearnMorePage() {
             >
               <div className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/5 px-4 py-1.5 mb-4 text-sm font-medium text-primary">
                 <Lightbulb size={16} />
-                {t("mission.title")}
+                {t('mission.title')}
               </div>
 
-              <h2 className="text-3xl md:text-4xl font-bold mb-6">
-                {t("mission.heading")}
-              </h2>
+              <h2 className="text-3xl md:text-4xl font-bold mb-6">{t('mission.heading')}</h2>
 
-              <p className="text-lg mb-6 text-muted-foreground">
-                {t("mission.description1")}
-              </p>
+              <p className="text-lg mb-6 text-muted-foreground">{t('mission.description1')}</p>
 
-              <p className="text-lg text-muted-foreground">
-                {t("mission.description2")}
-              </p>
+              <p className="text-lg text-muted-foreground">{t('mission.description2')}</p>
             </motion.div>
 
             <motion.div
@@ -221,16 +201,13 @@ export default function LearnMorePage() {
               <div className="bg-card rounded-lg p-8 h-full">
                 <h3 className="text-2xl font-bold mb-6 flex items-center">
                   <Sparkles className="text-primary mr-2" size={24} />
-                  {t("mission.keyObjectives.title")}
+                  {t('mission.keyObjectives.title')}
                 </h3>
 
                 <ul className="space-y-4">
                   {keyObjectives.map((item: string, i: number) => (
                     <li key={i} className="flex items-start">
-                      <Check
-                        className="text-primary shrink-0 mr-2 mt-1"
-                        size={20}
-                      />
+                      <Check className="text-primary shrink-0 mr-2 mt-1" size={20} />
                       <span>{item}</span>
                     </li>
                   ))}
@@ -247,7 +224,7 @@ export default function LearnMorePage() {
           <div className="absolute top-1/4 right-0 h-[300px] w-[300px] rounded-full bg-blue-600/10 dark:bg-blue-500/10 blur-[100px] animate-pulse-slow"></div>
           <div
             className="absolute bottom-1/4 left-0 h-[250px] w-[250px] rounded-full bg-purple-600/10 dark:bg-purple-500/10 blur-[100px] animate-pulse-slow"
-            style={{ animationDelay: "2s" }}
+            style={{ animationDelay: '2s' }}
           ></div>
         </div>
 
@@ -261,16 +238,12 @@ export default function LearnMorePage() {
           >
             <div className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/5 px-4 py-1.5 mb-4 text-sm font-medium text-primary">
               <Rocket size={16} />
-              {t("benefits.title")}
+              {t('benefits.title')}
             </div>
 
-            <h2 className="text-3xl md:text-4xl font-bold mb-6">
-              {t("benefits.heading")}
-            </h2>
+            <h2 className="text-3xl md:text-4xl font-bold mb-6">{t('benefits.heading')}</h2>
 
-            <p className="text-lg text-muted-foreground">
-              {t("benefits.description")}
-            </p>
+            <p className="text-lg text-muted-foreground">{t('benefits.description')}</p>
           </motion.div>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -295,10 +268,7 @@ export default function LearnMorePage() {
                   <ul className="space-y-3">
                     {column.benefits.map((benefit: string, j: number) => (
                       <li key={j} className="flex items-start">
-                        <Check
-                          className="text-primary shrink-0 mr-2 mt-1"
-                          size={18}
-                        />
+                        <Check className="text-primary shrink-0 mr-2 mt-1" size={18} />
                         <span>{benefit}</span>
                       </li>
                     ))}
@@ -326,16 +296,12 @@ export default function LearnMorePage() {
           >
             <div className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/5 px-4 py-1.5 mb-4 text-sm font-medium text-primary">
               <Zap size={16} />
-              {t("technology.title")}
+              {t('technology.title')}
             </div>
 
-            <h2 className="text-3xl md:text-4xl font-bold mb-6">
-              {t("technology.heading")}
-            </h2>
+            <h2 className="text-3xl md:text-4xl font-bold mb-6">{t('technology.heading')}</h2>
 
-            <p className="text-lg text-muted-foreground mb-8">
-              {t("technology.description")}
-            </p>
+            <p className="text-lg text-muted-foreground mb-8">{t('technology.description')}</p>
 
             <div className="grid md:grid-cols-2 gap-6 mt-10">
               {techFeatures.map((tech: TechFeature, i: number) => (
@@ -363,7 +329,7 @@ export default function LearnMorePage() {
           <div className="absolute top-0 right-0 h-[400px] w-[400px] rounded-full bg-blue-600/20 dark:bg-blue-500/20 blur-[100px] animate-pulse-slow"></div>
           <div
             className="absolute bottom-0 left-0 h-[300px] w-[300px] rounded-full bg-purple-600/20 dark:bg-purple-500/20 blur-[100px] animate-pulse-slow"
-            style={{ animationDelay: "2s" }}
+            style={{ animationDelay: '2s' }}
           ></div>
           <div className="h-full w-full bg-[url('/patterns/dots.svg')] bg-repeat opacity-10"></div>
         </div>
@@ -378,16 +344,12 @@ export default function LearnMorePage() {
           >
             <div className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/5 px-4 py-1.5 mb-4 text-sm font-medium text-primary">
               <Lightbulb size={16} />
-              {t("faq.title")}
+              {t('faq.title')}
             </div>
 
-            <h2 className="text-3xl md:text-4xl font-bold mb-6">
-              {t("faq.heading")}
-            </h2>
+            <h2 className="text-3xl md:text-4xl font-bold mb-6">{t('faq.heading')}</h2>
 
-            <p className="text-lg text-muted-foreground">
-              {t("faq.description")}
-            </p>
+            <p className="text-lg text-muted-foreground">{t('faq.description')}</p>
           </motion.div>
 
           <div className="max-w-4xl mx-auto grid gap-6">
@@ -426,16 +388,12 @@ export default function LearnMorePage() {
           >
             <div className="mb-6 inline-flex items-center gap-2 rounded-full bg-white/10 backdrop-blur-sm px-4 py-1.5 text-sm font-medium">
               <Sparkles size={16} className="text-white" />
-              {t("cta.readyToStart")}
+              {t('cta.readyToStart')}
             </div>
 
-            <h2 className="text-3xl md:text-4xl font-bold mb-6">
-              {t("cta.heading")}
-            </h2>
+            <h2 className="text-3xl md:text-4xl font-bold mb-6">{t('cta.heading')}</h2>
 
-            <p className="text-lg text-white/90 mb-10">
-              {t("cta.description")}
-            </p>
+            <p className="text-lg text-white/90 mb-10">{t('cta.description')}</p>
 
             <div className="flex flex-wrap justify-center gap-6">
               <Link href="/login">
@@ -445,7 +403,7 @@ export default function LearnMorePage() {
                   className="gap-2 bg-white text-primary hover:bg-white hover:shadow-lg hover:shadow-white/20 transition-all duration-300 transform hover:-translate-y-1"
                 >
                   <Zap size={18} className="text-primary" />
-                  <span className="font-medium">{t("cta.getStarted")}</span>
+                  <span className="font-medium">{t('cta.getStarted')}</span>
                 </Button>
               </Link>
             </div>

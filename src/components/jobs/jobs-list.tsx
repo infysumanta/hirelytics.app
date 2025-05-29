@@ -1,14 +1,16 @@
-"use client";
+'use client';
 
-import * as React from "react";
-import { JobCard } from "./job-card";
-import { JobFilter } from "./job-filter";
-import { Button } from "@/components/ui/button";
-import { Loader2 } from "lucide-react";
-import { useInView } from "react-intersection-observer";
-import { IJob } from "@/models/job";
+import { Loader2 } from 'lucide-react';
+import * as React from 'react';
+import { useInView } from 'react-intersection-observer';
 
-interface JobWithId extends Omit<IJob, "_id"> {
+import { Button } from '@/components/ui/button';
+import { IJob } from '@/models/job';
+
+import { JobCard } from './job-card';
+import { JobFilter } from './job-filter';
+
+interface JobWithId extends Omit<IJob, '_id'> {
   id: string;
 }
 
@@ -19,9 +21,9 @@ export function JobsList() {
   const [page, setPage] = React.useState(1);
 
   // Filter states
-  const [search, setSearch] = React.useState("");
+  const [search, setSearch] = React.useState('');
   const [selectedSkills, setSelectedSkills] = React.useState<string[]>([]);
-  const [location, setLocation] = React.useState("");
+  const [location, setLocation] = React.useState('');
 
   // Infinite scroll setup
   const { ref, inView } = useInView();
@@ -30,17 +32,16 @@ export function JobsList() {
   const buildQueryString = React.useCallback(
     (page: number) => {
       const params = new URLSearchParams();
-      params.append("page", page.toString());
-      params.append("limit", "12");
+      params.append('page', page.toString());
+      params.append('limit', '12');
 
-      if (search) params.append("search", search);
-      if (selectedSkills.length > 0)
-        params.append("skills", selectedSkills.join(","));
-      if (location) params.append("location", location);
+      if (search) params.append('search', search);
+      if (selectedSkills.length > 0) params.append('skills', selectedSkills.join(','));
+      if (location) params.append('location', location);
 
       return params.toString();
     },
-    [search, selectedSkills, location],
+    [search, selectedSkills, location]
   );
 
   // Initial load and filter changes
@@ -60,7 +61,7 @@ export function JobsList() {
         setHasMore(result.hasMore);
         setPage(1);
       } catch (error) {
-        console.error("Failed to fetch jobs:", error);
+        console.error('Failed to fetch jobs:', error);
       } finally {
         setLoading(false);
       }
@@ -89,7 +90,7 @@ export function JobsList() {
           setHasMore(result.hasMore);
           setPage(nextPage);
         } catch (error) {
-          console.error("Failed to load more jobs:", error);
+          console.error('Failed to load more jobs:', error);
         } finally {
           setLoading(false);
         }
@@ -126,8 +127,7 @@ export function JobsList() {
         <div className="text-center py-16">
           <h3 className="text-xl font-medium">No jobs found</h3>
           <p className="text-muted-foreground mt-2">
-            Try adjusting your search criteria or check back later for new
-            opportunities.
+            Try adjusting your search criteria or check back later for new opportunities.
           </p>
         </div>
       ) : (

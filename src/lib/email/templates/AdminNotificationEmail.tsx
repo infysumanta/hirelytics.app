@@ -1,12 +1,7 @@
-import * as React from "react";
-import { Section, Heading, Text, Link } from "@react-email/components";
-import {
-  BaseEmailTemplate,
-  headingLg,
-  textBase,
-  textLg,
-  highlightedBox,
-} from "./BaseTemplate";
+import { Heading, Link, Section, Text } from '@react-email/components';
+import * as React from 'react';
+
+import { BaseEmailTemplate, headingLg, highlightedBox, textBase, textLg } from './BaseTemplate';
 
 interface AdminNotificationEmailProps {
   name: string;
@@ -21,18 +16,18 @@ export const AdminNotificationEmail = ({
   reason,
   submittedAt,
 }: AdminNotificationEmailProps) => {
-  const formattedDate = submittedAt.toLocaleString("en-US", {
-    weekday: "long",
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
+  const formattedDate = submittedAt.toLocaleString('en-US', {
+    weekday: 'long',
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
   });
 
   return (
     <BaseEmailTemplate previewText={`New Waitlist Submission from ${name}`}>
-      <Section style={{ padding: "24px", backgroundColor: "#ffffff" }}>
+      <Section style={{ padding: '24px', backgroundColor: '#ffffff' }}>
         <Heading as="h1" style={headingLg}>
           New Waitlist Submission
         </Heading>
@@ -45,10 +40,10 @@ export const AdminNotificationEmail = ({
             <strong>Name:</strong> {name}
           </Text>
           <Text style={textBase}>
-            <strong>Email:</strong>{" "}
+            <strong>Email:</strong>{' '}
             <Link
               href={`mailto:${email}`}
-              style={{ color: "#4f46e5", textDecoration: "underline" }}
+              style={{ color: '#4f46e5', textDecoration: 'underline' }}
             >
               {email}
             </Link>
@@ -62,10 +57,10 @@ export const AdminNotificationEmail = ({
         </Section>
 
         <Text style={textBase}>
-          You can view and manage all waitlist entries in the{" "}
+          You can view and manage all waitlist entries in the{' '}
           <Link
             href="https://hirelytics.app/dashboard/admin/waitlist"
-            style={{ color: "#4f46e5", textDecoration: "underline" }}
+            style={{ color: '#4f46e5', textDecoration: 'underline' }}
           >
             admin dashboard
           </Link>

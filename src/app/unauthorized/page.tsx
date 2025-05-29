@@ -1,27 +1,28 @@
-"use client";
+'use client';
 
-import { motion } from "framer-motion";
-import { Button } from "@/components/ui/button";
-import { useRouter } from "next/navigation";
-import { useTranslations } from "next-intl";
-import { signOut } from "next-auth/react";
-import { ExclamationTriangleIcon } from "@radix-ui/react-icons";
+import { ExclamationTriangleIcon } from '@radix-ui/react-icons';
+import { motion } from 'framer-motion';
+import { useRouter } from 'next/navigation';
+import { signOut } from 'next-auth/react';
+import { useTranslations } from 'next-intl';
+
+import { Button } from '@/components/ui/button';
 
 export default function UnauthorizedPage() {
   const router = useRouter();
-  const t = useTranslations("Auth");
+  const t = useTranslations('Auth');
 
   const handleGoBack = () => {
     router.back();
   };
 
   const handleGoToDashboard = () => {
-    router.push("/dashboard");
+    router.push('/dashboard');
   };
 
   const handleLogout = async () => {
     await signOut({ redirect: false });
-    router.push("/login");
+    router.push('/login');
   };
 
   return (
@@ -36,33 +37,17 @@ export default function UnauthorizedPage() {
           <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-destructive/10">
             <ExclamationTriangleIcon className="h-8 w-8 text-destructive" />
           </div>
-          <h1 className="mb-2 text-2xl font-bold text-foreground">
-            {t("unauthorized")}
-          </h1>
-          <p className="mb-6 text-muted-foreground">
-            {t("unauthorizedMessage")}
-          </p>
+          <h1 className="mb-2 text-2xl font-bold text-foreground">{t('unauthorized')}</h1>
+          <p className="mb-6 text-muted-foreground">{t('unauthorizedMessage')}</p>
           <div className="flex flex-col gap-2 sm:flex-row">
-            <Button
-              onClick={handleGoBack}
-              variant="outline"
-              className="min-w-32"
-            >
-              {t("goBack")}
+            <Button onClick={handleGoBack} variant="outline" className="min-w-32">
+              {t('goBack')}
             </Button>
-            <Button
-              onClick={handleGoToDashboard}
-              variant="outline"
-              className="min-w-32"
-            >
-              {t("dashboard")}
+            <Button onClick={handleGoToDashboard} variant="outline" className="min-w-32">
+              {t('dashboard')}
             </Button>
-            <Button
-              onClick={handleLogout}
-              variant="default"
-              className="min-w-32"
-            >
-              {t("logout")}
+            <Button onClick={handleLogout} variant="default" className="min-w-32">
+              {t('logout')}
             </Button>
           </div>
         </div>

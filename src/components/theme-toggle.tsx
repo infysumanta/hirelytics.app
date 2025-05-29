@@ -1,20 +1,21 @@
-"use client";
+'use client';
 
-import * as React from "react";
-import { useTheme } from "next-themes";
-import { useTranslations } from "next-intl";
+import { motion } from 'framer-motion';
+import { LaptopIcon, MoonIcon, SunIcon } from 'lucide-react';
+import { useTranslations } from 'next-intl';
+import { useTheme } from 'next-themes';
+import * as React from 'react';
+
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { LaptopIcon, MoonIcon, SunIcon } from "lucide-react";
-import { motion } from "framer-motion";
+} from '@/components/ui/dropdown-menu';
 
 export function ThemeToggle() {
   const { setTheme, theme } = useTheme();
-  const t = useTranslations("Common.theme");
+  const t = useTranslations('Common.theme');
 
   return (
     <DropdownMenu>
@@ -34,16 +35,14 @@ export function ThemeToggle() {
         className="animate-in fade-in-50 zoom-in-95 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95"
       >
         <DropdownMenuItem
-          onClick={() => setTheme("light")}
+          onClick={() => setTheme('light')}
           className={`flex items-center gap-2 cursor-pointer ${
-            theme === "light"
-              ? "bg-accent text-accent-foreground font-medium"
-              : ""
+            theme === 'light' ? 'bg-accent text-accent-foreground font-medium' : ''
           }`}
         >
           <SunIcon className="h-4 w-4" />
-          <span>{t("light")}</span>
-          {theme === "light" && (
+          <span>{t('light')}</span>
+          {theme === 'light' && (
             <motion.span
               initial={{ scale: 0 }}
               animate={{ scale: 1 }}
@@ -52,16 +51,14 @@ export function ThemeToggle() {
           )}
         </DropdownMenuItem>
         <DropdownMenuItem
-          onClick={() => setTheme("dark")}
+          onClick={() => setTheme('dark')}
           className={`flex items-center gap-2 cursor-pointer ${
-            theme === "dark"
-              ? "bg-accent text-accent-foreground font-medium"
-              : ""
+            theme === 'dark' ? 'bg-accent text-accent-foreground font-medium' : ''
           }`}
         >
           <MoonIcon className="h-4 w-4" />
-          <span>{t("dark")}</span>
-          {theme === "dark" && (
+          <span>{t('dark')}</span>
+          {theme === 'dark' && (
             <motion.span
               initial={{ scale: 0 }}
               animate={{ scale: 1 }}
@@ -70,16 +67,14 @@ export function ThemeToggle() {
           )}
         </DropdownMenuItem>
         <DropdownMenuItem
-          onClick={() => setTheme("system")}
+          onClick={() => setTheme('system')}
           className={`flex items-center gap-2 cursor-pointer ${
-            theme === "system"
-              ? "bg-accent text-accent-foreground font-medium"
-              : ""
+            theme === 'system' ? 'bg-accent text-accent-foreground font-medium' : ''
           }`}
         >
           <LaptopIcon className="h-4 w-4" />
-          <span>{t("system")}</span>
-          {theme === "system" && (
+          <span>{t('system')}</span>
+          {theme === 'system' && (
             <motion.span
               initial={{ scale: 0 }}
               animate={{ scale: 1 }}

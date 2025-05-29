@@ -1,24 +1,26 @@
-"use client";
+'use client';
 
-import { Button } from "@/components/ui/button";
-import { Loader2 } from "lucide-react";
-import { useState } from "react";
-import { IJob } from "@/models/job";
-import { JobApplicationModal } from "./job-application-modal";
+import { Loader2 } from 'lucide-react';
+import { useState } from 'react';
+
+import { Button } from '@/components/ui/button';
+import { IJob } from '@/models/job';
+
+import { JobApplicationModal } from './job-application-modal';
 
 interface JobApplyButtonProps {
   jobId: string;
   disabled?: boolean;
   isExpired?: boolean;
   job?: IJob;
-  variant?: "default" | "small";
+  variant?: 'default' | 'small';
 }
 
 export function JobApplyButton({
   disabled = false,
   isExpired = false,
   job,
-  variant = "default",
+  variant = 'default',
 }: JobApplyButtonProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -39,37 +41,33 @@ export function JobApplyButton({
   return (
     <>
       <Button
-        className={variant === "default" ? "w-full" : ""}
-        size={variant === "small" ? "sm" : "default"}
+        className={variant === 'default' ? 'w-full' : ''}
+        size={variant === 'small' ? 'sm' : 'default'}
         onClick={handleApply}
         disabled={disabled || isLoading}
       >
         {isLoading ? (
           <>
             <Loader2
-              className={`${variant === "small" ? "h-3.5 w-3.5" : "h-4 w-4"} mr-1 animate-spin`}
+              className={`${variant === 'small' ? 'h-3.5 w-3.5' : 'h-4 w-4'} mr-1 animate-spin`}
             />
-            {variant === "small" ? "Loading..." : "Processing..."}
+            {variant === 'small' ? 'Loading...' : 'Processing...'}
           </>
         ) : isExpired ? (
-          variant === "small" ? (
-            "Expired"
+          variant === 'small' ? (
+            'Expired'
           ) : (
-            "Job Expired"
+            'Job Expired'
           )
-        ) : variant === "small" ? (
-          "Apply"
+        ) : variant === 'small' ? (
+          'Apply'
         ) : (
-          "Apply Now"
+          'Apply Now'
         )}
       </Button>
 
       {job && isModalOpen && (
-        <JobApplicationModal
-          job={job}
-          isOpen={isModalOpen}
-          onClose={() => setIsModalOpen(false)}
-        />
+        <JobApplicationModal job={job} isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
       )}
     </>
   );

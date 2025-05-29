@@ -1,22 +1,7 @@
-"use client";
+'use client';
 
-import { useParams, useRouter } from "next/navigation";
-import { useState } from "react";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { format } from "date-fns";
-import Image from "next/image";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Separator } from "@/components/ui/separator";
-import { toast } from "sonner";
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { format } from 'date-fns';
 import {
   AlertCircle,
   ArrowLeft,
@@ -33,23 +18,33 @@ import {
   Play,
   Square,
   X,
-} from "lucide-react";
-import { Progress } from "@/components/ui/progress";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogClose,
-} from "@/components/ui/dialog";
+} from 'lucide-react';
+import Image from 'next/image';
+import { useParams, useRouter } from 'next/navigation';
+import { useState } from 'react';
+import { toast } from 'sonner';
+
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import {
   Carousel,
   CarouselContent,
   CarouselItem,
   CarouselNext,
   CarouselPrevious,
-} from "@/components/ui/carousel";
+} from '@/components/ui/carousel';
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
+import { Progress } from '@/components/ui/progress';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { Separator } from '@/components/ui/separator';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 // Define the application interface
 interface JobApplication {
@@ -63,7 +58,7 @@ interface JobApplication {
   s3Key?: string;
   s3Bucket?: string;
   preferredLanguage: string;
-  status: "pending" | "reviewed" | "accepted" | "rejected";
+  status: 'pending' | 'reviewed' | 'accepted' | 'rejected';
   parsedResume?: {
     extractedText: string;
     about?: string;
@@ -101,7 +96,7 @@ interface JobApplication {
   };
   interviewChatHistory?: {
     text: string;
-    sender: "ai" | "user" | "system";
+    sender: 'ai' | 'user' | 'system';
     timestamp: string;
     questionId?: string;
     questionCategory?: string;
@@ -122,7 +117,7 @@ export default function JobApplicationDetailsPage() {
   const params = useParams();
   const router = useRouter();
   const applicationId = params.id as string;
-  const [activeTab, setActiveTab] = useState("resume");
+  const [activeTab, setActiveTab] = useState('resume');
   const queryClient = useQueryClient();
 
   // State for image gallery
@@ -146,10 +141,10 @@ export default function JobApplicationDetailsPage() {
 
   // Fetch application details
   const { data: application, isLoading } = useQuery({
-    queryKey: ["job-application", applicationId],
+    queryKey: ['job-application', applicationId],
     queryFn: async () => {
       const response = await fetch(`/api/applications/${applicationId}`);
-      if (!response.ok) throw new Error("Failed to fetch application details");
+      if (!response.ok) throw new Error('Failed to fetch application details');
       const data = await response.json();
       return data.application as JobApplication;
     },
@@ -158,20 +153,17 @@ export default function JobApplicationDetailsPage() {
   // Status update mutation
   const statusMutation = useMutation({
     mutationFn: async (newStatus: string) => {
-      const response = await fetch(
-        `/api/applications/${applicationId}/status`,
-        {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ status: newStatus }),
+      const response = await fetch(`/api/applications/${applicationId}/status`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
         },
-      );
+        body: JSON.stringify({ status: newStatus }),
+      });
 
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.message || "Failed to update status");
+        throw new Error(errorData.message || 'Failed to update status');
       }
 
       return response.json();
@@ -180,15 +172,13 @@ export default function JobApplicationDetailsPage() {
       toast.success(`Application status updated to ${newStatus}`);
       // Invalidate and refetch queries related to this application
       queryClient.invalidateQueries({
-        queryKey: ["job-application", applicationId],
+        queryKey: ['job-application', applicationId],
       });
     },
     onError: (error) => {
-      console.error("Error updating status:", error);
+      console.error('Error updating status:', error);
       toast.error(
-        `Failed to update status: ${
-          error instanceof Error ? error.message : "Unknown error"
-        }`,
+        `Failed to update status: ${error instanceof Error ? error.message : 'Unknown error'}`
       );
     },
   });
@@ -218,7 +208,7 @@ export default function JobApplicationDetailsPage() {
           <Button
             variant="outline"
             className="mt-4"
-            onClick={() => router.push("/dashboard/job-applications")}
+            onClick={() => router.push('/dashboard/job-applications')}
           >
             <ArrowLeft className="mr-2 h-4 w-4" />
             Back to Applications
@@ -229,9 +219,9 @@ export default function JobApplicationDetailsPage() {
   }
 
   // Format dates
-  const formattedCreatedDate = format(new Date(application.createdAt), "PPP");
+  const formattedCreatedDate = format(new Date(application.createdAt), 'PPP');
   const matchedAt = application.parsedResume?.matchedAt
-    ? format(new Date(application.parsedResume.matchedAt), "PPP")
+    ? format(new Date(application.parsedResume.matchedAt), 'PPP')
     : null;
 
   // Extract interview data
@@ -243,18 +233,15 @@ export default function JobApplicationDetailsPage() {
   // Organize questions by category
   const questions = application.interviewChatHistory
     ? application.interviewChatHistory
-        .filter((msg) => msg.sender === "ai" && msg.questionCategory)
+        .filter((msg) => msg.sender === 'ai' && msg.questionCategory)
         .reduce(
           (acc, message) => {
-            const category = message.questionCategory || "other";
+            const category = message.questionCategory || 'other';
             if (!acc[category]) acc[category] = [];
             acc[category].push(message);
             return acc;
           },
-          {} as Record<
-            string,
-            (typeof application.interviewChatHistory)[number][]
-          >,
+          {} as Record<string, (typeof application.interviewChatHistory)[number][]>
         )
     : {};
 
@@ -263,7 +250,7 @@ export default function JobApplicationDetailsPage() {
     if (!questionId || !application.interviewChatHistory) return null;
 
     const questionIndex = application.interviewChatHistory.findIndex(
-      (msg) => msg.questionId === questionId,
+      (msg) => msg.questionId === questionId
     );
 
     if (questionIndex === -1) return null;
@@ -271,7 +258,7 @@ export default function JobApplicationDetailsPage() {
     // Look for the next user message after this question
     const nextUserMessage = application.interviewChatHistory
       .slice(questionIndex + 1)
-      .find((msg) => msg.sender === "user");
+      .find((msg) => msg.sender === 'user');
 
     return nextUserMessage?.text || null;
   };
@@ -314,14 +301,11 @@ export default function JobApplicationDetailsPage() {
               <div className="absolute inset-0 flex items-center justify-center bg-background">
                 <div className="text-center p-6">
                   <AlertCircle className="h-10 w-10 text-destructive mx-auto mb-4" />
-                  <h3 className="font-medium text-lg mb-2">
-                    Unable to display resume
-                  </h3>
+                  <h3 className="font-medium text-lg mb-2">Unable to display resume</h3>
                   <p className="text-muted-foreground mb-4">
-                    The resume cannot be displayed in the browser. Please
-                    download it to view.
+                    The resume cannot be displayed in the browser. Please download it to view.
                   </p>
-                  <Button onClick={() => window.open(resumeUrl, "_blank")}>
+                  <Button onClick={() => window.open(resumeUrl, '_blank')}>
                     <Download className="h-4 w-4 mr-1" />
                     Download Resume
                   </Button>
@@ -331,7 +315,7 @@ export default function JobApplicationDetailsPage() {
               <iframe
                 src={resumeUrl}
                 className="w-full h-full"
-                title={`Resume of ${application?.candidateName || "candidate"}`}
+                title={`Resume of ${application?.candidateName || 'candidate'}`}
                 onLoad={handleIframeLoad}
                 onError={handleIframeError}
               />
@@ -354,7 +338,7 @@ export default function JobApplicationDetailsPage() {
             <Button
               variant="ghost"
               size="sm"
-              onClick={() => router.push("/dashboard/job-applications")}
+              onClick={() => router.push('/dashboard/job-applications')}
               className="mb-2"
             >
               <ArrowLeft className="h-4 w-4 mr-1" />
@@ -363,8 +347,7 @@ export default function JobApplicationDetailsPage() {
             <h1 className="text-3xl font-bold">Job Application Details</h1>
           </div>
           <p className="text-muted-foreground">
-            Detailed information for application submitted on{" "}
-            {formattedCreatedDate}
+            Detailed information for application submitted on {formattedCreatedDate}
           </p>
         </div>
       </div>
@@ -374,26 +357,19 @@ export default function JobApplicationDetailsPage() {
         <CardHeader>
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
             <div>
-              <CardTitle className="text-2xl">
-                {application?.job?.title}
-              </CardTitle>
-              <CardDescription className="text-lg">
-                {application?.job?.companyName}
-              </CardDescription>
+              <CardTitle className="text-2xl">{application?.job?.title}</CardTitle>
+              <CardDescription className="text-lg">{application?.job?.companyName}</CardDescription>
             </div>
             <div className="flex flex-col sm:flex-row gap-2">
               <div className="space-x-2">
-                {application?.status === "pending" && (
+                {application?.status === 'pending' && (
                   <>
-                    <Button
-                      variant="default"
-                      onClick={() => updateStatus("accepted")}
-                    >
+                    <Button variant="default" onClick={() => updateStatus('accepted')}>
                       Accept
                     </Button>
                     <Button
                       variant="outline"
-                      onClick={() => updateStatus("rejected")}
+                      onClick={() => updateStatus('rejected')}
                       className="border-destructive text-destructive hover:bg-destructive/10"
                     >
                       Reject
@@ -401,22 +377,18 @@ export default function JobApplicationDetailsPage() {
                   </>
                 )}
 
-                {application.status === "accepted" && (
+                {application.status === 'accepted' && (
                   <Badge className="bg-green-500/20 text-green-500 text-lg py-2 px-4">
                     Accepted
                   </Badge>
                 )}
 
-                {application.status === "rejected" && (
-                  <Badge className="bg-red-500/20 text-red-500 text-lg py-2 px-4">
-                    Rejected
-                  </Badge>
+                {application.status === 'rejected' && (
+                  <Badge className="bg-red-500/20 text-red-500 text-lg py-2 px-4">Rejected</Badge>
                 )}
 
-                {application.status === "reviewed" && (
-                  <Badge className="bg-blue-500/20 text-blue-500 text-lg py-2 px-4">
-                    Reviewed
-                  </Badge>
+                {application.status === 'reviewed' && (
+                  <Badge className="bg-blue-500/20 text-blue-500 text-lg py-2 px-4">Reviewed</Badge>
                 )}
               </div>
             </div>
@@ -442,12 +414,8 @@ export default function JobApplicationDetailsPage() {
 
               <div className="flex items-center">
                 <MessageSquare className="h-4 w-4 mr-2" />
-                <span className="text-muted-foreground mr-2">
-                  Preferred Language:
-                </span>
-                <span className="font-medium">
-                  {application.preferredLanguage}
-                </span>
+                <span className="text-muted-foreground mr-2">Preferred Language:</span>
+                <span className="font-medium">{application.preferredLanguage}</span>
               </div>
 
               <div className="flex items-center">
@@ -462,18 +430,16 @@ export default function JobApplicationDetailsPage() {
                 <div className="flex justify-between">
                   <div className="flex items-center">
                     <Award className="h-4 w-4 mr-2" />
-                    <span className="text-muted-foreground mr-2">
-                      Match Score:
-                    </span>
+                    <span className="text-muted-foreground mr-2">Match Score:</span>
                   </div>
                   <Badge
                     className={`
                     ${
                       application.parsedResume.matchScore >= 70
-                        ? "bg-green-500/20 text-green-500"
+                        ? 'bg-green-500/20 text-green-500'
                         : application.parsedResume.matchScore >= 50
-                          ? "bg-yellow-500/20 text-yellow-500"
-                          : "bg-red-500/20 text-red-500"
+                          ? 'bg-yellow-500/20 text-yellow-500'
+                          : 'bg-red-500/20 text-red-500'
                     }`}
                   >
                     {application.parsedResume.matchScore}%
@@ -483,19 +449,19 @@ export default function JobApplicationDetailsPage() {
                 <div
                   className={`h-2 rounded-full overflow-hidden ${
                     application.parsedResume.matchScore >= 70
-                      ? "bg-green-100"
+                      ? 'bg-green-100'
                       : application.parsedResume.matchScore >= 50
-                        ? "bg-yellow-100"
-                        : "bg-red-100"
+                        ? 'bg-yellow-100'
+                        : 'bg-red-100'
                   }`}
                 >
                   <div
                     className={`h-full ${
                       application.parsedResume.matchScore >= 70
-                        ? "bg-green-500"
+                        ? 'bg-green-500'
                         : application.parsedResume.matchScore >= 50
-                          ? "bg-yellow-500"
-                          : "bg-red-500"
+                          ? 'bg-yellow-500'
+                          : 'bg-red-500'
                     }`}
                     style={{ width: `${application.parsedResume.matchScore}%` }}
                   />
@@ -521,11 +487,7 @@ export default function JobApplicationDetailsPage() {
       </Card>
 
       {/* Detailed content tabs */}
-      <Tabs
-        value={activeTab}
-        onValueChange={setActiveTab}
-        className="space-y-4"
-      >
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
         <TabsList className="grid grid-cols-3 md:grid-cols-5">
           <TabsTrigger value="resume">Resume Analysis</TabsTrigger>
           <TabsTrigger value="interview" disabled={!hasInterviewData}>
@@ -534,10 +496,7 @@ export default function JobApplicationDetailsPage() {
           <TabsTrigger value="questions" disabled={!hasInterviewData}>
             Questions & Answers
           </TabsTrigger>
-          <TabsTrigger
-            value="monitoring"
-            disabled={!application.monitoringImages?.length}
-          >
+          <TabsTrigger value="monitoring" disabled={!application.monitoringImages?.length}>
             Monitoring Images
           </TabsTrigger>
           <TabsTrigger value="actions">Actions</TabsTrigger>
@@ -549,8 +508,7 @@ export default function JobApplicationDetailsPage() {
             <CardHeader>
               <CardTitle>Resume Match Analysis</CardTitle>
               <CardDescription>
-                AI-powered analysis of how the candidate matches job
-                requirements
+                AI-powered analysis of how the candidate matches job requirements
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
@@ -558,9 +516,7 @@ export default function JobApplicationDetailsPage() {
                 <div className="space-y-4">
                   <h3 className="text-lg font-medium">Analysis</h3>
                   <div className="border rounded-lg p-4 bg-muted/30">
-                    <p className="whitespace-pre-line">
-                      {application.parsedResume.aiComments}
-                    </p>
+                    <p className="whitespace-pre-line">{application.parsedResume.aiComments}</p>
                   </div>
                 </div>
               )}
@@ -575,22 +531,14 @@ export default function JobApplicationDetailsPage() {
                   <div className="border rounded-lg p-4">
                     {application.parsedResume?.topSkillMatches?.length ? (
                       <div className="flex flex-wrap gap-1">
-                        {application.parsedResume.topSkillMatches.map(
-                          (skill, index) => (
-                            <Badge
-                              key={index}
-                              variant="outline"
-                              className="bg-green-500/10"
-                            >
-                              {skill}
-                            </Badge>
-                          ),
-                        )}
+                        {application.parsedResume.topSkillMatches.map((skill, index) => (
+                          <Badge key={index} variant="outline" className="bg-green-500/10">
+                            {skill}
+                          </Badge>
+                        ))}
                       </div>
                     ) : (
-                      <p className="text-muted-foreground">
-                        No matching skills identified
-                      </p>
+                      <p className="text-muted-foreground">No matching skills identified</p>
                     )}
                   </div>
                 </div>
@@ -604,22 +552,14 @@ export default function JobApplicationDetailsPage() {
                   <div className="border rounded-lg p-4">
                     {application.parsedResume?.missingSkills?.length ? (
                       <div className="flex flex-wrap gap-1">
-                        {application.parsedResume.missingSkills.map(
-                          (skill, index) => (
-                            <Badge
-                              key={index}
-                              variant="outline"
-                              className="bg-amber-500/10"
-                            >
-                              {skill}
-                            </Badge>
-                          ),
-                        )}
+                        {application.parsedResume.missingSkills.map((skill, index) => (
+                          <Badge key={index} variant="outline" className="bg-amber-500/10">
+                            {skill}
+                          </Badge>
+                        ))}
                       </div>
                     ) : (
-                      <p className="text-muted-foreground">
-                        No missing skills identified
-                      </p>
+                      <p className="text-muted-foreground">No missing skills identified</p>
                     )}
                   </div>
                 </div>
@@ -633,24 +573,19 @@ export default function JobApplicationDetailsPage() {
                     {application.parsedResume?.experience ? (
                       <div className="space-y-2">
                         <p>
-                          <strong>Years:</strong>{" "}
-                          {application.parsedResume.experience.years}
+                          <strong>Years:</strong> {application.parsedResume.experience.years}
                         </p>
                         <div>
                           <strong>Companies:</strong>
                           <ul className="list-disc list-inside">
-                            {application.parsedResume.experience.companies.map(
-                              (company, index) => (
-                                <li key={index}>{company}</li>
-                              ),
-                            )}
+                            {application.parsedResume.experience.companies.map((company, index) => (
+                              <li key={index}>{company}</li>
+                            ))}
                           </ul>
                         </div>
                       </div>
                     ) : (
-                      <p className="text-muted-foreground">
-                        No experience data available
-                      </p>
+                      <p className="text-muted-foreground">No experience data available</p>
                     )}
                   </div>
                 </div>
@@ -661,26 +596,17 @@ export default function JobApplicationDetailsPage() {
                   <div className="border rounded-lg p-4">
                     {application.parsedResume?.education?.length ? (
                       <div className="space-y-2">
-                        {application.parsedResume.education.map(
-                          (edu, index) => (
-                            <div
-                              key={index}
-                              className="border-b last:border-0 pb-2 last:pb-0"
-                            >
-                              <p>
-                                <strong>{edu.degree}</strong>
-                              </p>
-                              <p className="text-sm text-muted-foreground">
-                                {edu.institution}
-                              </p>
-                            </div>
-                          ),
-                        )}
+                        {application.parsedResume.education.map((edu, index) => (
+                          <div key={index} className="border-b last:border-0 pb-2 last:pb-0">
+                            <p>
+                              <strong>{edu.degree}</strong>
+                            </p>
+                            <p className="text-sm text-muted-foreground">{edu.institution}</p>
+                          </div>
+                        ))}
                       </div>
                     ) : (
-                      <p className="text-muted-foreground">
-                        No education data available
-                      </p>
+                      <p className="text-muted-foreground">No education data available</p>
                     )}
                   </div>
                 </div>
@@ -691,9 +617,7 @@ export default function JobApplicationDetailsPage() {
                 <div>
                   <h3 className="text-lg font-medium mb-2">About</h3>
                   <div className="border rounded-lg p-4 bg-muted/30">
-                    <p className="whitespace-pre-line">
-                      {application.parsedResume.about}
-                    </p>
+                    <p className="whitespace-pre-line">{application.parsedResume.about}</p>
                   </div>
                 </div>
               )}
@@ -702,9 +626,7 @@ export default function JobApplicationDetailsPage() {
               <div>
                 <h3 className="text-lg font-medium mb-2">Full Resume Text</h3>
                 <ScrollArea className="border rounded-lg p-4 h-[300px]">
-                  <p className="whitespace-pre-line">
-                    {application.parsedResume?.extractedText}
-                  </p>
+                  <p className="whitespace-pre-line">{application.parsedResume?.extractedText}</p>
                 </ScrollArea>
               </div>
             </CardContent>
@@ -717,9 +639,7 @@ export default function JobApplicationDetailsPage() {
             <Card>
               <CardHeader>
                 <CardTitle>Interview Feedback</CardTitle>
-                <CardDescription>
-                  Results from the AI interview with the candidate
-                </CardDescription>
+                <CardDescription>Results from the AI interview with the candidate</CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
                 {isInterviewComplete ? (
@@ -737,9 +657,7 @@ export default function JobApplicationDetailsPage() {
                         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
                           {interviewFeedback.technicalSkills !== undefined && (
                             <div className="border rounded-lg p-3 space-y-1">
-                              <p className="text-sm text-muted-foreground">
-                                Technical Skills
-                              </p>
+                              <p className="text-sm text-muted-foreground">Technical Skills</p>
                               <div className="flex justify-between items-center">
                                 <p className="font-medium">
                                   {interviewFeedback.technicalSkills}/10
@@ -752,20 +670,15 @@ export default function JobApplicationDetailsPage() {
                             </div>
                           )}
 
-                          {interviewFeedback.communicationSkills !==
-                            undefined && (
+                          {interviewFeedback.communicationSkills !== undefined && (
                             <div className="border rounded-lg p-3 space-y-1">
-                              <p className="text-sm text-muted-foreground">
-                                Communication
-                              </p>
+                              <p className="text-sm text-muted-foreground">Communication</p>
                               <div className="flex justify-between items-center">
                                 <p className="font-medium">
                                   {interviewFeedback.communicationSkills}/10
                                 </p>
                                 <Progress
-                                  value={
-                                    interviewFeedback.communicationSkills * 10
-                                  }
+                                  value={interviewFeedback.communicationSkills * 10}
                                   className="h-2 w-16"
                                 />
                               </div>
@@ -774,13 +687,9 @@ export default function JobApplicationDetailsPage() {
 
                           {interviewFeedback.problemSolving !== undefined && (
                             <div className="border rounded-lg p-3 space-y-1">
-                              <p className="text-sm text-muted-foreground">
-                                Problem Solving
-                              </p>
+                              <p className="text-sm text-muted-foreground">Problem Solving</p>
                               <div className="flex justify-between items-center">
-                                <p className="font-medium">
-                                  {interviewFeedback.problemSolving}/10
-                                </p>
+                                <p className="font-medium">{interviewFeedback.problemSolving}/10</p>
                                 <Progress
                                   value={interviewFeedback.problemSolving * 10}
                                   className="h-2 w-16"
@@ -791,13 +700,9 @@ export default function JobApplicationDetailsPage() {
 
                           {interviewFeedback.cultureFit !== undefined && (
                             <div className="border rounded-lg p-3 space-y-1">
-                              <p className="text-sm text-muted-foreground">
-                                Culture Fit
-                              </p>
+                              <p className="text-sm text-muted-foreground">Culture Fit</p>
                               <div className="flex justify-between items-center">
-                                <p className="font-medium">
-                                  {interviewFeedback.cultureFit}/10
-                                </p>
+                                <p className="font-medium">{interviewFeedback.cultureFit}/10</p>
                                 <Progress
                                   value={interviewFeedback.cultureFit * 10}
                                   className="h-2 w-16"
@@ -812,9 +717,7 @@ export default function JobApplicationDetailsPage() {
                           {/* Overall Impression */}
                           {interviewFeedback.overallImpression && (
                             <div>
-                              <h3 className="text-lg font-medium mb-2">
-                                Overall Impression
-                              </h3>
+                              <h3 className="text-lg font-medium mb-2">Overall Impression</h3>
                               <div className="border rounded-lg p-4 bg-muted/30">
                                 <p className="whitespace-pre-line">
                                   {interviewFeedback.overallImpression}
@@ -827,16 +730,12 @@ export default function JobApplicationDetailsPage() {
                             {/* Strengths */}
                             {interviewFeedback.strengths?.length && (
                               <div>
-                                <h3 className="text-lg font-medium mb-2">
-                                  Strengths
-                                </h3>
+                                <h3 className="text-lg font-medium mb-2">Strengths</h3>
                                 <div className="border rounded-lg p-4">
                                   <ul className="list-disc list-inside space-y-1">
-                                    {interviewFeedback.strengths.map(
-                                      (strength, index) => (
-                                        <li key={index}>{strength}</li>
-                                      ),
-                                    )}
+                                    {interviewFeedback.strengths.map((strength, index) => (
+                                      <li key={index}>{strength}</li>
+                                    ))}
                                   </ul>
                                 </div>
                               </div>
@@ -845,16 +744,12 @@ export default function JobApplicationDetailsPage() {
                             {/* Areas of Improvement */}
                             {interviewFeedback.areasOfImprovement?.length && (
                               <div>
-                                <h3 className="text-lg font-medium mb-2">
-                                  Areas for Improvement
-                                </h3>
+                                <h3 className="text-lg font-medium mb-2">Areas for Improvement</h3>
                                 <div className="border rounded-lg p-4">
                                   <ul className="list-disc list-inside space-y-1">
-                                    {interviewFeedback.areasOfImprovement.map(
-                                      (area, index) => (
-                                        <li key={index}>{area}</li>
-                                      ),
-                                    )}
+                                    {interviewFeedback.areasOfImprovement.map((area, index) => (
+                                      <li key={index}>{area}</li>
+                                    ))}
                                   </ul>
                                 </div>
                               </div>
@@ -863,27 +758,19 @@ export default function JobApplicationDetailsPage() {
                         </div>
                       </>
                     ) : (
-                      <p className="text-muted-foreground">
-                        No feedback data available yet.
-                      </p>
+                      <p className="text-muted-foreground">No feedback data available yet.</p>
                     )}
                   </>
                 ) : (
                   <div className="flex flex-col items-center justify-center py-6 text-center">
                     <Clock className="h-12 w-12 text-muted-foreground mb-4" />
-                    <h3 className="text-lg font-medium">
-                      Interview In Progress
-                    </h3>
+                    <h3 className="text-lg font-medium">Interview In Progress</h3>
                     <p className="text-muted-foreground mt-1">
                       The candidate has not yet completed the interview process.
                     </p>
                     {application?.interviewState?.currentPhase && (
                       <p className="text-muted-foreground">
-                        Current phase:{" "}
-                        {application.interviewState.currentPhase.replace(
-                          /_/g,
-                          " ",
-                        )}
+                        Current phase: {application.interviewState.currentPhase.replace(/_/g, ' ')}
                       </p>
                     )}
                   </div>
@@ -917,19 +804,12 @@ export default function JobApplicationDetailsPage() {
                 {/* Technical Questions */}
                 {questions.technical?.length > 0 && (
                   <div>
-                    <h3 className="text-lg font-medium mb-3">
-                      Technical Questions
-                    </h3>
+                    <h3 className="text-lg font-medium mb-3">Technical Questions</h3>
                     <div className="space-y-4">
                       {questions.technical.map((question, index) => {
-                        const answer = getAnswerForQuestion(
-                          question.questionId,
-                        );
+                        const answer = getAnswerForQuestion(question.questionId);
                         return (
-                          <div
-                            key={index}
-                            className="border rounded-lg overflow-hidden"
-                          >
+                          <div key={index} className="border rounded-lg overflow-hidden">
                             <div className="bg-muted p-3 flex items-center justify-between">
                               <p className="font-medium">{question.text}</p>
                               {question.signedAudioUrl && (
@@ -937,13 +817,10 @@ export default function JobApplicationDetailsPage() {
                                   <Button
                                     variant="ghost"
                                     size="sm"
-                                    onClick={() =>
-                                      handlePlayAudio(question.signedAudioUrl!)
-                                    }
+                                    onClick={() => handlePlayAudio(question.signedAudioUrl!)}
                                     className="h-8 w-8 p-0"
                                   >
-                                    {currentlyPlaying ===
-                                    question.signedAudioUrl ? (
+                                    {currentlyPlaying === question.signedAudioUrl ? (
                                       <Square className="h-4 w-4" />
                                     ) : (
                                       <Play className="h-4 w-4" />
@@ -955,23 +832,16 @@ export default function JobApplicationDetailsPage() {
                             {answer && (
                               <div className="p-3 border-t">
                                 <div className="flex justify-between items-start gap-4">
-                                  <p className="whitespace-pre-line flex-1">
-                                    {answer}
-                                  </p>
+                                  <p className="whitespace-pre-line flex-1">{answer}</p>
                                   {question.signedAudioUrl && (
                                     <div className="flex items-center gap-2">
                                       <Button
                                         variant="ghost"
                                         size="sm"
-                                        onClick={() =>
-                                          handlePlayAudio(
-                                            question.signedAudioUrl!,
-                                          )
-                                        }
+                                        onClick={() => handlePlayAudio(question.signedAudioUrl!)}
                                         className="h-8 w-8 p-0 shrink-0"
                                       >
-                                        {currentlyPlaying ===
-                                        question.signedAudioUrl ? (
+                                        {currentlyPlaying === question.signedAudioUrl ? (
                                           <Square className="h-4 w-4" />
                                         ) : (
                                           <Play className="h-4 w-4" />
@@ -992,19 +862,12 @@ export default function JobApplicationDetailsPage() {
                 {/* Project Questions */}
                 {questions.project?.length > 0 && (
                   <div>
-                    <h3 className="text-lg font-medium mb-3">
-                      Project Questions
-                    </h3>
+                    <h3 className="text-lg font-medium mb-3">Project Questions</h3>
                     <div className="space-y-4">
                       {questions.project.map((question, index) => {
-                        const answer = getAnswerForQuestion(
-                          question.questionId,
-                        );
+                        const answer = getAnswerForQuestion(question.questionId);
                         return (
-                          <div
-                            key={index}
-                            className="border rounded-lg overflow-hidden"
-                          >
+                          <div key={index} className="border rounded-lg overflow-hidden">
                             <div className="bg-muted p-3 flex items-center justify-between">
                               <p className="font-medium">{question.text}</p>
                               {question.signedAudioUrl && (
@@ -1012,13 +875,10 @@ export default function JobApplicationDetailsPage() {
                                   <Button
                                     variant="ghost"
                                     size="sm"
-                                    onClick={() =>
-                                      handlePlayAudio(question.signedAudioUrl!)
-                                    }
+                                    onClick={() => handlePlayAudio(question.signedAudioUrl!)}
                                     className="h-8 w-8 p-0"
                                   >
-                                    {currentlyPlaying ===
-                                    question.signedAudioUrl ? (
+                                    {currentlyPlaying === question.signedAudioUrl ? (
                                       <Square className="h-4 w-4" />
                                     ) : (
                                       <Play className="h-4 w-4" />
@@ -1030,23 +890,16 @@ export default function JobApplicationDetailsPage() {
                             {answer && (
                               <div className="p-3 border-t">
                                 <div className="flex justify-between items-start gap-4">
-                                  <p className="whitespace-pre-line flex-1">
-                                    {answer}
-                                  </p>
+                                  <p className="whitespace-pre-line flex-1">{answer}</p>
                                   {question.signedAudioUrl && (
                                     <div className="flex items-center gap-2">
                                       <Button
                                         variant="ghost"
                                         size="sm"
-                                        onClick={() =>
-                                          handlePlayAudio(
-                                            question.signedAudioUrl!,
-                                          )
-                                        }
+                                        onClick={() => handlePlayAudio(question.signedAudioUrl!)}
                                         className="h-8 w-8 p-0 shrink-0"
                                       >
-                                        {currentlyPlaying ===
-                                        question.signedAudioUrl ? (
+                                        {currentlyPlaying === question.signedAudioUrl ? (
                                           <Square className="h-4 w-4" />
                                         ) : (
                                           <Play className="h-4 w-4" />
@@ -1067,19 +920,12 @@ export default function JobApplicationDetailsPage() {
                 {/* Behavioral Questions */}
                 {questions.behavioral?.length > 0 && (
                   <div>
-                    <h3 className="text-lg font-medium mb-3">
-                      Behavioral Questions
-                    </h3>
+                    <h3 className="text-lg font-medium mb-3">Behavioral Questions</h3>
                     <div className="space-y-4">
                       {questions.behavioral.map((question, index) => {
-                        const answer = getAnswerForQuestion(
-                          question.questionId,
-                        );
+                        const answer = getAnswerForQuestion(question.questionId);
                         return (
-                          <div
-                            key={index}
-                            className="border rounded-lg overflow-hidden"
-                          >
+                          <div key={index} className="border rounded-lg overflow-hidden">
                             <div className="bg-muted p-3 flex items-center justify-between">
                               <p className="font-medium">{question.text}</p>
                               {question.signedAudioUrl && (
@@ -1087,13 +933,10 @@ export default function JobApplicationDetailsPage() {
                                   <Button
                                     variant="ghost"
                                     size="sm"
-                                    onClick={() =>
-                                      handlePlayAudio(question.signedAudioUrl!)
-                                    }
+                                    onClick={() => handlePlayAudio(question.signedAudioUrl!)}
                                     className="h-8 w-8 p-0"
                                   >
-                                    {currentlyPlaying ===
-                                    question.signedAudioUrl ? (
+                                    {currentlyPlaying === question.signedAudioUrl ? (
                                       <Square className="h-4 w-4" />
                                     ) : (
                                       <Play className="h-4 w-4" />
@@ -1105,23 +948,16 @@ export default function JobApplicationDetailsPage() {
                             {answer && (
                               <div className="p-3 border-t">
                                 <div className="flex justify-between items-start gap-4">
-                                  <p className="whitespace-pre-line flex-1">
-                                    {answer}
-                                  </p>
+                                  <p className="whitespace-pre-line flex-1">{answer}</p>
                                   {question.signedAudioUrl && (
                                     <div className="flex items-center gap-2">
                                       <Button
                                         variant="ghost"
                                         size="sm"
-                                        onClick={() =>
-                                          handlePlayAudio(
-                                            question.signedAudioUrl!,
-                                          )
-                                        }
+                                        onClick={() => handlePlayAudio(question.signedAudioUrl!)}
                                         className="h-8 w-8 p-0 shrink-0"
                                       >
-                                        {currentlyPlaying ===
-                                        question.signedAudioUrl ? (
+                                        {currentlyPlaying === question.signedAudioUrl ? (
                                           <Square className="h-4 w-4" />
                                         ) : (
                                           <Play className="h-4 w-4" />
@@ -1142,19 +978,12 @@ export default function JobApplicationDetailsPage() {
                 {/* Other Questions */}
                 {questions.other?.length > 0 && (
                   <div>
-                    <h3 className="text-lg font-medium mb-3">
-                      Other Questions
-                    </h3>
+                    <h3 className="text-lg font-medium mb-3">Other Questions</h3>
                     <div className="space-y-4">
                       {questions.other.map((question, index) => {
-                        const answer = getAnswerForQuestion(
-                          question.questionId,
-                        );
+                        const answer = getAnswerForQuestion(question.questionId);
                         return (
-                          <div
-                            key={index}
-                            className="border rounded-lg overflow-hidden"
-                          >
+                          <div key={index} className="border rounded-lg overflow-hidden">
                             <div className="bg-muted p-3 flex items-center justify-between">
                               <p className="font-medium">{question.text}</p>
                               {question.signedAudioUrl && (
@@ -1162,13 +991,10 @@ export default function JobApplicationDetailsPage() {
                                   <Button
                                     variant="ghost"
                                     size="sm"
-                                    onClick={() =>
-                                      handlePlayAudio(question.signedAudioUrl!)
-                                    }
+                                    onClick={() => handlePlayAudio(question.signedAudioUrl!)}
                                     className="h-8 w-8 p-0"
                                   >
-                                    {currentlyPlaying ===
-                                    question.signedAudioUrl ? (
+                                    {currentlyPlaying === question.signedAudioUrl ? (
                                       <Square className="h-4 w-4" />
                                     ) : (
                                       <Play className="h-4 w-4" />
@@ -1180,23 +1006,16 @@ export default function JobApplicationDetailsPage() {
                             {answer && (
                               <div className="p-3 border-t">
                                 <div className="flex justify-between items-start gap-4">
-                                  <p className="whitespace-pre-line flex-1">
-                                    {answer}
-                                  </p>
+                                  <p className="whitespace-pre-line flex-1">{answer}</p>
                                   {question.signedAudioUrl && (
                                     <div className="flex items-center gap-2">
                                       <Button
                                         variant="ghost"
                                         size="sm"
-                                        onClick={() =>
-                                          handlePlayAudio(
-                                            question.signedAudioUrl!,
-                                          )
-                                        }
+                                        onClick={() => handlePlayAudio(question.signedAudioUrl!)}
                                         className="h-8 w-8 p-0 shrink-0"
                                       >
-                                        {currentlyPlaying ===
-                                        question.signedAudioUrl ? (
+                                        {currentlyPlaying === question.signedAudioUrl ? (
                                           <Square className="h-4 w-4" />
                                         ) : (
                                           <Play className="h-4 w-4" />
@@ -1218,9 +1037,7 @@ export default function JobApplicationDetailsPage() {
                 {Object.keys(questions).length === 0 && (
                   <div className="text-center py-6">
                     <MessageSquare className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                    <p className="text-muted-foreground">
-                      No categorized questions found
-                    </p>
+                    <p className="text-muted-foreground">No categorized questions found</p>
                   </div>
                 )}
               </CardContent>
@@ -1244,9 +1061,7 @@ export default function JobApplicationDetailsPage() {
             <Card>
               <CardHeader>
                 <CardTitle>Monitoring Images</CardTitle>
-                <CardDescription>
-                  Images captured during the interview process
-                </CardDescription>
+                <CardDescription>Images captured during the interview process</CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
@@ -1255,7 +1070,7 @@ export default function JobApplicationDetailsPage() {
                       key={index}
                       className="border rounded-lg overflow-hidden relative group cursor-pointer"
                       onClick={() => {
-                        setSelectedImage(image.signedUrl || "");
+                        setSelectedImage(image.signedUrl || '');
                         setIsImageDialogOpen(true);
                       }}
                     >
@@ -1274,20 +1089,14 @@ export default function JobApplicationDetailsPage() {
                         <Maximize2 className="text-white h-6 w-6" />
                       </div>
                       <div className="p-2 text-xs text-center text-muted-foreground">
-                        {format(
-                          new Date(image.timestamp),
-                          "MMM d, yyyy HH:mm:ss",
-                        )}
+                        {format(new Date(image.timestamp), 'MMM d, yyyy HH:mm:ss')}
                       </div>
                     </div>
                   ))}
                 </div>
 
                 {/* Image Lightbox Dialog */}
-                <Dialog
-                  open={isImageDialogOpen}
-                  onOpenChange={setIsImageDialogOpen}
-                >
+                <Dialog open={isImageDialogOpen} onOpenChange={setIsImageDialogOpen}>
                   <DialogContent className="max-w-4xl max-h-[90vh] p-0">
                     <DialogHeader className="sr-only">
                       <DialogTitle>Monitoring Image</DialogTitle>
@@ -1300,34 +1109,30 @@ export default function JobApplicationDetailsPage() {
                         <div className="w-full h-full max-h-[80vh]">
                           <Carousel className="w-full">
                             <CarouselContent>
-                              {application.monitoringImages.map(
-                                (image, index) => (
-                                  <CarouselItem key={index}>
-                                    <div className="flex items-center justify-center p-1 h-[80vh]">
-                                      <div className="relative w-full h-full flex items-center justify-center">
-                                        <Image
-                                          src={image.signedUrl || ""}
-                                          alt={`Monitoring image ${index + 1}`}
-                                          fill
-                                          className="object-contain"
-                                        />
-                                        <div className="absolute bottom-4 left-0 right-0 text-center">
-                                          <div className="inline-block bg-black/70 text-white text-sm px-2 py-1 rounded">
-                                            Image {index + 1} of{" "}
-                                            {application.monitoringImages
-                                              ?.length || 0}{" "}
-                                            •
-                                            {format(
-                                              new Date(image.timestamp),
-                                              " MMM d, yyyy HH:mm:ss",
-                                            )}
-                                          </div>
+                              {application.monitoringImages.map((image, index) => (
+                                <CarouselItem key={index}>
+                                  <div className="flex items-center justify-center p-1 h-[80vh]">
+                                    <div className="relative w-full h-full flex items-center justify-center">
+                                      <Image
+                                        src={image.signedUrl || ''}
+                                        alt={`Monitoring image ${index + 1}`}
+                                        fill
+                                        className="object-contain"
+                                      />
+                                      <div className="absolute bottom-4 left-0 right-0 text-center">
+                                        <div className="inline-block bg-black/70 text-white text-sm px-2 py-1 rounded">
+                                          Image {index + 1} of{' '}
+                                          {application.monitoringImages?.length || 0} •
+                                          {format(
+                                            new Date(image.timestamp),
+                                            ' MMM d, yyyy HH:mm:ss'
+                                          )}
                                         </div>
                                       </div>
                                     </div>
-                                  </CarouselItem>
-                                ),
-                              )}
+                                  </div>
+                                </CarouselItem>
+                              ))}
                             </CarouselContent>
                             <CarouselPrevious className="left-2" />
                             <CarouselNext className="right-2" />
@@ -1357,9 +1162,7 @@ export default function JobApplicationDetailsPage() {
           <Card>
             <CardHeader>
               <CardTitle>Application Actions</CardTitle>
-              <CardDescription>
-                Manage the status of this job application
-              </CardDescription>
+              <CardDescription>Manage the status of this job application</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="flex flex-col gap-2">
@@ -1368,47 +1171,46 @@ export default function JobApplicationDetailsPage() {
                   Current status:
                   <Badge
                     className={`ml-2 ${
-                      application.status === "accepted"
-                        ? "bg-green-500/20 text-green-500"
-                        : application.status === "rejected"
-                          ? "bg-red-500/20 text-red-500"
-                          : application.status === "reviewed"
-                            ? "bg-blue-500/20 text-blue-500"
-                            : "bg-yellow-500/20 text-yellow-500"
+                      application.status === 'accepted'
+                        ? 'bg-green-500/20 text-green-500'
+                        : application.status === 'rejected'
+                          ? 'bg-red-500/20 text-red-500'
+                          : application.status === 'reviewed'
+                            ? 'bg-blue-500/20 text-blue-500'
+                            : 'bg-yellow-500/20 text-yellow-500'
                     }`}
                   >
-                    {application.status.charAt(0).toUpperCase() +
-                      application.status.slice(1)}
+                    {application.status.charAt(0).toUpperCase() + application.status.slice(1)}
                   </Badge>
                 </p>
 
                 <div className="flex flex-wrap gap-2 mt-2">
                   <Button
                     variant="outline"
-                    onClick={() => updateStatus("pending")}
-                    disabled={application.status === "pending"}
+                    onClick={() => updateStatus('pending')}
+                    disabled={application.status === 'pending'}
                   >
                     Mark as Pending
                   </Button>
                   <Button
                     variant="outline"
-                    onClick={() => updateStatus("reviewed")}
-                    disabled={application.status === "reviewed"}
+                    onClick={() => updateStatus('reviewed')}
+                    disabled={application.status === 'reviewed'}
                   >
                     Mark as Reviewed
                   </Button>
                   <Button
                     variant="default"
-                    onClick={() => updateStatus("accepted")}
-                    disabled={application.status === "accepted"}
+                    onClick={() => updateStatus('accepted')}
+                    disabled={application.status === 'accepted'}
                   >
                     Accept Application
                   </Button>
                   <Button
                     variant="outline"
                     className="border-destructive text-destructive hover:bg-destructive/10"
-                    onClick={() => updateStatus("rejected")}
-                    disabled={application.status === "rejected"}
+                    onClick={() => updateStatus('rejected')}
+                    disabled={application.status === 'rejected'}
                   >
                     Reject Application
                   </Button>
@@ -1419,9 +1221,7 @@ export default function JobApplicationDetailsPage() {
 
               <div className="space-y-2">
                 <h3 className="font-medium">Download Resume</h3>
-                <p className="text-muted-foreground">
-                  Download the candidate&apos;s resume
-                </p>
+                <p className="text-muted-foreground">Download the candidate&apos;s resume</p>
                 <Button asChild>
                   <a
                     href={application.signedResumeUrl || application.resumeUrl}
@@ -1438,13 +1238,8 @@ export default function JobApplicationDetailsPage() {
 
               <div className="space-y-2">
                 <h3 className="font-medium">View Full Interview</h3>
-                <p className="text-muted-foreground">
-                  View the complete interview transcript
-                </p>
-                <Button
-                  variant="outline"
-                  disabled={!application.interviewChatHistory?.length}
-                >
+                <p className="text-muted-foreground">View the complete interview transcript</p>
+                <Button variant="outline" disabled={!application.interviewChatHistory?.length}>
                   <MessageSquare className="h-4 w-4 mr-2" />
                   View Interview Transcript
                 </Button>

@@ -1,10 +1,11 @@
-import Link from "next/link";
-import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
-import { CheckCircle2, ArrowRightCircle } from "lucide-react";
-import { JobApplication } from "@/models/job-application";
-import { connectToDatabase } from "@/lib/mongodb";
-import { notFound } from "next/navigation";
+import { ArrowRightCircle, CheckCircle2 } from 'lucide-react';
+import Link from 'next/link';
+import { notFound } from 'next/navigation';
+
+import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
+import { connectToDatabase } from '@/lib/mongodb';
+import { JobApplication } from '@/models/job-application';
 
 type Props = {
   params: Promise<{ id: string }>;
@@ -30,9 +31,8 @@ export default async function ApplicationSubmittedPage(props: Props) {
           <h1 className="text-3xl font-bold mt-6">Application Submitted!</h1>
 
           <p className="text-lg text-muted-foreground mt-4 max-w-md">
-            Your job application has been successfully submitted. The employer
-            will review your application and contact you if they&apos;d like to
-            proceed with your candidacy.
+            Your job application has been successfully submitted. The employer will review your
+            application and contact you if they&apos;d like to proceed with your candidacy.
           </p>
 
           <div className="mt-8 space-y-4 w-full">
@@ -61,7 +61,7 @@ export default async function ApplicationSubmittedPage(props: Props) {
       </div>
     );
   } catch (error) {
-    console.error("Error loading application:", error);
+    console.error('Error loading application:', error);
     notFound();
   }
 }

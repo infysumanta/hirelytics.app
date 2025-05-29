@@ -1,12 +1,13 @@
-import { getMessages } from "next-intl/server";
-import { ThemeProvider } from "./_theme-provider";
-import { NextIntlClientProvider } from "next-intl";
-import ReactQueryProvider from "./_react-query-provider";
-import { SessionProvider } from "next-auth/react";
-import { auth } from "@/auth";
+import { SessionProvider } from 'next-auth/react';
+import { NextIntlClientProvider } from 'next-intl';
+import { getMessages } from 'next-intl/server';
+import { NuqsAdapter } from 'nuqs/adapters/next/app';
 
-import { NuqsAdapter } from "nuqs/adapters/next/app";
-import { HeaderTitleProvider } from "./_header-title-provider";
+import { auth } from '@/auth';
+
+import { HeaderTitleProvider } from './_header-title-provider';
+import ReactQueryProvider from './_react-query-provider';
+import { ThemeProvider } from './_theme-provider';
 interface RootProviderProps {
   children: React.ReactNode;
 }
@@ -19,7 +20,7 @@ export default async function RootProvider({ children }: RootProviderProps) {
   try {
     session = await auth();
   } catch (error) {
-    console.error("Error getting session:", error);
+    console.error('Error getting session:', error);
     session = null;
   }
 

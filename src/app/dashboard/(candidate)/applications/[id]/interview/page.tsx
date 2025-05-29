@@ -1,11 +1,12 @@
-import { Metadata } from "next";
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import { notFound } from "next/navigation";
-import { JobApplication } from "@/models/job-application";
-import { connectToDatabase } from "@/lib/mongodb";
-import { getJobById } from "@/actions/jobs";
-import { InterviewClient } from "@/components/interview/interview-client";
-import { AIInterviewBackground } from "@/components/interview/ai-interview-background";
+import { Metadata } from 'next';
+import { notFound } from 'next/navigation';
+
+import { getJobById } from '@/actions/jobs';
+import { AIInterviewBackground } from '@/components/interview/ai-interview-background';
+import { InterviewClient } from '@/components/interview/interview-client';
+import { Card, CardContent, CardHeader } from '@/components/ui/card';
+import { connectToDatabase } from '@/lib/mongodb';
+import { JobApplication } from '@/models/job-application';
 
 type Props = {
   params: Promise<{ id: string }>;
@@ -21,8 +22,8 @@ export async function generateMetadata(props: Props): Promise<Metadata> {
 
     if (!application) {
       return {
-        title: "Interview | Hirelytics",
-        description: "Virtual interview for your job application",
+        title: 'Interview | Hirelytics',
+        description: 'Virtual interview for your job application',
       };
     }
 
@@ -34,8 +35,8 @@ export async function generateMetadata(props: Props): Promise<Metadata> {
     };
   } catch {
     return {
-      title: "Interview | Hirelytics",
-      description: "Virtual interview for your job application",
+      title: 'Interview | Hirelytics',
+      description: 'Virtual interview for your job application',
     };
   }
 }
@@ -65,8 +66,7 @@ export default async function InterviewPage(props: Props) {
           <Card>
             <CardContent className="p-8 text-center">
               <p className="text-muted-foreground">
-                Interview configuration is incomplete. Please contact the
-                recruiter.
+                Interview configuration is incomplete. Please contact the recruiter.
               </p>
             </CardContent>
           </Card>
@@ -85,9 +85,7 @@ export default async function InterviewPage(props: Props) {
           <Card className="mb-6 border-border/60 shadow-lg">
             <CardHeader>
               <h1 className="text-3xl font-bold">{job.title} - AI Interview</h1>
-              <p className="text-muted-foreground">
-                Virtual interview for {job.companyName}
-              </p>
+              <p className="text-muted-foreground">Virtual interview for {job.companyName}</p>
             </CardHeader>
             <CardContent>
               <InterviewClient
@@ -104,7 +102,7 @@ export default async function InterviewPage(props: Props) {
       </div>
     );
   } catch (error) {
-    console.error("Error loading interview page:", error);
+    console.error('Error loading interview page:', error);
     notFound();
   }
 }

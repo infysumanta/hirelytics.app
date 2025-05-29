@@ -1,11 +1,12 @@
-import { NextRequest, NextResponse } from "next/server";
-import { z } from "zod";
-import { connectToDatabase } from "@/lib/mongodb";
-import { JobApplication } from "@/models/job-application";
-import { getJobById } from "@/actions/jobs";
-import { generateGeminiText } from "@/lib/ai-utils";
-import { serverTextToSpeech } from "@/lib/deepgram-tts";
-import { uploadAudioToS3 } from "@/lib/audio-utils";
+import { NextRequest, NextResponse } from 'next/server';
+import { z } from 'zod';
+
+import { getJobById } from '@/actions/jobs';
+import { generateGeminiText } from '@/lib/ai-utils';
+import { uploadAudioToS3 } from '@/lib/audio-utils';
+import { serverTextToSpeech } from '@/lib/deepgram-tts';
+import { connectToDatabase } from '@/lib/mongodb';
+import { JobApplication } from '@/models/job-application';
 
 // Schema for validating request body
 const initInterviewSchema = z.object({
@@ -25,16 +26,13 @@ export async function POST(req: NextRequest) {
     // Get application details
     const application = await JobApplication.findById(applicationId);
     if (!application) {
-      return NextResponse.json(
-        { error: "Application not found" },
-        { status: 404 },
-      );
+      return NextResponse.json({ error: 'Application not found' }, { status: 404 });
     }
 
     // Get job details
     const job = await getJobById(application.jobId);
     if (!job) {
-      return NextResponse.json({ error: "Job not found" }, { status: 404 });
+      return NextResponse.json({ error: 'Job not found' }, { status: 404 });
     }
 
     // Check if there's existing chat history and we're not forcing a restart
@@ -43,12 +41,12 @@ export async function POST(req: NextRequest) {
     if (existingChatHistory.length > 0 && !forceRestart) {
       // Check if the interview is already completed
       const interviewState = application.interviewState || {};
-      const isCompleted = interviewState.currentPhase === "completed";
+      const isCompleted = interviewState.currentPhase === 'completed';
 
       // Define an interface for our message structure
       interface InterviewMessage {
         text?: string;
-        sender?: "ai" | "user" | "system";
+        sender?: 'ai' | 'user' | 'system';
         timestamp?: Date;
         questionId?: string;
         questionCategory?: string;
@@ -61,7 +59,7 @@ export async function POST(req: NextRequest) {
       }
 
       // Debug the chat history first
-      console.log("[Interview Init] Processing existing chat history", {
+      console.log('[Interview Init] Processing existing chat history', {
         count: existingChatHistory.length,
         firstMessage: existingChatHistory[0]
           ? {
@@ -75,93 +73,86 @@ export async function POST(req: NextRequest) {
       // Ensure all AI messages have audioUrl (in case they're missing from legacy data)
       // Convert MongoDB documents to plain JavaScript objects
       const processedChatHistory = await Promise.all(
-        existingChatHistory.map(
-          async (message: InterviewMessage, index: number) => {
-            // Create a new plain object with only the properties we need
-            // This avoids MongoDB document methods and metadata
-            const plainMessage = {
-              text: message.text || "",
-              sender: message.sender || "system",
-              timestamp: message.timestamp || new Date(),
-              questionId: message.questionId || undefined,
-              questionCategory: message.questionCategory || undefined,
-              feedback: message.feedback || undefined,
-              audioS3Key: message.audioS3Key || undefined,
-              audioS3Bucket: message.audioS3Bucket || undefined,
-              audioUrl: message.audioUrl || undefined,
-              // Add any other properties that might be needed
-            };
+        existingChatHistory.map(async (message: InterviewMessage, index: number) => {
+          // Create a new plain object with only the properties we need
+          // This avoids MongoDB document methods and metadata
+          const plainMessage = {
+            text: message.text || '',
+            sender: message.sender || 'system',
+            timestamp: message.timestamp || new Date(),
+            questionId: message.questionId || undefined,
+            questionCategory: message.questionCategory || undefined,
+            feedback: message.feedback || undefined,
+            audioS3Key: message.audioS3Key || undefined,
+            audioS3Bucket: message.audioS3Bucket || undefined,
+            audioUrl: message.audioUrl || undefined,
+            // Add any other properties that might be needed
+          };
 
-            // Debug first message details
-            if (index === 0) {
-              console.log("[Interview Init] First message converted", {
-                original: {
-                  textType: typeof message.text,
-                  senderType: typeof message.sender,
-                  audioKeyExists: !!message.audioS3Key,
-                  keys: Object.keys(message).slice(0, 5), // Show first 5 keys
-                },
-                converted: {
-                  textType: typeof plainMessage.text,
-                  senderType: typeof plainMessage.sender,
-                  audioKeyExists: !!plainMessage.audioS3Key,
-                },
+          // Debug first message details
+          if (index === 0) {
+            console.log('[Interview Init] First message converted', {
+              original: {
+                textType: typeof message.text,
+                senderType: typeof message.sender,
+                audioKeyExists: !!message.audioS3Key,
+                keys: Object.keys(message).slice(0, 5), // Show first 5 keys
+              },
+              converted: {
+                textType: typeof plainMessage.text,
+                senderType: typeof plainMessage.sender,
+                audioKeyExists: !!plainMessage.audioS3Key,
+              },
+            });
+          }
+
+          // Only process AI messages that have S3 info but lack audioUrl
+          if (
+            plainMessage.sender === 'ai' &&
+            plainMessage.audioS3Key &&
+            plainMessage.audioS3Bucket &&
+            !plainMessage.audioUrl
+          ) {
+            try {
+              // Generate a fresh audio URL from the S3 keys
+              const { getAudioSignedUrl } = await import('@/lib/audio-utils');
+              const audioUrl = await getAudioSignedUrl(
+                plainMessage.audioS3Key,
+                plainMessage.audioS3Bucket
+              );
+
+              // Debug URL generation
+              console.log(`[Interview Init] Generated audio URL for message ${index}`, {
+                audioUrl: audioUrl.substring(0, 50) + '...', // Show truncated URL for privacy
               });
+
+              // Return the message with the new audioUrl
+              return {
+                ...plainMessage,
+                audioUrl,
+              };
+            } catch (error) {
+              console.error(
+                `[Interview Init] Failed to generate audio URL for message ${index}:`,
+                error
+              );
+              return plainMessage;
             }
-
-            // Only process AI messages that have S3 info but lack audioUrl
-            if (
-              plainMessage.sender === "ai" &&
-              plainMessage.audioS3Key &&
-              plainMessage.audioS3Bucket &&
-              !plainMessage.audioUrl
-            ) {
-              try {
-                // Generate a fresh audio URL from the S3 keys
-                const { getAudioSignedUrl } = await import("@/lib/audio-utils");
-                const audioUrl = await getAudioSignedUrl(
-                  plainMessage.audioS3Key,
-                  plainMessage.audioS3Bucket,
-                );
-
-                // Debug URL generation
-                console.log(
-                  `[Interview Init] Generated audio URL for message ${index}`,
-                  {
-                    audioUrl: audioUrl.substring(0, 50) + "...", // Show truncated URL for privacy
-                  },
-                );
-
-                // Return the message with the new audioUrl
-                return {
-                  ...plainMessage,
-                  audioUrl,
-                };
-              } catch (error) {
-                console.error(
-                  `[Interview Init] Failed to generate audio URL for message ${index}:`,
-                  error,
-                );
-                return plainMessage;
-              }
-            }
-            return plainMessage;
-          },
-        ),
+          }
+          return plainMessage;
+        })
       );
 
       // Debug the processed history
-      console.log("[Interview Init] Processed chat history", {
+      console.log('[Interview Init] Processed chat history', {
         count: processedChatHistory.length,
-        firstMessageHasAudioUrl: processedChatHistory[0]?.audioUrl
-          ? true
-          : false,
+        firstMessageHasAudioUrl: processedChatHistory[0]?.audioUrl ? true : false,
       });
 
       // Create a sanitized version of the chat history that's safe for client consumption
       const sanitizedChatHistory = processedChatHistory.map((msg) => ({
-        text: msg.text || "",
-        sender: msg.sender || "system",
+        text: msg.text || '',
+        sender: msg.sender || 'system',
         timestamp: msg.timestamp || new Date(),
         questionId: msg.questionId,
         questionCategory: msg.questionCategory,
@@ -190,14 +181,14 @@ export async function POST(req: NextRequest) {
       }. You're conducting an interview for the ${job.title} position.
 
       JOB DESCRIPTION:
-      ${job.description || "No detailed job description available."}
+      ${job.description || 'No detailed job description available.'}
 
       REQUIRED SKILLS:
-      ${job.skills?.join(", ") || "not specified"}.
+      ${job.skills?.join(', ') || 'not specified'}.
 
       CANDIDATE'S RESUME:
       """
-      ${application.parsedResume?.extractedText || "No resume text available"}
+      ${application.parsedResume?.extractedText || 'No resume text available'}
       """
 
       You'll be conducting a structured interview process with the following phases:
@@ -213,66 +204,60 @@ export async function POST(req: NextRequest) {
     `;
 
     // Generate initial greeting and question
-    const initialGreeting = await generateGeminiText(
-      initPrompt,
-      "gemini-2.0-flash-lite",
-    );
+    const initialGreeting = await generateGeminiText(initPrompt, 'gemini-2.0-flash-lite');
 
     // Create a system message with job description and complete parsed resume data
     const systemMessage = `
 # Interview for: ${job.title} at ${job.companyName}
 
 ## Job Description:
-${job.description || "No detailed job description available."}
+${job.description || 'No detailed job description available.'}
 
 ## Required Skills:
-${job.skills?.join(", ") || "not specified"}.
+${job.skills?.join(', ') || 'not specified'}.
 
 ## Resume Data:
 ${
   application.parsedResume
     ? `
-Skills: ${application.parsedResume.skills?.join(", ") || "Not specified"}
+Skills: ${application.parsedResume.skills?.join(', ') || 'Not specified'}
 
-Experience: ${application.parsedResume.experience?.years || "Unknown"} years
+Experience: ${application.parsedResume.experience?.years || 'Unknown'} years
 ${
   application.parsedResume.experience?.companies?.length
-    ? `Companies: ${application.parsedResume.experience.companies.join(", ")}`
-    : "No company information available"
+    ? `Companies: ${application.parsedResume.experience.companies.join(', ')}`
+    : 'No company information available'
 }
 
 Education: ${
         application.parsedResume.education
           ?.map(
             (edu: { degree?: string; institution?: string }) =>
-              `${edu.degree || "Degree"} - ${edu.institution || "Institution"}`,
+              `${edu.degree || 'Degree'} - ${edu.institution || 'Institution'}`
           )
-          .join("\n") || "No education information available"
+          .join('\n') || 'No education information available'
       }
 
-About: ${application.parsedResume.about || "No summary available"}
+About: ${application.parsedResume.about || 'No summary available'}
 `
-    : "Resume data not available."
+    : 'Resume data not available.'
 }
     `.trim();
 
     // Get the current application to ensure we have the most up-to-date state
     const currentApplication = await JobApplication.findById(applicationId);
     if (!currentApplication) {
-      return NextResponse.json(
-        { error: "Application no longer exists" },
-        { status: 404 },
-      );
+      return NextResponse.json({ error: 'Application no longer exists' }, { status: 404 });
     }
 
     // Create AI greeting message
     const aiGreetingMessage = {
       text: initialGreeting,
-      sender: "ai",
+      sender: 'ai',
       timestamp: new Date(),
-      audioS3Key: "",
-      audioS3Bucket: "",
-      audioUrl: "",
+      audioS3Key: '',
+      audioS3Bucket: '',
+      audioUrl: '',
     };
 
     // Initialize the chat history if it doesn't exist yet or if we're forcing a restart
@@ -283,16 +268,14 @@ About: ${application.parsedResume.about || "No summary available"}
     ) {
       // If we're forcing a restart, log it
       if (forceRestart) {
-        console.log(
-          `[Interview Init] Forcing restart for application ${applicationId}`,
-        );
+        console.log(`[Interview Init] Forcing restart for application ${applicationId}`);
       }
 
       // Create messages array
       const messages = [
         {
           text: systemMessage,
-          sender: "system",
+          sender: 'system',
           timestamp: new Date(),
         },
       ];
@@ -311,24 +294,16 @@ About: ${application.parsedResume.about || "No summary available"}
           aiGreetingMessage.audioS3Bucket = audioS3Data.s3Bucket;
 
           // Generate signed URL for immediate playback
-          const { getAudioSignedUrl } = await import("@/lib/audio-utils");
-          const audioUrl = await getAudioSignedUrl(
-            audioS3Data.s3Key,
-            audioS3Data.s3Bucket,
-          );
+          const { getAudioSignedUrl } = await import('@/lib/audio-utils');
+          const audioUrl = await getAudioSignedUrl(audioS3Data.s3Key, audioS3Data.s3Bucket);
 
           // Add audio URL to the message for immediate playback
           aiGreetingMessage.audioUrl = audioUrl;
 
-          console.log(
-            `[Interview Init] Audio generated and uploaded to ${audioS3Data.s3Key}`,
-          );
+          console.log(`[Interview Init] Audio generated and uploaded to ${audioS3Data.s3Key}`);
         }
       } catch (audioError) {
-        console.error(
-          "[Interview Init] Error generating or uploading audio:",
-          audioError,
-        );
+        console.error('[Interview Init] Error generating or uploading audio:', audioError);
         // Continue with the flow even if audio generation fails
       }
 
@@ -342,7 +317,7 @@ About: ${application.parsedResume.about || "No summary available"}
           $set: {
             interviewChatHistory: messages,
             interviewState: {
-              currentPhase: "introduction",
+              currentPhase: 'introduction',
               technicalQuestionsAsked: 0,
               projectQuestionsAsked: 0,
               behavioralQuestionsAsked: 0,
@@ -353,7 +328,7 @@ About: ${application.parsedResume.about || "No summary available"}
             },
           },
         },
-        { new: true },
+        { new: true }
       );
     }
 
@@ -361,12 +336,12 @@ About: ${application.parsedResume.about || "No summary available"}
     const initialChatHistory = [
       {
         text: systemMessage,
-        sender: "system",
+        sender: 'system',
         timestamp: new Date(),
       },
       {
         text: initialGreeting,
-        sender: "ai",
+        sender: 'ai',
         timestamp: new Date(),
         // Include all audio-related properties
         audioUrl: aiGreetingMessage.audioUrl,
@@ -388,10 +363,10 @@ About: ${application.parsedResume.about || "No summary available"}
       audioUrl: aiGreetingMessage.audioUrl,
     });
   } catch (error) {
-    console.error("Error initializing interview:", error);
+    console.error('Error initializing interview:', error);
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : "An error occurred" },
-      { status: 500 },
+      { error: error instanceof Error ? error.message : 'An error occurred' },
+      { status: 500 }
     );
   }
 }

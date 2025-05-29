@@ -1,6 +1,11 @@
-"use client";
+'use client';
 
-import { useState } from "react";
+import { AlertCircle, Building, Clock, MapPin, Users } from 'lucide-react';
+import { useState } from 'react';
+
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
   Dialog,
   DialogContent,
@@ -8,13 +13,10 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Clock, Building, MapPin, Users, AlertCircle } from "lucide-react";
-import { AIInterviewBackground } from "./ai-interview-background";
-import { AIInterviewerIcon } from "./ai-interviewer-icon";
+} from '@/components/ui/dialog';
+
+import { AIInterviewBackground } from './ai-interview-background';
+import { AIInterviewerIcon } from './ai-interviewer-icon';
 
 interface InterviewDetailsDialogProps {
   open: boolean;
@@ -50,12 +52,12 @@ export function InterviewDetailsDialog({
 
   const formatDuration = (minutes: number) => {
     if (minutes < 60) {
-      return `${minutes} minute${minutes !== 1 ? "s" : ""}`;
+      return `${minutes} minute${minutes !== 1 ? 's' : ''}`;
     }
     const hours = Math.floor(minutes / 60);
     const remainingMinutes = minutes % 60;
     if (remainingMinutes === 0) {
-      return `${hours} hour${hours !== 1 ? "s" : ""}`;
+      return `${hours} hour${hours !== 1 ? 's' : ''}`;
     }
     return `${hours}h ${remainingMinutes}m`;
   };
@@ -97,9 +99,7 @@ export function InterviewDetailsDialog({
                   {location && (
                     <div className="flex items-center gap-1 mt-1">
                       <MapPin className="h-4 w-4 text-muted-foreground" />
-                      <span className="text-sm text-muted-foreground">
-                        {location}
-                      </span>
+                      <span className="text-sm text-muted-foreground">{location}</span>
                     </div>
                   )}
                 </div>
@@ -148,9 +148,7 @@ export function InterviewDetailsDialog({
                     <AIInterviewerIcon size={20} />
                     <div>
                       <p className="font-medium">AI Interviewer</p>
-                      <p className="text-sm text-muted-foreground">
-                        Hirelytics AI
-                      </p>
+                      <p className="text-sm text-muted-foreground">Hirelytics AI</p>
                     </div>
                   </div>
                 </div>
@@ -163,7 +161,10 @@ export function InterviewDetailsDialog({
                         Interview Guidelines
                       </h4>
                       <ul className="text-sm text-blue-800 dark:text-blue-200 space-y-1">
-                        <li>• The interview will automatically end after {formatDuration(interviewDuration)}</li>
+                        <li>
+                          • The interview will automatically end after{' '}
+                          {formatDuration(interviewDuration)}
+                        </li>
                         <li>• Ensure your camera and microphone are working properly</li>
                         <li>• Speak clearly and maintain eye contact with the camera</li>
                         <li>• You can use both voice and text to communicate</li>
@@ -177,19 +178,11 @@ export function InterviewDetailsDialog({
           </div>
 
           <DialogFooter className="relative z-10 mt-6">
-            <Button
-              variant="outline"
-              onClick={() => onOpenChange(false)}
-              disabled={isStarting}
-            >
+            <Button variant="outline" onClick={() => onOpenChange(false)} disabled={isStarting}>
               Cancel
             </Button>
-            <Button
-              onClick={handleStartInterview}
-              disabled={isStarting}
-              className="min-w-[120px]"
-            >
-              {isStarting ? "Starting..." : "Start Interview"}
+            <Button onClick={handleStartInterview} disabled={isStarting} className="min-w-[120px]">
+              {isStarting ? 'Starting...' : 'Start Interview'}
             </Button>
           </DialogFooter>
         </div>

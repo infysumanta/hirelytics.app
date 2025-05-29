@@ -10,27 +10,27 @@ export interface LocalsLanguage {
 
 export const localsLanguages: LocalsLanguage[] = [
   {
-    code: "en",
-    name: "English",
-    flag: "🇺🇸",
-    language: "English",
+    code: 'en',
+    name: 'English',
+    flag: '🇺🇸',
+    language: 'English',
     active: true,
   },
   {
-    code: "hi",
-    name: "Hindi",
-    flag: "🇮🇳",
-    language: "हिंदी",
+    code: 'hi',
+    name: 'Hindi',
+    flag: '🇮🇳',
+    language: 'हिंदी',
     active: true,
   },
   {
-    code: "es",
-    name: "Spanish",
-    flag: "🇪🇸",
-    language: "Spanish",
+    code: 'es',
+    name: 'Spanish',
+    flag: '🇪🇸',
+    language: 'Spanish',
     active: false,
   },
 ];
 
 export const locales = localsLanguages.map((locale) => locale.code);
-export const defaultLocale: Locale = "en";
+export const defaultLocale: Locale = 'en';

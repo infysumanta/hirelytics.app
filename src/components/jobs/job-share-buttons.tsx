@@ -1,22 +1,19 @@
-"use client";
+'use client';
 
-import React, { useState } from "react";
-import { ShareButtons } from "@/components/ui/share-buttons";
-import { Button } from "@/components/ui/button";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
+import { ShareIcon, XIcon } from 'lucide-react';
+import React, { useState } from 'react';
+
 import {
   AlertDialog,
   AlertDialogContent,
-  AlertDialogHeader,
-  AlertDialogTitle,
   AlertDialogDescription,
   AlertDialogFooter,
-} from "@/components/ui/alert-dialog";
-import { ShareIcon, XIcon } from "lucide-react";
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
+import { Button } from '@/components/ui/button';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { ShareButtons } from '@/components/ui/share-buttons';
 
 interface JobShareButtonsProps {
   jobId: string;
@@ -36,13 +33,10 @@ export function JobShareButtons({
   const [isAlertOpen, setIsAlertOpen] = useState(false);
 
   // Get domain from environment variable or fallback
-  const domain = process.env.NEXT_PUBLIC_DOMAIN || "hirelytics.app";
+  const domain = process.env.NEXT_PUBLIC_DOMAIN || 'hirelytics.app';
 
   // Create the share URL for this specific job
-  const baseUrl =
-    typeof window !== "undefined"
-      ? window.location.origin
-      : `https://${domain}`;
+  const baseUrl = typeof window !== 'undefined' ? window.location.origin : `https://${domain}`;
   const shareUrl = `${baseUrl}/jobs/${jobId}`;
 
   // Create a shorter display URL for the copy button
@@ -53,15 +47,13 @@ export function JobShareButtons({
   const shareMessage = `Check out this job opportunity: ${jobTitle} at ${companyName}`;
 
   // Get Facebook app ID from environment variable
-  const fbAppId = process.env.NEXT_PUBLIC_FACEBOOK_APP_ID || "";
+  const fbAppId = process.env.NEXT_PUBLIC_FACEBOOK_APP_ID || '';
 
   // Share content component to be used in both Popover and AlertDialog
   const ShareContent = () => (
     <div className="space-y-2">
       <h4 className="font-medium text-sm">Share this job</h4>
-      <p className="text-xs text-muted-foreground">
-        Help others find this opportunity
-      </p>
+      <p className="text-xs text-muted-foreground">Help others find this opportunity</p>
       <ShareButtons
         url={shareUrl}
         displayUrl={displayUrl}
@@ -78,11 +70,7 @@ export function JobShareButtons({
   if (alertDialogMode) {
     return (
       <>
-        <Button
-          variant="outline"
-          className={className}
-          onClick={() => setIsAlertOpen(true)}
-        >
+        <Button variant="outline" className={className} onClick={() => setIsAlertOpen(true)}>
           <ShareIcon className="h-4 w-4 mr-2" />
           Share Job
         </Button>

@@ -14,23 +14,20 @@ export async function textToSpeech(text: string): Promise<{
     const apiKey = process.env.DEEPGRAM_API_KEY;
 
     if (!apiKey) {
-      throw new Error("Deepgram API key is missing");
+      throw new Error('Deepgram API key is missing');
     }
 
     // Updated URL format with model query parameter
-    const response = await fetch(
-      "https://api.deepgram.com/v1/speak?model=aura-2-thalia-en",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Token ${apiKey}`,
-        },
-        body: JSON.stringify({
-          text: limitedText,
-        }),
+    const response = await fetch('https://api.deepgram.com/v1/speak?model=aura-2-thalia-en', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Token ${apiKey}`,
       },
-    );
+      body: JSON.stringify({
+        text: limitedText,
+      }),
+    });
 
     if (!response.ok) {
       const errorText = await response.text();
@@ -48,10 +45,10 @@ export async function textToSpeech(text: string): Promise<{
       audioUrl,
     };
   } catch (error) {
-    console.error("Text-to-speech conversion failed:", error);
+    console.error('Text-to-speech conversion failed:', error);
     return {
       success: false,
-      error: error instanceof Error ? error.message : "Unknown error occurred",
+      error: error instanceof Error ? error.message : 'Unknown error occurred',
     };
   }
 }
@@ -68,23 +65,20 @@ export async function serverTextToSpeech(text: string): Promise<Buffer | null> {
     const apiKey = process.env.DEEPGRAM_API_KEY;
 
     if (!apiKey) {
-      throw new Error("Deepgram API key is missing");
+      throw new Error('Deepgram API key is missing');
     }
 
     // Updated URL format with model query parameter
-    const response = await fetch(
-      "https://api.deepgram.com/v1/speak?model=aura-2-thalia-en",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Token ${apiKey}`,
-        },
-        body: JSON.stringify({
-          text: limitedText,
-        }),
+    const response = await fetch('https://api.deepgram.com/v1/speak?model=aura-2-thalia-en', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Token ${apiKey}`,
       },
-    );
+      body: JSON.stringify({
+        text: limitedText,
+      }),
+    });
 
     if (!response.ok) {
       const errorText = await response.text();
@@ -95,7 +89,7 @@ export async function serverTextToSpeech(text: string): Promise<Buffer | null> {
     const arrayBuffer = await response.arrayBuffer();
     return Buffer.from(arrayBuffer);
   } catch (error) {
-    console.error("Server text-to-speech conversion failed:", error);
+    console.error('Server text-to-speech conversion failed:', error);
     return null;
   }
 }

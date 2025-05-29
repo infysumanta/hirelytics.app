@@ -1,26 +1,22 @@
-"use client";
+'use client';
 
-import { IJob } from "@/models/job";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { CalendarIcon, MapPinIcon, BriefcaseIcon, EyeIcon } from "lucide-react";
-import Link from "next/link";
-import { getSkillLabel } from "@/data/technical-skills";
-import { getCountryLabel } from "@/data/countries";
-import ReactMarkdown from "react-markdown";
-import { JobShareButtons } from "./job-share-buttons";
-import { JobApplyButton } from "./job-apply-button";
-import { JobApplyRedirectButton } from "./job-apply-redirect-button";
-import { usePathname } from "next/navigation";
+import { BriefcaseIcon, CalendarIcon, EyeIcon, MapPinIcon } from 'lucide-react';
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+import ReactMarkdown from 'react-markdown';
 
-interface JobWithId extends Omit<IJob, "_id"> {
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { getCountryLabel } from '@/data/countries';
+import { getSkillLabel } from '@/data/technical-skills';
+import { IJob } from '@/models/job';
+
+import { JobApplyButton } from './job-apply-button';
+import { JobApplyRedirectButton } from './job-apply-redirect-button';
+import { JobShareButtons } from './job-share-buttons';
+
+interface JobWithId extends Omit<IJob, '_id'> {
   id: string;
 }
 
@@ -30,10 +26,10 @@ interface JobCardProps {
 
 export function JobCard({ job }: JobCardProps) {
   // Format the date
-  const formattedDate = new Date(job.expiryDate).toLocaleDateString("en-US", {
-    year: "numeric",
-    month: "short",
-    day: "numeric",
+  const formattedDate = new Date(job.expiryDate).toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
   });
 
   // Check if job is expired
@@ -41,20 +37,14 @@ export function JobCard({ job }: JobCardProps) {
 
   // Check if we're in the dashboard context
   const pathname = usePathname();
-  const isDashboard = pathname?.startsWith("/dashboard");
+  const isDashboard = pathname?.startsWith('/dashboard');
 
   return (
     <Card className="h-full transition-all duration-300 hover:shadow-md hover:border-primary/30 bg-background/70 backdrop-blur-sm border border-primary/10">
       <CardHeader className="pb-2">
         <div className="flex justify-between items-start">
-          <CardTitle className="text-xl font-semibold line-clamp-1">
-            {job.title}
-          </CardTitle>
-          <JobShareButtons
-            jobId={job.urlId}
-            jobTitle={job.title}
-            companyName={job.companyName}
-          />
+          <CardTitle className="text-xl font-semibold line-clamp-1">{job.title}</CardTitle>
+          <JobShareButtons jobId={job.urlId} jobTitle={job.title} companyName={job.companyName} />
         </div>
         <div className="flex items-center mt-1 text-muted-foreground">
           <BriefcaseIcon className="h-4 w-4 mr-1" />
@@ -75,8 +65,7 @@ export function JobCard({ job }: JobCardProps) {
 
         <div className="text-sm line-clamp-2 mb-3 prose-sm prose-p:my-0">
           <ReactMarkdown>
-            {job.description.substring(0, 150) +
-              (job.description.length > 150 ? "..." : "")}
+            {job.description.substring(0, 150) + (job.description.length > 150 ? '...' : '')}
           </ReactMarkdown>
         </div>
 

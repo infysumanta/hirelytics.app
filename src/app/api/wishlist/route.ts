@@ -1,14 +1,15 @@
-import { NextRequest, NextResponse } from "next/server";
-import { connectToDatabase } from "@/lib/mongodb";
-import Wishlist from "@/models/wishlist";
-import { z } from "zod";
-import { Resend } from "resend";
-import { auth } from "@/auth";
+import { NextRequest, NextResponse } from 'next/server';
+import { Resend } from 'resend';
+import { z } from 'zod';
+
+import { auth } from '@/auth';
+import { connectToDatabase } from '@/lib/mongodb';
+import Wishlist from '@/models/wishlist';
 
 // Define wishlist schema for validation
 const wishlistSchema = z.object({
-  name: z.string().min(2, "Name must be at least 2 characters"),
-  email: z.string().email("Invalid email address"),
+  name: z.string().min(2, 'Name must be at least 2 characters'),
+  email: z.string().email('Invalid email address'),
   reason: z.string().optional(),
 });
 
@@ -30,8 +31,8 @@ export async function POST(req: NextRequest) {
 
     if (existingEntry) {
       return NextResponse.json(
-        { message: "Your email is already in our waitlist" },
-        { status: 200 },
+        { message: 'Your email is already in our waitlist' },
+        { status: 200 }
       );
     }
 
@@ -44,11 +45,12 @@ export async function POST(req: NextRequest) {
 
     // Send notification emails if Resend API key is configured
     if (process.env.RESEND_API_KEY) {
-      console.log("Sending notification emails...");
+      console.log('Sending notification emails...');
 
       // Import email rendering utilities
-      const { renderAdminNotificationEmail, renderWaitlistConfirmationEmail } =
-        await import("@/lib/email/render");
+      const { renderAdminNotificationEmail, renderWaitlistConfirmationEmail } = await import(
+        '@/lib/email/render'
+      );
 
       try {
         const submittedAt = new Date();
@@ -56,9 +58,9 @@ export async function POST(req: NextRequest) {
         // Send notification to admin
         if (process.env.ADMIN_EMAIL) {
           const adminSend = await resend.emails.send({
-            from: "Hirelytics <notification@hirelytics.app>",
+            from: 'Hirelytics <notification@hirelytics.app>',
             to: process.env.ADMIN_EMAIL,
-            subject: "New Hirelytics Waitlist Submission",
+            subject: 'New Hirelytics Waitlist Submission',
             html: await renderAdminNotificationEmail({
               name,
               email,
@@ -66,19 +68,19 @@ export async function POST(req: NextRequest) {
               submittedAt,
             }),
           });
-          console.log("Notification email sent:", adminSend);
+          console.log('Notification email sent:', adminSend);
         }
 
         // Send confirmation email to user
         const wishlistsend = await resend.emails.send({
-          from: "Hirelytics <wishlist@hirelytics.app>",
+          from: 'Hirelytics <wishlist@hirelytics.app>',
           to: email,
-          subject: "Welcome to the Hirelytics Waitlist",
+          subject: 'Welcome to the Hirelytics Waitlist',
           html: await renderWaitlistConfirmationEmail(name),
         });
-        console.log("Confirmation email sent:", wishlistsend);
+        console.log('Confirmation email sent:', wishlistsend);
       } catch (emailError) {
-        console.error("Failed to send notification email:", emailError);
+        console.error('Failed to send notification email:', emailError);
         // Continue processing even if email fails
       }
     }
@@ -86,25 +88,19 @@ export async function POST(req: NextRequest) {
     // Return success response
     return NextResponse.json(
       {
-        message: "Thank you! Your information has been added to our waitlist.",
+        message: 'Thank you! Your information has been added to our waitlist.',
         success: true,
       },
-      { status: 201 },
+      { status: 201 }
     );
   } catch (error) {
-    console.error("Wishlist submission error:", error);
+    console.error('Wishlist submission error:', error);
 
     if (error instanceof z.ZodError) {
-      return NextResponse.json(
-        { error: error.errors[0].message },
-        { status: 400 },
-      );
+      return NextResponse.json({ error: error.errors[0].message }, { status: 400 });
     }
 
-    return NextResponse.json(
-      { error: "Something went wrong. Please try again." },
-      { status: 500 },
-    );
+    return NextResponse.json({ error: 'Something went wrong. Please try again.' }, { status: 500 });
   }
 }
 
@@ -113,11 +109,8 @@ export async function GET(req: NextRequest) {
   try {
     // Check authentication and admin role
     const session = await auth();
-    if (!session?.user || session.user.role !== "admin") {
-      return NextResponse.json(
-        { error: "Unauthorized. Admin access required." },
-        { status: 403 },
-      );
+    if (!session?.user || session.user.role !== 'admin') {
+      return NextResponse.json({ error: 'Unauthorized. Admin access required.' }, { status: 403 });
     }
 
     // Connect to database
@@ -125,17 +118,17 @@ export async function GET(req: NextRequest) {
 
     // Get query parameters for pagination and search
     const { searchParams } = new URL(req.url);
-    const page = parseInt(searchParams.get("page") || "1");
-    const limit = parseInt(searchParams.get("limit") || "10");
-    const search = searchParams.get("search") || "";
+    const page = parseInt(searchParams.get('page') || '1');
+    const limit = parseInt(searchParams.get('limit') || '10');
+    const search = searchParams.get('search') || '';
 
     // Build query for search
     const query = search
       ? {
           $or: [
-            { name: { $regex: search, $options: "i" } },
-            { email: { $regex: search, $options: "i" } },
-            { reason: { $regex: search, $options: "i" } },
+            { name: { $regex: search, $options: 'i' } },
+            { email: { $regex: search, $options: 'i' } },
+            { reason: { $regex: search, $options: 'i' } },
           ],
         }
       : {};
@@ -169,10 +162,7 @@ export async function GET(req: NextRequest) {
       },
     });
   } catch (error) {
-    console.error("Error fetching wishlist entries:", error);
-    return NextResponse.json(
-      { error: "Failed to fetch wishlist entries" },
-      { status: 500 },
-    );
+    console.error('Error fetching wishlist entries:', error);
+    return NextResponse.json({ error: 'Failed to fetch wishlist entries' }, { status: 500 });
   }
 }

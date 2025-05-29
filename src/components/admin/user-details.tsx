@@ -1,17 +1,9 @@
-"use client";
+'use client';
 
-import { useState } from "react";
-import { format } from "date-fns";
-import { UserRole } from "@/models/user";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import {
-  DrawerHeader,
-  DrawerTitle,
-  DrawerDescription,
-  DrawerFooter,
-  DrawerClose,
-} from "@/components/ui/drawer";
+import { format } from 'date-fns';
+import { CheckCircle, UserCircle, XCircle } from 'lucide-react';
+import { useState } from 'react';
+
 import {
   AlertDialog,
   AlertDialogAction,
@@ -22,8 +14,17 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
-import { CheckCircle, XCircle, UserCircle } from "lucide-react";
+} from '@/components/ui/alert-dialog';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import {
+  DrawerClose,
+  DrawerDescription,
+  DrawerFooter,
+  DrawerHeader,
+  DrawerTitle,
+} from '@/components/ui/drawer';
+import { UserRole } from '@/models/user';
 
 interface User {
   id: string;
@@ -40,11 +41,7 @@ interface UserDetailsProps {
   onClose: () => void;
 }
 
-export function UserDetails({
-  user,
-  onToggleStatus,
-  onClose,
-}: UserDetailsProps) {
+export function UserDetails({ user, onToggleStatus, onClose }: UserDetailsProps) {
   const [isLoading, setIsLoading] = useState(false);
 
   const handleToggleStatus = async () => {
@@ -53,7 +50,7 @@ export function UserDetails({
       await onToggleStatus(user.id, user.isActive);
       onClose();
     } catch (error) {
-      console.error("Error toggling user status:", error);
+      console.error('Error toggling user status:', error);
     } finally {
       setIsLoading(false);
     }
@@ -75,11 +72,11 @@ export function UserDetails({
             <p className="text-sm font-medium text-muted-foreground">Role</p>
             <Badge
               variant={
-                user.role === "admin"
-                  ? "destructive"
-                  : user.role === "recruiter"
-                    ? "default"
-                    : "secondary"
+                user.role === 'admin'
+                  ? 'destructive'
+                  : user.role === 'recruiter'
+                    ? 'default'
+                    : 'secondary'
               }
               className="text-sm"
             >
@@ -89,24 +86,19 @@ export function UserDetails({
 
           <div className="space-y-2">
             <p className="text-sm font-medium text-muted-foreground">Status</p>
-            <Badge
-              variant={user.isActive ? "default" : "outline"}
-              className="text-sm"
-            >
+            <Badge variant={user.isActive ? 'default' : 'outline'} className="text-sm">
               {user.isActive ? (
                 <CheckCircle className="h-4 w-4 mr-1" />
               ) : (
                 <XCircle className="h-4 w-4 mr-1" />
               )}
-              {user.isActive ? "Active" : "Inactive"}
+              {user.isActive ? 'Active' : 'Inactive'}
             </Badge>
           </div>
 
           <div className="space-y-2">
-            <p className="text-sm font-medium text-muted-foreground">
-              Created At
-            </p>
-            <p className="text-sm">{format(new Date(user.createdAt), "PPP")}</p>
+            <p className="text-sm font-medium text-muted-foreground">Created At</p>
+            <p className="text-sm">{format(new Date(user.createdAt), 'PPP')}</p>
           </div>
         </div>
       </div>
@@ -116,33 +108,30 @@ export function UserDetails({
           <Button variant="outline">Close</Button>
         </DrawerClose>
 
-        {user.role !== "admin" && (
+        {user.role !== 'admin' && (
           <AlertDialog>
             <AlertDialogTrigger asChild>
-              <Button
-                variant={user.isActive ? "destructive" : "default"}
-                disabled={isLoading}
-              >
-                {user.isActive ? "Disable User" : "Enable User"}
+              <Button variant={user.isActive ? 'destructive' : 'default'} disabled={isLoading}>
+                {user.isActive ? 'Disable User' : 'Enable User'}
               </Button>
             </AlertDialogTrigger>
             <AlertDialogContent>
               <AlertDialogHeader>
                 <AlertDialogTitle>
                   {user.isActive
-                    ? "Are you sure you want to disable this user?"
-                    : "Are you sure you want to enable this user?"}
+                    ? 'Are you sure you want to disable this user?'
+                    : 'Are you sure you want to enable this user?'}
                 </AlertDialogTitle>
                 <AlertDialogDescription>
                   {user.isActive
-                    ? "This will prevent the user from logging in and accessing the system."
-                    : "This will allow the user to log in and access the system again."}
+                    ? 'This will prevent the user from logging in and accessing the system.'
+                    : 'This will allow the user to log in and access the system again.'}
                 </AlertDialogDescription>
               </AlertDialogHeader>
               <AlertDialogFooter>
                 <AlertDialogCancel>Cancel</AlertDialogCancel>
                 <AlertDialogAction onClick={handleToggleStatus}>
-                  {user.isActive ? "Disable" : "Enable"}
+                  {user.isActive ? 'Disable' : 'Enable'}
                 </AlertDialogAction>
               </AlertDialogFooter>
             </AlertDialogContent>

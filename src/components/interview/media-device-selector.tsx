@@ -1,16 +1,17 @@
-"use client";
+'use client';
 
-import { useEffect, useState } from "react";
-import { Label } from "@/components/ui/label";
-import { Button } from "@/components/ui/button";
-import { Check, RefreshCw } from "lucide-react";
+import { Check, RefreshCw } from 'lucide-react';
+import { useEffect, useState } from 'react';
+
+import { Button } from '@/components/ui/button';
+import { Label } from '@/components/ui/label';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
+} from '@/components/ui/select';
 
 interface MediaDevice {
   deviceId: string;
@@ -18,10 +19,7 @@ interface MediaDevice {
 }
 
 interface MediaDeviceSelectorProps {
-  onDevicesSelected: (
-    videoDeviceId: string | null,
-    audioDeviceId: string | null,
-  ) => void;
+  onDevicesSelected: (videoDeviceId: string | null, audioDeviceId: string | null) => void;
   initialVideoDeviceId?: string;
   initialAudioDeviceId?: string;
 }
@@ -34,10 +32,10 @@ export function MediaDeviceSelector({
   const [videoDevices, setVideoDevices] = useState<MediaDevice[]>([]);
   const [audioDevices, setAudioDevices] = useState<MediaDevice[]>([]);
   const [selectedVideoDevice, setSelectedVideoDevice] = useState<string>(
-    initialVideoDeviceId || "",
+    initialVideoDeviceId || ''
   );
   const [selectedAudioDevice, setSelectedAudioDevice] = useState<string>(
-    initialAudioDeviceId || "",
+    initialAudioDeviceId || ''
   );
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -54,14 +52,14 @@ export function MediaDeviceSelector({
       const devices = await navigator.mediaDevices.enumerateDevices();
 
       const videoInputs = devices
-        .filter((device) => device.kind === "videoinput")
+        .filter((device) => device.kind === 'videoinput')
         .map((device) => ({
           deviceId: device.deviceId,
           label: device.label || `Camera ${videoDevices.length + 1}`,
         }));
 
       const audioInputs = devices
-        .filter((device) => device.kind === "audioinput")
+        .filter((device) => device.kind === 'audioinput')
         .map((device) => ({
           deviceId: device.deviceId,
           label: device.label || `Microphone ${audioDevices.length + 1}`,
@@ -80,9 +78,9 @@ export function MediaDeviceSelector({
       }
     } catch (err) {
       setError(
-        "Error accessing media devices. Please ensure you've granted camera and microphone permissions.",
+        "Error accessing media devices. Please ensure you've granted camera and microphone permissions."
       );
-      console.error("Error enumerating devices:", err);
+      console.error('Error enumerating devices:', err);
     } finally {
       setIsLoading(false);
     }
@@ -109,9 +107,7 @@ export function MediaDeviceSelector({
           onValueChange={setSelectedVideoDevice}
         >
           <SelectTrigger className="w-full">
-            <SelectValue
-              placeholder={isLoading ? "Loading cameras..." : "Select camera"}
-            />
+            <SelectValue placeholder={isLoading ? 'Loading cameras...' : 'Select camera'} />
           </SelectTrigger>
           <SelectContent>
             {videoDevices.map((device) => (
@@ -131,11 +127,7 @@ export function MediaDeviceSelector({
           onValueChange={setSelectedAudioDevice}
         >
           <SelectTrigger className="w-full">
-            <SelectValue
-              placeholder={
-                isLoading ? "Loading microphones..." : "Select microphone"
-              }
-            />
+            <SelectValue placeholder={isLoading ? 'Loading microphones...' : 'Select microphone'} />
           </SelectTrigger>
           <SelectContent>
             {audioDevices.map((device) => (
@@ -148,19 +140,14 @@ export function MediaDeviceSelector({
       </div>
 
       <div className="flex gap-3 justify-end pt-2">
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={enumerateDevices}
-          disabled={isLoading}
-        >
+        <Button variant="outline" size="sm" onClick={enumerateDevices} disabled={isLoading}>
           <div className="flex items-center">
             {isLoading ? (
               <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
             ) : (
               <RefreshCw className="h-4 w-4 mr-2" />
             )}
-            {isLoading ? "Refreshing..." : "Refresh devices"}
+            {isLoading ? 'Refreshing...' : 'Refresh devices'}
           </div>
         </Button>
         <Button

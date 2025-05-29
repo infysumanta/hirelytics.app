@@ -1,9 +1,10 @@
-"use client";
+'use client';
 
-import { useState, useEffect } from "react";
-import { useAudioPlaybackState } from "./use-audio-playback-state";
+import { useEffect, useState } from 'react';
 
-export type AIAgentState = "idle" | "thinking" | "speaking";
+import { useAudioPlaybackState } from './use-audio-playback-state';
+
+export type AIAgentState = 'idle' | 'thinking' | 'speaking';
 
 interface AIAgentStateHook {
   agentState: AIAgentState;
@@ -16,21 +17,21 @@ interface AIAgentStateHook {
  */
 export function useAIAgentState(isLoading: boolean): AIAgentStateHook {
   const { isAudioPlaying } = useAudioPlaybackState();
-  const [agentState, setAgentState] = useState<AIAgentState>("idle");
+  const [agentState, setAgentState] = useState<AIAgentState>('idle');
 
   useEffect(() => {
     if (isAudioPlaying) {
-      setAgentState("speaking");
+      setAgentState('speaking');
     } else if (isLoading) {
-      setAgentState("thinking");
+      setAgentState('thinking');
     } else {
-      setAgentState("idle");
+      setAgentState('idle');
     }
   }, [isLoading, isAudioPlaying]);
 
   return {
     agentState,
-    isThinking: agentState === "thinking",
-    isSpeaking: agentState === "speaking",
+    isThinking: agentState === 'thinking',
+    isSpeaking: agentState === 'speaking',
   };
 }

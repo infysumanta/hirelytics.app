@@ -1,4 +1,6 @@
-"use client";
+'use client';
+
+import { useRouter } from 'next/navigation';
 
 import {
   Dialog,
@@ -6,10 +8,10 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog";
-import { IJob } from "@/models/job";
-import { JobApplicationForm } from "./job-application-form";
-import { useRouter } from "next/navigation";
+} from '@/components/ui/dialog';
+import { IJob } from '@/models/job';
+
+import { JobApplicationForm } from './job-application-form';
 
 interface JobApplicationModalProps {
   job: IJob;
@@ -17,11 +19,7 @@ interface JobApplicationModalProps {
   onClose: () => void;
 }
 
-export function JobApplicationModal({
-  job,
-  isOpen,
-  onClose,
-}: JobApplicationModalProps) {
+export function JobApplicationModal({ job, isOpen, onClose }: JobApplicationModalProps) {
   const router = useRouter();
 
   // This function will now receive the application ID from the form
@@ -37,8 +35,7 @@ export function JobApplicationModal({
         <DialogHeader>
           <DialogTitle>Apply for {job.title}</DialogTitle>
           <DialogDescription>
-            Complete the application form below to apply for this position at{" "}
-            {job.companyName}
+            Complete the application form below to apply for this position at {job.companyName}
           </DialogDescription>
         </DialogHeader>
 

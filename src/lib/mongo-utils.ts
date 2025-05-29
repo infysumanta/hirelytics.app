@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { JobApplication } from "@/models/job-application";
+import { JobApplication } from '@/models/job-application';
 
 /**
  * Helper to safely update MongoDB document with retry mechanism
@@ -11,14 +11,10 @@ import { JobApplication } from "@/models/job-application";
 export async function safeMongoUpdate(
   applicationId: string,
   updateObj: any,
-  options = { retries: 1, logPrefix: "[MongoDB]" },
+  options = { retries: 1, logPrefix: '[MongoDB]' }
 ): Promise<any> {
   try {
-    const result = await JobApplication.findByIdAndUpdate(
-      applicationId,
-      updateObj,
-      { new: true },
-    );
+    const result = await JobApplication.findByIdAndUpdate(applicationId, updateObj, { new: true });
 
     if (!result) {
       console.error(`${options.logPrefix} Update failed for application`, {

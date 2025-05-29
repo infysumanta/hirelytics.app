@@ -1,6 +1,6 @@
-"use client";
+'use client';
 
-import { useState, useEffect } from "react";
+import { useEffect, useState } from 'react';
 
 // Define types for dashboard stats
 interface DashboardStats {
@@ -42,20 +42,18 @@ export function useDashboardStats(): {
     const fetchStats = async () => {
       try {
         setLoading(true);
-        const response = await fetch("/api/dashboard/stats");
+        const response = await fetch('/api/dashboard/stats');
 
         if (!response.ok) {
-          throw new Error("Failed to fetch dashboard data");
+          throw new Error('Failed to fetch dashboard data');
         }
 
         const data = await response.json();
         setStats(data);
         setError(null);
       } catch (err) {
-        console.error("Error fetching dashboard stats:", err);
-        setError(
-          err instanceof Error ? err.message : "An unknown error occurred",
-        );
+        console.error('Error fetching dashboard stats:', err);
+        setError(err instanceof Error ? err.message : 'An unknown error occurred');
       } finally {
         setLoading(false);
       }

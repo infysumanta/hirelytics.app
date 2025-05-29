@@ -1,6 +1,6 @@
-"use client";
+'use client';
 
-import { JobShareButtons } from "./job-share-buttons";
+import { JobShareButtons } from './job-share-buttons';
 
 interface ClientShareButtonProps {
   jobId: string;
@@ -8,11 +8,7 @@ interface ClientShareButtonProps {
   companyName: string;
 }
 
-export function ClientShareButton({
-  jobId,
-  jobTitle,
-  companyName,
-}: ClientShareButtonProps) {
+export function ClientShareButton({ jobId, jobTitle, companyName }: ClientShareButtonProps) {
   return (
     <JobShareButtons
       jobId={jobId}

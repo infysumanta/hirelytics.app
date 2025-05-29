@@ -1,14 +1,9 @@
-"use client";
+'use client';
 
-import { Cell, Pie, PieChart, ResponsiveContainer, Tooltip } from "recharts";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { cn } from "@/lib/utils";
+import { Cell, Pie, PieChart, ResponsiveContainer, Tooltip } from 'recharts';
+
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { cn } from '@/lib/utils';
 
 interface PieChartCardProps {
   title: string;
@@ -21,12 +16,7 @@ interface PieChartCardProps {
   className?: string;
 }
 
-export function PieChartCard({
-  title,
-  description,
-  data,
-  className,
-}: PieChartCardProps) {
+export function PieChartCard({ title, description, data, className }: PieChartCardProps) {
   return (
     <Card className={cn(className)}>
       <CardHeader>
@@ -46,17 +36,13 @@ export function PieChartCard({
                 fill="#8884d8"
                 paddingAngle={5}
                 dataKey="value"
-                label={({ name, percent }) =>
-                  `${name}: ${(percent * 100).toFixed(0)}%`
-                }
+                label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
               >
                 {data.map((entry, index) => (
                   <Cell key={`cell-${index}`} fill={entry.color} />
                 ))}
               </Pie>
-              <Tooltip
-                formatter={(value: number, name: string) => [value, name]}
-              />
+              <Tooltip formatter={(value: number, name: string) => [value, name]} />
             </PieChart>
           </ResponsiveContainer>
         </div>
@@ -64,10 +50,7 @@ export function PieChartCard({
       <div className="grid grid-cols-2 gap-2 px-6 pb-6">
         {data.map((item) => (
           <div key={item.name} className="flex items-center gap-2">
-            <div
-              className="h-3 w-3 rounded-full"
-              style={{ backgroundColor: item.color }}
-            />
+            <div className="h-3 w-3 rounded-full" style={{ backgroundColor: item.color }} />
             <div className="flex items-center gap-1 text-sm">
               <div>{item.name}:</div>
               <div className="font-semibold">{item.value}</div>

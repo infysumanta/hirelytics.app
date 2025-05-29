@@ -1,10 +1,11 @@
-"use client";
+'use client';
 
-import Link from "next/link";
-import { LoginForm } from "@/components/auth/login-form";
-import { motion } from "framer-motion";
-import { AnimatedBackground } from "@/components/ui/animated-background";
-import { AnimatedAuthCard } from "@/components/ui/auth-card";
+import { motion } from 'framer-motion';
+import Link from 'next/link';
+
+import { LoginForm } from '@/components/auth/login-form';
+import { AnimatedBackground } from '@/components/ui/animated-background';
+import { AnimatedAuthCard } from '@/components/ui/auth-card';
 
 export default function AdminLoginPage() {
   // Create footer content with animations
@@ -15,14 +16,14 @@ export default function AdminLoginPage() {
       transition={{ delay: 0.3 }}
       className="text-sm text-muted-foreground text-center"
     >
-      Not an admin? Login as a{" "}
+      Not an admin? Login as a{' '}
       <Link
         href="/login/recruiter"
         className="text-primary underline underline-offset-4 hover:text-primary/90"
       >
         recruiter
-      </Link>{" "}
-      or{" "}
+      </Link>{' '}
+      or{' '}
       <Link
         href="/login/candidate"
         className="text-primary underline underline-offset-4 hover:text-primary/90"

@@ -1,13 +1,14 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-"use client";
+'use client';
 
-import { useEffect, useState } from "react";
-import { Activity, Users, BriefcaseIcon } from "lucide-react";
-import { format } from "date-fns";
-import { ClickableStatCard } from "@/components/dashboard/clickable-stat-card";
-import { PieChartCard } from "@/components/dashboard/pie-chart-card";
-import { ActivityFeed } from "@/components/dashboard/activity-feed";
-import { useDashboardStats } from "@/hooks/use-dashboard-stats";
+import { format } from 'date-fns';
+import { Activity, BriefcaseIcon, Users } from 'lucide-react';
+import { useEffect, useState } from 'react';
+
+import { ActivityFeed } from '@/components/dashboard/activity-feed';
+import { ClickableStatCard } from '@/components/dashboard/clickable-stat-card';
+import { PieChartCard } from '@/components/dashboard/pie-chart-card';
+import { useDashboardStats } from '@/hooks/use-dashboard-stats';
 
 export function AdminDashboard() {
   const { stats, loading, error } = useDashboardStats();
@@ -19,21 +20,21 @@ export function AdminDashboard() {
 
   // Define colors for pie chart
   const statusColors = {
-    pending: "#fbbf24",
-    reviewed: "#3b82f6",
-    accepted: "#10b981",
-    rejected: "#ef4444",
+    pending: '#fbbf24',
+    reviewed: '#3b82f6',
+    accepted: '#10b981',
+    rejected: '#ef4444',
   };
 
   const recruiterColors = [
-    "#6366f1",
-    "#8b5cf6",
-    "#ec4899",
-    "#14b8a6",
-    "#f59e0b",
-    "#84cc16",
-    "#06b6d4",
-    "#f43f5e",
+    '#6366f1',
+    '#8b5cf6',
+    '#ec4899',
+    '#14b8a6',
+    '#f59e0b',
+    '#84cc16',
+    '#06b6d4',
+    '#f43f5e',
   ];
 
   useEffect(() => {
@@ -44,9 +45,8 @@ export function AdminDashboard() {
           stats.applicationStatusData.map((item: any) => ({
             name: item._id,
             value: item.count,
-            color:
-              statusColors[item._id as keyof typeof statusColors] || "#94a3b8",
-          })),
+            color: statusColors[item._id as keyof typeof statusColors] || '#94a3b8',
+          }))
         );
       }
 
@@ -57,7 +57,7 @@ export function AdminDashboard() {
             name: item._id,
             value: item.count,
             color: recruiterColors[index % recruiterColors.length],
-          })),
+          }))
         );
       }
 
@@ -65,10 +65,10 @@ export function AdminDashboard() {
       if (stats.recentJobs) {
         setRecentJobs(
           stats.recentJobs.map((job: any) => ({
-            title: job.title || "Untitled Job",
-            description: `Added by ${job.recruiter?.name || "Unknown"}`,
-            timestamp: format(new Date(job.createdAt), "MMM dd, yyyy"),
-          })),
+            title: job.title || 'Untitled Job',
+            description: `Added by ${job.recruiter?.name || 'Unknown'}`,
+            timestamp: format(new Date(job.createdAt), 'MMM dd, yyyy'),
+          }))
         );
       }
     }

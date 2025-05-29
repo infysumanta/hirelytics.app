@@ -1,4 +1,4 @@
-import mongoose, { Document, Schema, Model } from "mongoose";
+import mongoose, { Document, Model, Schema } from 'mongoose';
 
 export interface IWishlist extends Document {
   _id: string;
@@ -12,12 +12,12 @@ const wishlistSchema = new Schema<IWishlist>(
   {
     name: {
       type: String,
-      required: [true, "Name is required"],
+      required: [true, 'Name is required'],
       trim: true,
     },
     email: {
       type: String,
-      required: [true, "Email is required"],
+      required: [true, 'Email is required'],
       trim: true,
       lowercase: true,
     },
@@ -32,12 +32,11 @@ const wishlistSchema = new Schema<IWishlist>(
   },
   {
     timestamps: true,
-  },
+  }
 );
 
 // Check if model already exists to prevent overwriting during hot reloads
 const Wishlist: Model<IWishlist> =
-  mongoose.models.Wishlist ||
-  mongoose.model<IWishlist>("Wishlist", wishlistSchema);
+  mongoose.models.Wishlist || mongoose.model<IWishlist>('Wishlist', wishlistSchema);
 
 export default Wishlist;

@@ -1,22 +1,22 @@
 {
-	"name": "Hirelytics",
-	"short_name": "Hirelytics",
-	"description": "AI-driven interview and recruitment platform",
-	"start_url": "/",
-	"display": "standalone",
-	"background_color": "#FFFFFF",
-	"theme_color": "#0C4A6E",
-	"icons": [
-		{
-			"src": "/images/favicon.svg",
-			"sizes": "any",
-			"type": "image/svg+xml",
-			"purpose": "any maskable"
-		},
-		{
-			"src": "/favicon.ico",
-			"sizes": "48x48",
-			"type": "image/x-icon"
-		}
-	]
+  "name": "Hirelytics",
+  "short_name": "Hirelytics",
+  "description": "AI-driven interview and recruitment platform",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#FFFFFF",
+  "theme_color": "#0C4A6E",
+  "icons": [
+    {
+      "src": "/images/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/favicon.ico",
+      "sizes": "48x48",
+      "type": "image/x-icon"
+    }
+  ]
 }

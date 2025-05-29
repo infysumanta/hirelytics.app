@@ -1,21 +1,9 @@
-"use client";
+'use client';
 
-import {
-  Line,
-  LineChart,
-  ResponsiveContainer,
-  Tooltip,
-  XAxis,
-  YAxis,
-} from "recharts";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { cn } from "@/lib/utils";
+import { Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
+
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { cn } from '@/lib/utils';
 
 interface ChartCardProps {
   title: string;
@@ -73,9 +61,7 @@ export function ChartCard({
                 axisLine={false}
                 tickFormatter={valueFormatter}
               />
-              <Tooltip
-                formatter={(value: number) => [valueFormatter(value), ""]}
-              />
+              <Tooltip formatter={(value: number) => [valueFormatter(value), '']} />
               {categories.map((category) => (
                 <Line
                   key={category.name}
@@ -93,13 +79,8 @@ export function ChartCard({
           <div className="mt-4 flex flex-wrap gap-3">
             {categories.map((category) => (
               <div key={category.name} className="flex items-center gap-1">
-                <div
-                  className="h-2 w-2 rounded-full"
-                  style={{ backgroundColor: category.color }}
-                />
-                <span className="text-xs text-muted-foreground">
-                  {category.name}
-                </span>
+                <div className="h-2 w-2 rounded-full" style={{ backgroundColor: category.color }} />
+                <span className="text-xs text-muted-foreground">{category.name}</span>
               </div>
             ))}
           </div>

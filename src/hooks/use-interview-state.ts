@@ -1,8 +1,9 @@
 // Use this hook to track the interview completion state
-"use client";
+'use client';
 
-import { useState, useEffect, useRef } from "react";
-import { useAudioPlaybackState } from "./use-audio-playback-state";
+import { useEffect, useRef, useState } from 'react';
+
+import { useAudioPlaybackState } from './use-audio-playback-state';
 
 interface InterviewState {
   isCompleted: boolean;
@@ -20,7 +21,7 @@ interface InterviewState {
   projectQuestions: number;
   behavioralQuestions: number;
   isInterrupted?: boolean;
-  interruptionReason?: "timer_expired" | "technical_issue" | "user_action";
+  interruptionReason?: 'timer_expired' | 'technical_issue' | 'user_action';
 }
 
 export function useInterviewState(applicationId: string) {
@@ -40,9 +41,7 @@ export function useInterviewState(applicationId: string) {
   // Listen for custom events from chat activities and UI interactions
   useEffect(() => {
     const handleChatActive = () => {
-      console.log(
-        "[InterviewState] Chat activity detected, pausing state checks",
-      );
+      console.log('[InterviewState] Chat activity detected, pausing state checks');
       isChatActiveRef.current = true;
       // Reset chat activity after 5 seconds
       setTimeout(() => {
@@ -52,9 +51,7 @@ export function useInterviewState(applicationId: string) {
 
     const handleUIInteraction = () => {
       // When user interacts with UI, pause state checks briefly
-      console.log(
-        "[InterviewState] UI interaction detected, pausing state checks",
-      );
+      console.log('[InterviewState] UI interaction detected, pausing state checks');
       isChatActiveRef.current = true;
       // Reset after 2 seconds for UI interactions (shorter than chat activity)
       setTimeout(() => {
@@ -63,18 +60,18 @@ export function useInterviewState(applicationId: string) {
     };
 
     // Chat-specific events
-    document.addEventListener("chat-message-sent", handleChatActive);
-    document.addEventListener("chat-initializing", handleChatActive);
+    document.addEventListener('chat-message-sent', handleChatActive);
+    document.addEventListener('chat-initializing', handleChatActive);
 
     // General UI interaction events
-    const uiEvents = ["click", "touchstart", "keydown", "scroll"];
+    const uiEvents = ['click', 'touchstart', 'keydown', 'scroll'];
     uiEvents.forEach((event) => {
       document.addEventListener(event, handleUIInteraction);
     });
 
     return () => {
-      document.removeEventListener("chat-message-sent", handleChatActive);
-      document.removeEventListener("chat-initializing", handleChatActive);
+      document.removeEventListener('chat-message-sent', handleChatActive);
+      document.removeEventListener('chat-initializing', handleChatActive);
 
       uiEvents.forEach((event) => {
         document.removeEventListener(event, handleUIInteraction);
@@ -88,12 +85,8 @@ export function useInterviewState(applicationId: string) {
       // 1. Audio is currently playing
       // 2. Chat is active (message just sent or initializing)
       // 3. We're in the initialization phase
-      if (
-        isAudioPlaying ||
-        isChatActiveRef.current ||
-        isInitializingRef.current
-      ) {
-        console.log("[InterviewState] Skipping state check due to:", {
+      if (isAudioPlaying || isChatActiveRef.current || isInitializingRef.current) {
+        console.log('[InterviewState] Skipping state check due to:', {
           isAudioPlaying,
           isChatActive: isChatActiveRef.current,
           isInitializing: isInitializingRef.current,
@@ -104,7 +97,7 @@ export function useInterviewState(applicationId: string) {
       // Don't check too frequently (at least 5 seconds between checks)
       const now = Date.now();
       if (now - lastCheckedRef.current < 5000) {
-        console.log("[InterviewState] Too soon since last check, skipping");
+        console.log('[InterviewState] Too soon since last check, skipping');
         return;
       }
 
@@ -112,15 +105,12 @@ export function useInterviewState(applicationId: string) {
 
       try {
         setIsLoading(true);
-        const response = await fetch(
-          `/api/ai/interview/state?applicationId=${applicationId}`,
-          {
-            method: "GET",
-          },
-        );
+        const response = await fetch(`/api/ai/interview/state?applicationId=${applicationId}`, {
+          method: 'GET',
+        });
 
         if (!response.ok) {
-          console.error("Failed to get interview state");
+          console.error('Failed to get interview state');
           return;
         }
 
@@ -136,7 +126,7 @@ export function useInterviewState(applicationId: string) {
           interruptionReason: data.interruptionReason,
         });
       } catch (error) {
-        console.error("Error checking interview state:", error);
+        console.error('Error checking interview state:', error);
       } finally {
         setIsLoading(false);
       }

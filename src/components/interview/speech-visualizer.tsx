@@ -1,17 +1,15 @@
-"use client";
+'use client';
 
-import { useEffect, useRef } from "react";
-import { cn } from "@/lib/utils";
+import { useEffect, useRef } from 'react';
+
+import { cn } from '@/lib/utils';
 
 interface SpeechVisualizerProps {
   isListening: boolean;
   className?: string;
 }
 
-export function SpeechVisualizer({
-  isListening,
-  className,
-}: SpeechVisualizerProps) {
+export function SpeechVisualizer({ isListening, className }: SpeechVisualizerProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const animationRef = useRef<number | null>(null);
 
@@ -19,7 +17,7 @@ export function SpeechVisualizer({
     const canvas = canvasRef.current;
     if (!canvas) return;
 
-    const ctx = canvas.getContext("2d");
+    const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
     const bars = 16; // Number of bars
@@ -35,13 +33,8 @@ export function SpeechVisualizer({
         for (let i = 0; i < bars; i++) {
           const x = i * barWidth + barMargin / 2;
           const barWidthWithMargin = barWidth - barMargin;
-          ctx.fillStyle = "rgba(136, 58, 234, 0.3)"; // Primary color, low opacity
-          ctx.fillRect(
-            x,
-            canvas.height - minBarHeight,
-            barWidthWithMargin,
-            minBarHeight,
-          );
+          ctx.fillStyle = 'rgba(136, 58, 234, 0.3)'; // Primary color, low opacity
+          ctx.fillRect(x, canvas.height - minBarHeight, barWidthWithMargin, minBarHeight);
         }
         return;
       }
@@ -58,8 +51,8 @@ export function SpeechVisualizer({
 
         // Create a gradient from primary to secondary color
         const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
-        gradient.addColorStop(0, "rgba(136, 58, 234, 0.9)"); // Primary
-        gradient.addColorStop(1, "rgba(238, 96, 156, 0.5)"); // Secondary
+        gradient.addColorStop(0, 'rgba(136, 58, 234, 0.9)'); // Primary
+        gradient.addColorStop(1, 'rgba(238, 96, 156, 0.5)'); // Secondary
 
         ctx.fillStyle = gradient;
         ctx.fillRect(x, canvas.height - height, barWidthWithMargin, height);
@@ -78,15 +71,8 @@ export function SpeechVisualizer({
   }, [isListening]);
 
   return (
-    <div
-      className={cn("flex items-center justify-center w-full h-10", className)}
-    >
-      <canvas
-        ref={canvasRef}
-        width={200}
-        height={40}
-        className="w-full max-w-[200px]"
-      />
+    <div className={cn('flex items-center justify-center w-full h-10', className)}>
+      <canvas ref={canvasRef} width={200} height={40} className="w-full max-w-[200px]" />
     </div>
   );
 }

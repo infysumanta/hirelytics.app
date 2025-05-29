@@ -1,13 +1,14 @@
-"use client";
+'use client';
 
-import { useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { signIn } from "next-auth/react";
-import { useTranslations } from "next-intl";
-import { LoginFormValues, loginSchema } from "@/lib/validations/auth";
-import { Button } from "@/components/ui/button";
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { signIn } from 'next-auth/react';
+import { useTranslations } from 'next-intl';
+import { useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { toast } from 'sonner';
+
+import { Button } from '@/components/ui/button';
 import {
   Form,
   FormControl,
@@ -15,10 +16,10 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { UserRole } from "@/models/user";
-import { toast } from "sonner";
+} from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
+import { LoginFormValues, loginSchema } from '@/lib/validations/auth';
+import { UserRole } from '@/models/user';
 
 interface LoginFormProps {
   role: UserRole;
@@ -29,14 +30,14 @@ export function LoginForm({ role, callbackUrl }: LoginFormProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [isLoading, setIsLoading] = useState(false);
-  const emailFromQuery = searchParams.get("email") || "";
-  const t = useTranslations("Auth");
+  const emailFromQuery = searchParams.get('email') || '';
+  const t = useTranslations('Auth');
 
   const form = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
       email: emailFromQuery,
-      password: "",
+      password: '',
       role: role,
     },
   });
@@ -45,7 +46,7 @@ export function LoginForm({ role, callbackUrl }: LoginFormProps) {
     setIsLoading(true);
 
     try {
-      const result = await signIn("credentials", {
+      const result = await signIn('credentials', {
         email: data.email,
         password: data.password,
         role: data.role,
@@ -58,12 +59,12 @@ export function LoginForm({ role, callbackUrl }: LoginFormProps) {
       }
 
       // Redirect to unified dashboard
-      router.push(callbackUrl || "/dashboard");
+      router.push(callbackUrl || '/dashboard');
 
-      toast.success(t("loginSuccess"));
+      toast.success(t('loginSuccess'));
     } catch (error) {
-      console.error("Login error:", error);
-      toast.error(t("loginError"));
+      console.error('Login error:', error);
+      toast.error(t('loginError'));
     } finally {
       setIsLoading(false);
     }
@@ -77,7 +78,7 @@ export function LoginForm({ role, callbackUrl }: LoginFormProps) {
           name="email"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>{t("email")}</FormLabel>
+              <FormLabel>{t('email')}</FormLabel>
               <FormControl>
                 <Input
                   placeholder="email@example.com"
@@ -96,7 +97,7 @@ export function LoginForm({ role, callbackUrl }: LoginFormProps) {
           name="password"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>{t("password")}</FormLabel>
+              <FormLabel>{t('password')}</FormLabel>
               <FormControl>
                 <Input
                   placeholder="••••••••"
@@ -111,7 +112,7 @@ export function LoginForm({ role, callbackUrl }: LoginFormProps) {
           )}
         />
         <Button type="submit" className="w-full" disabled={isLoading}>
-          {isLoading ? t("loggingIn") : t("login")}
+          {isLoading ? t('loggingIn') : t('login')}
         </Button>
       </form>
     </Form>

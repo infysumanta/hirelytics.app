@@ -1,5 +1,6 @@
-import { auth } from "@/auth";
-import { redirect } from "next/navigation";
+import { redirect } from 'next/navigation';
+
+import { auth } from '@/auth';
 
 export default async function CandidateDashboardLayout({
   children,
@@ -10,8 +11,8 @@ export default async function CandidateDashboardLayout({
   const user = session?.user;
   const role = user?.role;
 
-  if (role !== "candidate" && role !== "admin") {
-    redirect("/unauthorized");
+  if (role !== 'candidate' && role !== 'admin') {
+    redirect('/unauthorized');
   }
 
   return <>{children}</>;

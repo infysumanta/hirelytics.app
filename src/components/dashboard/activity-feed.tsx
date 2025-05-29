@@ -1,7 +1,7 @@
-"use client";
+'use client';
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { cn } from "@/lib/utils";
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { cn } from '@/lib/utils';
 
 interface ActivityItemProps {
   title: string;
@@ -11,26 +11,18 @@ interface ActivityItemProps {
 }
 
 const StatusColors: Record<string, string> = {
-  pending: "bg-yellow-500",
-  reviewed: "bg-blue-500",
-  accepted: "bg-green-500",
-  rejected: "bg-red-500",
+  pending: 'bg-yellow-500',
+  reviewed: 'bg-blue-500',
+  accepted: 'bg-green-500',
+  rejected: 'bg-red-500',
 };
 
-function ActivityItem({
-  title,
-  description,
-  timestamp,
-  status,
-}: ActivityItemProps) {
+function ActivityItem({ title, description, timestamp, status }: ActivityItemProps) {
   return (
     <div className="flex items-start gap-4 rounded-lg border p-4">
       {status && (
         <span
-          className={cn(
-            "mt-0.5 h-2 w-2 rounded-full",
-            StatusColors[status] || "bg-gray-500",
-          )}
+          className={cn('mt-0.5 h-2 w-2 rounded-full', StatusColors[status] || 'bg-gray-500')}
         />
       )}
       <div className="flex-1 space-y-1">
@@ -54,10 +46,10 @@ export function ActivityFeed({
   title,
   items,
   className,
-  emptyMessage = "No recent activity",
+  emptyMessage = 'No recent activity',
 }: ActivityFeedProps) {
   return (
-    <Card className={cn("col-span-1", className)}>
+    <Card className={cn('col-span-1', className)}>
       <CardHeader>
         <CardTitle>{title}</CardTitle>
       </CardHeader>

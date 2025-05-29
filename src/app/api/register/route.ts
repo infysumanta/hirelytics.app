@@ -1,25 +1,23 @@
-import { NextRequest, NextResponse } from "next/server";
-import { connectToDatabase } from "@/lib/mongodb";
-import User from "@/models/user";
-import { z } from "zod";
-import { config } from "@/lib/config";
+import { NextRequest, NextResponse } from 'next/server';
+import { z } from 'zod';
+
+import { config } from '@/lib/config';
+import { connectToDatabase } from '@/lib/mongodb';
+import User from '@/models/user';
 
 // Define registration schema for validation
 const registerSchema = z.object({
-  name: z.string().min(2, "Name must be at least 2 characters"),
-  email: z.string().email("Invalid email address"),
-  password: z.string().min(6, "Password must be at least 6 characters"),
-  role: z.enum(["recruiter", "candidate"]),
+  name: z.string().min(2, 'Name must be at least 2 characters'),
+  email: z.string().email('Invalid email address'),
+  password: z.string().min(6, 'Password must be at least 6 characters'),
+  role: z.enum(['recruiter', 'candidate']),
 });
 
 export async function POST(req: NextRequest) {
   try {
     // Check if registration is enabled
     if (!config.registrationEnabled) {
-      return NextResponse.json(
-        { error: "Registration is currently disabled" },
-        { status: 403 },
-      );
+      return NextResponse.json({ error: 'Registration is currently disabled' }, { status: 403 });
     }
 
     const body = await req.json();
@@ -28,10 +26,10 @@ export async function POST(req: NextRequest) {
     const { name, email, password, role } = registerSchema.parse(body);
 
     // Only allow recruiter and candidate roles for registration
-    if (role !== "candidate" && role !== "recruiter") {
+    if (role !== 'candidate' && role !== 'recruiter') {
       return NextResponse.json(
-        { error: "Admin accounts cannot be created through registration" },
-        { status: 403 },
+        { error: 'Admin accounts cannot be created through registration' },
+        { status: 403 }
       );
     }
 
@@ -42,10 +40,7 @@ export async function POST(req: NextRequest) {
     const existingUser = await User.findOne({ email });
 
     if (existingUser) {
-      return NextResponse.json(
-        { error: "User with this email already exists" },
-        { status: 409 },
-      );
+      return NextResponse.json({ error: 'User with this email already exists' }, { status: 409 });
     }
 
     // Create new user
@@ -66,21 +61,15 @@ export async function POST(req: NextRequest) {
           role: user.role,
         },
       },
-      { status: 201 },
+      { status: 201 }
     );
   } catch (error) {
-    console.error("Registration error:", error);
+    console.error('Registration error:', error);
 
     if (error instanceof z.ZodError) {
-      return NextResponse.json(
-        { error: error.errors[0].message },
-        { status: 400 },
-      );
+      return NextResponse.json({ error: error.errors[0].message }, { status: 400 });
     }
 
-    return NextResponse.json(
-      { error: "Something went wrong. Please try again." },
-      { status: 500 },
-    );
+    return NextResponse.json({ error: 'Something went wrong. Please try again.' }, { status: 500 });
   }
 }

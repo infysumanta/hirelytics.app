@@ -1,17 +1,12 @@
-import Link from "next/link";
-import { notFound } from "next/navigation";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import {
-  ArrowRightCircle,
-  Clock,
-  FileText,
-  CheckCircle,
-  XCircle,
-} from "lucide-react";
-import { JobApplication } from "@/models/job-application";
-import { connectToDatabase } from "@/lib/mongodb";
+import { ArrowRightCircle, CheckCircle, Clock, FileText, XCircle } from 'lucide-react';
+import Link from 'next/link';
+import { notFound } from 'next/navigation';
+
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { connectToDatabase } from '@/lib/mongodb';
+import { JobApplication } from '@/models/job-application';
 
 type Props = {
   params: Promise<{ id: string }>;
@@ -30,25 +25,24 @@ export default async function ApplicationDetailsPage(props: Props) {
     }
 
     // Status badge color mapping
-    type ApplicationStatus = "pending" | "reviewed" | "accepted" | "rejected";
+    type ApplicationStatus = 'pending' | 'reviewed' | 'accepted' | 'rejected';
 
     const statusColors = {
-      pending: "bg-yellow-500/20 text-yellow-500 hover:bg-yellow-500/20",
-      reviewed: "bg-blue-500/20 text-blue-500 hover:bg-blue-500/20",
-      accepted: "bg-green-500/20 text-green-500 hover:bg-green-500/20",
-      rejected: "bg-red-500/20 text-red-500 hover:bg-red-500/20",
+      pending: 'bg-yellow-500/20 text-yellow-500 hover:bg-yellow-500/20',
+      reviewed: 'bg-blue-500/20 text-blue-500 hover:bg-blue-500/20',
+      accepted: 'bg-green-500/20 text-green-500 hover:bg-green-500/20',
+      rejected: 'bg-red-500/20 text-red-500 hover:bg-red-500/20',
     };
 
     const statusColor =
-      statusColors[application.status as ApplicationStatus] ||
-      statusColors.pending;
+      statusColors[application.status as ApplicationStatus] || statusColors.pending;
 
     // Format date
     const formatDate = (date: Date) => {
-      return new Date(date).toLocaleDateString("en-US", {
-        year: "numeric",
-        month: "short",
-        day: "numeric",
+      return new Date(date).toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric',
       });
     };
 
@@ -68,21 +62,16 @@ export default async function ApplicationDetailsPage(props: Props) {
                 </p>
               </div>
               <Badge className={`${statusColor}`}>
-                {application.status.charAt(0).toUpperCase() +
-                  application.status.slice(1)}
+                {application.status.charAt(0).toUpperCase() + application.status.slice(1)}
               </Badge>
             </div>
 
             {/* Action Buttons - Moved to top */}
             <div className="flex flex-wrap gap-3">
               {!application.interviewState?.completed && (
-                <Link
-                  href={`/dashboard/applications/${applicationId}/interview`}
-                >
+                <Link href={`/dashboard/applications/${applicationId}/interview`}>
                   <Button size="sm" className="gap-2">
-                    {hasInterviewState
-                      ? "Continue Interview"
-                      : "Start Interview"}
+                    {hasInterviewState ? 'Continue Interview' : 'Start Interview'}
                     <ArrowRightCircle className="h-4 w-4" />
                   </Button>
                 </Link>
@@ -99,25 +88,19 @@ export default async function ApplicationDetailsPage(props: Props) {
           {/* Application Overview */}
           <Card>
             <CardHeader className="border-b border-border/40">
-              <CardTitle className="text-lg font-medium">
-                Application Overview
-              </CardTitle>
+              <CardTitle className="text-lg font-medium">Application Overview</CardTitle>
             </CardHeader>
             <CardContent className="py-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <div className="flex items-center gap-2">
                     <FileText className="h-4 w-4 text-muted-foreground" />
-                    <span className="text-sm text-muted-foreground">
-                      Resume:
-                    </span>
+                    <span className="text-sm text-muted-foreground">Resume:</span>
                     <span className="text-sm">{application.fileName}</span>
                   </div>
                   <div className="flex items-center gap-2">
                     <Clock className="h-4 w-4 text-muted-foreground" />
-                    <span className="text-sm text-muted-foreground">
-                      Application Status:
-                    </span>
+                    <span className="text-sm text-muted-foreground">Application Status:</span>
                     <Badge variant="outline" className={statusColor}>
                       {application.status}
                     </Badge>
@@ -125,38 +108,29 @@ export default async function ApplicationDetailsPage(props: Props) {
                 </div>
 
                 <div className="space-y-2">
-                  {application.parsedResume &&
-                    application.parsedResume.analyzedAt && (
-                      <div className="flex items-center gap-2">
-                        <CheckCircle className="h-4 w-4 text-green-500" />
-                        <span className="text-sm text-muted-foreground">
-                          Resume Analyzed:
-                        </span>
-                        <span className="text-sm">
-                          {formatDate(application.parsedResume.analyzedAt)}
-                        </span>
-                      </div>
-                    )}
+                  {application.parsedResume && application.parsedResume.analyzedAt && (
+                    <div className="flex items-center gap-2">
+                      <CheckCircle className="h-4 w-4 text-green-500" />
+                      <span className="text-sm text-muted-foreground">Resume Analyzed:</span>
+                      <span className="text-sm">
+                        {formatDate(application.parsedResume.analyzedAt)}
+                      </span>
+                    </div>
+                  )}
 
                   <div className="flex items-center gap-2">
                     {hasInterviewState ? (
                       <>
                         <CheckCircle className="h-4 w-4 text-green-500" />
-                        <span className="text-sm text-muted-foreground">
-                          Interview Status:
-                        </span>
+                        <span className="text-sm text-muted-foreground">Interview Status:</span>
                         <span className="text-sm">
-                          {application.interviewState?.completed
-                            ? "Completed"
-                            : "Started"}
+                          {application.interviewState?.completed ? 'Completed' : 'Started'}
                         </span>
                       </>
                     ) : (
                       <>
                         <XCircle className="h-4 w-4 text-muted-foreground" />
-                        <span className="text-sm text-muted-foreground">
-                          Interview Status:
-                        </span>
+                        <span className="text-sm text-muted-foreground">Interview Status:</span>
                         <span className="text-sm">Not Started</span>
                       </>
                     )}
@@ -175,18 +149,12 @@ export default async function ApplicationDetailsPage(props: Props) {
                   application.interviewState?.completedAt) && (
                   <div className="flex items-center gap-2">
                     {application.parsedResume?.analyzedAt && (
-                      <Badge
-                        variant="outline"
-                        className="bg-blue-500/20 text-blue-500"
-                      >
+                      <Badge variant="outline" className="bg-blue-500/20 text-blue-500">
                         Resume Analyzed
                       </Badge>
                     )}
                     {application.interviewState?.completedAt && (
-                      <Badge
-                        variant="outline"
-                        className="bg-green-500/20 text-green-500"
-                      >
+                      <Badge variant="outline" className="bg-green-500/20 text-green-500">
                         Interview Completed
                       </Badge>
                     )}
@@ -205,16 +173,14 @@ export default async function ApplicationDetailsPage(props: Props) {
                         <h3 className="font-medium text-sm">Resume Analysis</h3>
                         {application.parsedResume.matchScore !== undefined && (
                           <div className="flex items-center gap-2">
-                            <span className="text-xs text-muted-foreground">
-                              Match Score:
-                            </span>
+                            <span className="text-xs text-muted-foreground">Match Score:</span>
                             <Badge
                               className={`${
                                 application.parsedResume.matchScore > 70
-                                  ? "bg-green-500/20 text-green-500"
+                                  ? 'bg-green-500/20 text-green-500'
                                   : application.parsedResume.matchScore > 50
-                                    ? "bg-yellow-500/20 text-yellow-500"
-                                    : "bg-red-500/20 text-red-500"
+                                    ? 'bg-yellow-500/20 text-yellow-500'
+                                    : 'bg-red-500/20 text-red-500'
                               }`}
                             >
                               {application.parsedResume.matchScore}%
@@ -234,11 +200,7 @@ export default async function ApplicationDetailsPage(props: Props) {
                               {application.parsedResume.topSkillMatches
                                 .slice(0, 5)
                                 .map((skill: string, index: number) => (
-                                  <Badge
-                                    key={index}
-                                    variant="outline"
-                                    className="bg-background/40"
-                                  >
+                                  <Badge key={index} variant="outline" className="bg-background/40">
                                     {skill}
                                   </Badge>
                                 ))}
@@ -275,7 +237,7 @@ export default async function ApplicationDetailsPage(props: Props) {
                                   >
                                     {skill}
                                   </Badge>
-                                ),
+                                )
                               )}
                             </div>
                           </div>
@@ -296,9 +258,7 @@ export default async function ApplicationDetailsPage(props: Props) {
                   application.interviewState.completedAt ? (
                     <div>
                       <div className="flex justify-between items-center mb-4">
-                        <h3 className="font-medium text-sm">
-                          Interview Feedback
-                        </h3>
+                        <h3 className="font-medium text-sm">Interview Feedback</h3>
                         <span className="text-xs text-muted-foreground">
                           {formatDate(application.interviewState.completedAt)}
                         </span>
@@ -306,36 +266,28 @@ export default async function ApplicationDetailsPage(props: Props) {
 
                       {/* Rating Summary */}
                       <div className="grid grid-cols-2 gap-3 mb-4">
-                        {application.interviewState.feedback
-                          .technicalSkills && (
+                        {application.interviewState.feedback.technicalSkills && (
                           <div className="bg-background/30 p-2 rounded-lg">
                             <h4 className="font-medium text-xs mb-1 text-muted-foreground">
                               Technical
                             </h4>
                             <div className="flex items-center">
                               <span className="text-base font-semibold">
-                                {
-                                  application.interviewState.feedback
-                                    .technicalSkills
-                                }
+                                {application.interviewState.feedback.technicalSkills}
                                 /5
                               </span>
                             </div>
                           </div>
                         )}
 
-                        {application.interviewState.feedback
-                          .communicationSkills && (
+                        {application.interviewState.feedback.communicationSkills && (
                           <div className="bg-background/30 p-2 rounded-lg">
                             <h4 className="font-medium text-xs mb-1 text-muted-foreground">
                               Communication
                             </h4>
                             <div className="flex items-center">
                               <span className="text-base font-semibold">
-                                {
-                                  application.interviewState.feedback
-                                    .communicationSkills
-                                }
+                                {application.interviewState.feedback.communicationSkills}
                                 /5
                               </span>
                             </div>
@@ -349,10 +301,7 @@ export default async function ApplicationDetailsPage(props: Props) {
                             </h4>
                             <div className="flex items-center">
                               <span className="text-base font-semibold">
-                                {
-                                  application.interviewState.feedback
-                                    .problemSolving
-                                }
+                                {application.interviewState.feedback.problemSolving}
                                 /5
                               </span>
                             </div>
@@ -375,25 +324,20 @@ export default async function ApplicationDetailsPage(props: Props) {
                       </div>
 
                       {/* Overall Impression */}
-                      {application.interviewState.feedback
-                        .overallImpression && (
+                      {application.interviewState.feedback.overallImpression && (
                         <div className="mb-3">
                           <h4 className="font-medium text-xs mb-1 text-muted-foreground">
                             Overall Impression
                           </h4>
                           <p className="text-xs text-muted-foreground">
-                            {
-                              application.interviewState.feedback
-                                .overallImpression
-                            }
+                            {application.interviewState.feedback.overallImpression}
                           </p>
                         </div>
                       )}
 
                       {/* Strengths */}
                       {application.interviewState.feedback.strengths &&
-                        application.interviewState.feedback.strengths.length >
-                          0 && (
+                        application.interviewState.feedback.strengths.length > 0 && (
                           <div className="mb-3">
                             <h4 className="font-medium text-xs mb-1 text-muted-foreground">
                               Strengths
@@ -401,13 +345,10 @@ export default async function ApplicationDetailsPage(props: Props) {
                             <ul className="list-disc list-inside space-y-1">
                               {application.interviewState.feedback.strengths.map(
                                 (strength: string, index: number) => (
-                                  <li
-                                    key={index}
-                                    className="text-xs text-muted-foreground"
-                                  >
+                                  <li key={index} className="text-xs text-muted-foreground">
                                     {strength}
                                   </li>
-                                ),
+                                )
                               )}
                             </ul>
                           </div>
@@ -415,8 +356,7 @@ export default async function ApplicationDetailsPage(props: Props) {
 
                       {/* Areas for Improvement */}
                       {application.interviewState.feedback.areasOfImprovement &&
-                        application.interviewState.feedback.areasOfImprovement
-                          .length > 0 && (
+                        application.interviewState.feedback.areasOfImprovement.length > 0 && (
                           <div>
                             <h4 className="font-medium text-xs mb-1 text-muted-foreground">
                               Areas for Improvement
@@ -424,13 +364,10 @@ export default async function ApplicationDetailsPage(props: Props) {
                             <ul className="list-disc list-inside space-y-1">
                               {application.interviewState.feedback.areasOfImprovement.map(
                                 (area: string, index: number) => (
-                                  <li
-                                    key={index}
-                                    className="text-xs text-muted-foreground"
-                                  >
+                                  <li key={index} className="text-xs text-muted-foreground">
                                     {area}
                                   </li>
-                                ),
+                                )
                               )}
                             </ul>
                           </div>
@@ -438,9 +375,7 @@ export default async function ApplicationDetailsPage(props: Props) {
                     </div>
                   ) : hasInterviewState ? (
                     <div className="flex flex-col items-center justify-center py-6">
-                      <p className="text-sm text-muted-foreground">
-                        Interview in progress
-                      </p>
+                      <p className="text-sm text-muted-foreground">Interview in progress</p>
                       <Link
                         href={`/dashboard/applications/${applicationId}/interview`}
                         className="mt-2"
@@ -452,9 +387,7 @@ export default async function ApplicationDetailsPage(props: Props) {
                     </div>
                   ) : (
                     <div className="flex flex-col items-center justify-center py-6">
-                      <p className="text-sm text-muted-foreground">
-                        Interview not started yet
-                      </p>
+                      <p className="text-sm text-muted-foreground">Interview not started yet</p>
                       <Link
                         href={`/dashboard/applications/${applicationId}/interview`}
                         className="mt-2"
@@ -475,7 +408,7 @@ export default async function ApplicationDetailsPage(props: Props) {
       </div>
     );
   } catch (error) {
-    console.error("Error loading application:", error);
+    console.error('Error loading application:', error);
     notFound();
   }
 }

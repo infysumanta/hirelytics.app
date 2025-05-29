@@ -1,7 +1,8 @@
-"use client";
+'use client';
 
-import { useEffect } from "react";
-import { AudioUrlManager } from "@/lib/deepgram-tts";
+import { useEffect } from 'react';
+
+import { AudioUrlManager } from '@/lib/deepgram-tts';
 
 /**
  * Component that handles cleanup of audio resources when navigating away
@@ -12,7 +13,7 @@ export function AudioCleanup() {
     // Clean up function that will be called when the component unmounts
     // (i.e., when navigating away from the page)
     return () => {
-      console.log("Cleaning up all audio blob URLs");
+      console.log('Cleaning up all audio blob URLs');
       AudioUrlManager.revokeAll();
     };
   }, []);

@@ -1,14 +1,15 @@
-import { NextRequest, NextResponse } from "next/server";
-import { connectToDatabase } from "@/lib/mongodb";
-import User from "@/models/user";
-import { auth } from "@/auth";
-import { z } from "zod";
-import mongoose from "mongoose";
+import mongoose from 'mongoose';
+import { NextRequest, NextResponse } from 'next/server';
+import { z } from 'zod';
+
+import { auth } from '@/auth';
+import { connectToDatabase } from '@/lib/mongodb';
+import User from '@/models/user';
 
 // Helper function to check if user is admin
 async function isAdmin() {
   const session = await auth();
-  return session?.user?.role === "admin";
+  return session?.user?.role === 'admin';
 }
 
 // Validation schema for update
@@ -16,34 +17,28 @@ const updateUserSchema = z.object({
   isActive: z.boolean().optional(),
 });
 
-export async function GET(
-  req: NextRequest,
-  { params }: { params: Promise<{ id: string }> },
-) {
+export async function GET(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     // Check if user is admin
     if (!(await isAdmin())) {
-      return NextResponse.json(
-        { error: "Unauthorized. Admin access required." },
-        { status: 403 },
-      );
+      return NextResponse.json({ error: 'Unauthorized. Admin access required.' }, { status: 403 });
     }
 
     const { id } = await params;
 
     // Validate ID format
     if (!mongoose.Types.ObjectId.isValid(id)) {
-      return NextResponse.json({ error: "Invalid user ID" }, { status: 400 });
+      return NextResponse.json({ error: 'Invalid user ID' }, { status: 400 });
     }
 
     // Connect to database
     await connectToDatabase();
 
     // Find user by ID
-    const user = await User.findById(id).select("-password");
+    const user = await User.findById(id).select('-password');
 
     if (!user) {
-      return NextResponse.json({ error: "User not found" }, { status: 404 });
+      return NextResponse.json({ error: 'User not found' }, { status: 404 });
     }
 
     // Return user data
@@ -59,32 +54,23 @@ export async function GET(
       },
     });
   } catch (error) {
-    console.error("Error fetching user:", error);
-    return NextResponse.json(
-      { error: "Failed to fetch user" },
-      { status: 500 },
-    );
+    console.error('Error fetching user:', error);
+    return NextResponse.json({ error: 'Failed to fetch user' }, { status: 500 });
   }
 }
 
-export async function PATCH(
-  req: NextRequest,
-  { params }: { params: Promise<{ id: string }> },
-) {
+export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     // Check if user is admin
     if (!(await isAdmin())) {
-      return NextResponse.json(
-        { error: "Unauthorized. Admin access required." },
-        { status: 403 },
-      );
+      return NextResponse.json({ error: 'Unauthorized. Admin access required.' }, { status: 403 });
     }
 
     const { id } = await params;
 
     // Validate ID format
     if (!mongoose.Types.ObjectId.isValid(id)) {
-      return NextResponse.json({ error: "Invalid user ID" }, { status: 400 });
+      return NextResponse.json({ error: 'Invalid user ID' }, { status: 400 });
     }
 
     // Parse and validate request body
@@ -98,23 +84,20 @@ export async function PATCH(
     const user = await User.findById(id);
 
     if (!user) {
-      return NextResponse.json({ error: "User not found" }, { status: 404 });
+      return NextResponse.json({ error: 'User not found' }, { status: 404 });
     }
 
     // Prevent disabling admin users (including self)
-    if (user.role === "admin" && validatedData.isActive === false) {
-      return NextResponse.json(
-        { error: "Cannot disable admin users" },
-        { status: 403 },
-      );
+    if (user.role === 'admin' && validatedData.isActive === false) {
+      return NextResponse.json({ error: 'Cannot disable admin users' }, { status: 403 });
     }
 
     // Update user
     const updatedUser = await User.findByIdAndUpdate(
       id,
       { $set: validatedData },
-      { new: true },
-    ).select("-password");
+      { new: true }
+    ).select('-password');
 
     // Return updated user data
     return NextResponse.json({
@@ -126,21 +109,15 @@ export async function PATCH(
         isActive: updatedUser?.isActive,
         updatedAt: updatedUser?.updatedAt,
       },
-      message: "User updated successfully",
+      message: 'User updated successfully',
     });
   } catch (error) {
-    console.error("Error updating user:", error);
+    console.error('Error updating user:', error);
 
     if (error instanceof z.ZodError) {
-      return NextResponse.json(
-        { error: error.errors[0].message },
-        { status: 400 },
-      );
+      return NextResponse.json({ error: error.errors[0].message }, { status: 400 });
     }
 
-    return NextResponse.json(
-      { error: "Failed to update user" },
-      { status: 500 },
-    );
+    return NextResponse.json({ error: 'Failed to update user' }, { status: 500 });
   }
 }

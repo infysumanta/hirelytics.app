@@ -1,19 +1,18 @@
-"use client";
+'use client';
 
-import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
-import { Loader2, AlertCircle, CheckCircle2 } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { AlertCircle, CheckCircle2, Loader2 } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
+
+import { Button } from '@/components/ui/button';
 
 interface AutoGenerateFeedbackProps {
   applicationId: string;
 }
 
-export function AutoGenerateFeedback({
-  applicationId,
-}: AutoGenerateFeedbackProps) {
+export function AutoGenerateFeedback({ applicationId }: AutoGenerateFeedbackProps) {
   const [isGenerating, setIsGenerating] = useState(true);
-  const [status, setStatus] = useState<string | null>("generating");
+  const [status, setStatus] = useState<string | null>('generating');
   const [progress, setProgress] = useState(0);
   const router = useRouter();
 
@@ -30,21 +29,21 @@ export function AutoGenerateFeedback({
       try {
         const response = await fetch(
           `/api/ai/interview/autoevaluate?applicationId=${applicationId}`,
-          { method: "GET", cache: "no-store" },
+          { method: 'GET', cache: 'no-store' }
         );
 
         if (!response.ok) {
-          console.error("Failed to auto-generate feedback");
-          setStatus("error");
+          console.error('Failed to auto-generate feedback');
+          setStatus('error');
           return;
         }
 
         const data = await response.json();
 
-        if (data.status === "generated_feedback") {
+        if (data.status === 'generated_feedback') {
           // Set progress to 100 for completion
           setProgress(100);
-          setStatus("generated");
+          setStatus('generated');
 
           // Wait a moment to show completion before refreshing
           setTimeout(() => {
@@ -57,8 +56,8 @@ export function AutoGenerateFeedback({
           setProgress(100);
         }
       } catch (error) {
-        console.error("Error generating feedback:", error);
-        setStatus("error");
+        console.error('Error generating feedback:', error);
+        setStatus('error');
       } finally {
         setIsGenerating(false);
         clearInterval(progressInterval);
@@ -71,7 +70,7 @@ export function AutoGenerateFeedback({
   }, [applicationId, router]);
 
   // Show loading state
-  if (status === "generating" || isGenerating) {
+  if (status === 'generating' || isGenerating) {
     return (
       <div className="bg-muted/20 p-6 rounded-lg border border-border/40 space-y-4">
         <div className="flex items-center justify-between">
@@ -90,15 +89,14 @@ export function AutoGenerateFeedback({
         </div>
 
         <p className="text-xs text-muted-foreground">
-          Our AI is carefully reviewing your interview responses against the job
-          requirements
+          Our AI is carefully reviewing your interview responses against the job requirements
         </p>
       </div>
     );
   }
 
   // Show error state
-  if (status === "error") {
+  if (status === 'error') {
     return (
       <div className="bg-destructive/10 p-6 rounded-lg border border-destructive/30 space-y-4">
         <div className="flex items-center gap-2 text-destructive mb-2">
@@ -107,15 +105,15 @@ export function AutoGenerateFeedback({
         </div>
 
         <p className="text-sm text-muted-foreground">
-          We encountered an issue while analyzing your interview. You can try
-          again or contact support.
+          We encountered an issue while analyzing your interview. You can try again or contact
+          support.
         </p>
 
         <Button
           variant="outline"
           size="sm"
           onClick={() => {
-            setStatus("generating");
+            setStatus('generating');
             setIsGenerating(true);
             setProgress(0);
             router.refresh();
@@ -128,16 +126,14 @@ export function AutoGenerateFeedback({
   }
 
   // Show success state if needed, though this typically gets replaced by refresh
-  if (status === "generated" && !isGenerating) {
+  if (status === 'generated' && !isGenerating) {
     return (
       <div className="bg-green-500/10 p-6 rounded-lg border border-green-500/30 space-y-2">
         <div className="flex items-center gap-2 text-green-600 mb-2">
           <CheckCircle2 className="h-5 w-5" />
           <h3 className="font-medium">Feedback generated successfully</h3>
         </div>
-        <p className="text-sm text-muted-foreground">
-          Loading your interview feedback now...
-        </p>
+        <p className="text-sm text-muted-foreground">Loading your interview feedback now...</p>
       </div>
     );
   }

@@ -1,18 +1,16 @@
-import { NextRequest, NextResponse } from "next/server";
-import { connectToDatabase } from "@/lib/mongodb";
-import { JobApplication } from "@/models/job-application";
+import { NextRequest, NextResponse } from 'next/server';
+
+import { connectToDatabase } from '@/lib/mongodb';
+import { JobApplication } from '@/models/job-application';
 
 export async function GET(req: NextRequest) {
   try {
     // Get application ID from query parameters
     const url = new URL(req.url);
-    const applicationId = url.searchParams.get("applicationId");
+    const applicationId = url.searchParams.get('applicationId');
 
     if (!applicationId) {
-      return NextResponse.json(
-        { error: "Application ID is required" },
-        { status: 400 },
-      );
+      return NextResponse.json({ error: 'Application ID is required' }, { status: 400 });
     }
 
     // Connect to database
@@ -21,10 +19,7 @@ export async function GET(req: NextRequest) {
     // Get application details
     const application = await JobApplication.findById(applicationId);
     if (!application) {
-      return NextResponse.json(
-        { error: "Application not found" },
-        { status: 404 },
-      );
+      return NextResponse.json({ error: 'Application not found' }, { status: 404 });
     }
 
     // Get interview state and questions
@@ -38,7 +33,7 @@ export async function GET(req: NextRequest) {
     let currentQuestion = null;
 
     for (const message of interviewChat) {
-      if (message.sender === "ai" && message.questionId) {
+      if (message.sender === 'ai' && message.questionId) {
         currentQuestion = {
           id: message.questionId,
           category: message.questionCategory,
@@ -47,11 +42,7 @@ export async function GET(req: NextRequest) {
           feedback: message.feedback,
         };
         questionsAndAnswers.push(currentQuestion);
-      } else if (
-        message.sender === "user" &&
-        currentQuestion &&
-        !currentQuestion.answer
-      ) {
+      } else if (message.sender === 'user' && currentQuestion && !currentQuestion.answer) {
         // This is likely the answer to the last question
         currentQuestion.answer = message.text;
       }
@@ -63,29 +54,24 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({
       success: true,
       isCompleted:
-        interviewState?.currentPhase === "completed" ||
-        interviewState?.currentPhase === "interrupted",
+        interviewState?.currentPhase === 'completed' ||
+        interviewState?.currentPhase === 'interrupted',
       hasEvaluation: !!application.interviewEvaluation,
       interviewState,
       questionsAndAnswers: completedQA,
       totalMessages: interviewChat.length,
-      technicalQuestions: completedQA.filter(
-        (qa) => qa.category === "technical",
-      ).length,
-      projectQuestions: completedQA.filter((qa) => qa.category === "project")
-        .length,
-      behavioralQuestions: completedQA.filter(
-        (qa) => qa.category === "behavioral",
-      ).length,
+      technicalQuestions: completedQA.filter((qa) => qa.category === 'technical').length,
+      projectQuestions: completedQA.filter((qa) => qa.category === 'project').length,
+      behavioralQuestions: completedQA.filter((qa) => qa.category === 'behavioral').length,
       feedback: interviewState?.feedback || application.interviewEvaluation,
-      isInterrupted: interviewState?.currentPhase === "interrupted",
+      isInterrupted: interviewState?.currentPhase === 'interrupted',
       interruptionReason: interviewState?.interruptionReason,
     });
   } catch (error) {
-    console.error("Error getting interview state:", error);
+    console.error('Error getting interview state:', error);
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : "An error occurred" },
-      { status: 500 },
+      { error: error instanceof Error ? error.message : 'An error occurred' },
+      { status: 500 }
     );
   }
 }

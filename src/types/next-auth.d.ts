@@ -1,6 +1,6 @@
-import { UserRole } from "@/models/user";
+import { UserRole } from '@/models/user';
 
-declare module "next-auth" {
+declare module 'next-auth' {
   interface User {
     id: string;
     role: UserRole;
@@ -16,7 +16,7 @@ declare module "next-auth" {
   }
 }
 
-declare module "next-auth/jwt" {
+declare module 'next-auth/jwt' {
   interface JWT {
     id: string;
     role: UserRole;

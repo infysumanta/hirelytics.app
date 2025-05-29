@@ -1,7 +1,8 @@
-import * as React from "react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
+import { CheckIcon, FilterIcon, MapPinIcon, X } from 'lucide-react';
+import * as React from 'react';
+
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import {
   Command,
   CommandEmpty,
@@ -9,17 +10,13 @@ import {
   CommandInput,
   CommandItem,
   CommandList,
-} from "@/components/ui/command";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import { cn } from "@/lib/utils";
-import { CheckIcon, FilterIcon, MapPinIcon, X } from "lucide-react";
-import { technicalSkills, Skill, SkillCategory } from "@/data/technical-skills";
-import { useDebounce } from "@/hooks/use-debounce";
-import { countries, getCountryLabel } from "@/data/countries";
+} from '@/components/ui/command';
+import { Input } from '@/components/ui/input';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { countries, getCountryLabel } from '@/data/countries';
+import { Skill, SkillCategory, technicalSkills } from '@/data/technical-skills';
+import { useDebounce } from '@/hooks/use-debounce';
+import { cn } from '@/lib/utils';
 
 type JobFilterProps = {
   onSearchChange: (value: string) => void;
@@ -27,13 +24,9 @@ type JobFilterProps = {
   onLocationChange: (location: string) => void;
 };
 
-export function JobFilter({
-  onSearchChange,
-  onSkillsChange,
-  onLocationChange,
-}: JobFilterProps) {
-  const [searchQuery, setSearchQuery] = React.useState("");
-  const [location, setLocation] = React.useState("");
+export function JobFilter({ onSearchChange, onSkillsChange, onLocationChange }: JobFilterProps) {
+  const [searchQuery, setSearchQuery] = React.useState('');
+  const [location, setLocation] = React.useState('');
   const [open, setOpen] = React.useState(false);
   const [selectedSkills, setSelectedSkills] = React.useState<string[]>([]);
 
@@ -50,7 +43,7 @@ export function JobFilter({
         acc[skill.category].push(skill);
         return acc;
       },
-      {} as Record<SkillCategory, Skill[]>,
+      {} as Record<SkillCategory, Skill[]>
     );
   }, []);
 
@@ -87,11 +80,11 @@ export function JobFilter({
 
   // Clear all filters
   const clearFilters = () => {
-    setSearchQuery("");
-    setLocation("");
+    setSearchQuery('');
+    setLocation('');
     setSelectedSkills([]);
-    onSearchChange("");
-    onLocationChange("");
+    onSearchChange('');
+    onLocationChange('');
     onSkillsChange([]);
   };
 
@@ -111,8 +104,8 @@ export function JobFilter({
               size="icon"
               className="absolute right-1 top-1/2 -translate-y-1/2 h-6 w-6 rounded-full"
               onClick={() => {
-                setSearchQuery("");
-                onSearchChange("");
+                setSearchQuery('');
+                onSearchChange('');
               }}
             >
               <X className="h-3 w-3" />
@@ -122,14 +115,10 @@ export function JobFilter({
 
         <Popover>
           <PopoverTrigger asChild>
-            <Button
-              variant="outline"
-              role="combobox"
-              className="justify-between w-full"
-            >
+            <Button variant="outline" role="combobox" className="justify-between w-full">
               <div className="flex items-center gap-2">
                 <MapPinIcon className="h-4 w-4" />
-                {location ? getCountryLabel(location) : "Filter by location"}
+                {location ? getCountryLabel(location) : 'Filter by location'}
               </div>
               <FilterIcon className="h-4 w-4 opacity-50" />
             </Button>
@@ -143,19 +132,17 @@ export function JobFilter({
                   <CommandItem
                     value="remote"
                     onSelect={() => {
-                      setLocation("remote");
-                      onLocationChange("remote");
+                      setLocation('remote');
+                      onLocationChange('remote');
                     }}
                   >
                     <div
                       className={cn(
-                        "mr-2 flex h-4 w-4 items-center justify-center rounded-sm border",
-                        location === "remote"
-                          ? "bg-primary border-primary"
-                          : "opacity-50",
+                        'mr-2 flex h-4 w-4 items-center justify-center rounded-sm border',
+                        location === 'remote' ? 'bg-primary border-primary' : 'opacity-50'
                       )}
                     >
-                      {location === "remote" && (
+                      {location === 'remote' && (
                         <CheckIcon className="h-3 w-3 text-primary-foreground" />
                       )}
                     </div>
@@ -174,10 +161,8 @@ export function JobFilter({
                     >
                       <div
                         className={cn(
-                          "mr-2 flex h-4 w-4 items-center justify-center rounded-sm border",
-                          location === country.value
-                            ? "bg-primary border-primary"
-                            : "opacity-50",
+                          'mr-2 flex h-4 w-4 items-center justify-center rounded-sm border',
+                          location === country.value ? 'bg-primary border-primary' : 'opacity-50'
                         )}
                       >
                         {location === country.value && (
@@ -203,8 +188,8 @@ export function JobFilter({
             >
               <span>
                 {selectedSkills.length > 0
-                  ? `${selectedSkills.length} skill${selectedSkills.length > 1 ? "s" : ""} selected`
-                  : "Filter by skills"}
+                  ? `${selectedSkills.length} skill${selectedSkills.length > 1 ? 's' : ''} selected`
+                  : 'Filter by skills'}
               </span>
               <FilterIcon className="ml-2 h-4 w-4 opacity-50" />
             </Button>
@@ -217,9 +202,7 @@ export function JobFilter({
                 {Object.entries(skillsByCategory).map(([category, skills]) => (
                   <CommandGroup
                     key={category}
-                    heading={
-                      category.charAt(0).toUpperCase() + category.slice(1)
-                    }
+                    heading={category.charAt(0).toUpperCase() + category.slice(1)}
                   >
                     {skills.map((skill) => (
                       <CommandItem
@@ -229,10 +212,10 @@ export function JobFilter({
                       >
                         <div
                           className={cn(
-                            "mr-2 flex h-4 w-4 items-center justify-center rounded-sm border",
+                            'mr-2 flex h-4 w-4 items-center justify-center rounded-sm border',
                             selectedSkills.includes(skill.value)
-                              ? "bg-primary border-primary"
-                              : "opacity-50",
+                              ? 'bg-primary border-primary'
+                              : 'opacity-50'
                           )}
                         >
                           {selectedSkills.includes(skill.value) && (
@@ -279,8 +262,8 @@ export function JobFilter({
                   size="icon"
                   className="ml-1 h-4 w-4 rounded-full"
                   onClick={() => {
-                    setLocation("");
-                    onLocationChange("");
+                    setLocation('');
+                    onLocationChange('');
                   }}
                 >
                   <X className="h-2 w-2" />
@@ -288,12 +271,7 @@ export function JobFilter({
               </Badge>
             )}
 
-            <Button
-              variant="ghost"
-              size="sm"
-              className="text-xs"
-              onClick={clearFilters}
-            >
+            <Button variant="ghost" size="sm" className="text-xs" onClick={clearFilters}>
               Clear all filters
             </Button>
           </>

@@ -1,30 +1,27 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-"use client";
+'use client';
 
-import { useEffect, useState } from "react";
-import { BriefcaseIcon, FileCheck, Clock } from "lucide-react";
-import { format } from "date-fns";
-import { ClickableStatCard } from "@/components/dashboard/clickable-stat-card";
-import { PieChartCard } from "@/components/dashboard/pie-chart-card";
-import { ActivityFeed } from "@/components/dashboard/activity-feed";
-import { useDashboardStats } from "@/hooks/use-dashboard-stats";
+import { format } from 'date-fns';
+import { BriefcaseIcon, Clock, FileCheck } from 'lucide-react';
+import { useEffect, useState } from 'react';
+
+import { ActivityFeed } from '@/components/dashboard/activity-feed';
+import { ClickableStatCard } from '@/components/dashboard/clickable-stat-card';
+import { PieChartCard } from '@/components/dashboard/pie-chart-card';
+import { useDashboardStats } from '@/hooks/use-dashboard-stats';
 
 export function CandidateDashboard() {
   const { stats, loading, error } = useDashboardStats();
-  const [applicationsByStatusData, setApplicationsByStatusData] = useState<
-    any[]
-  >([]);
-  const [recentApplicationsList, setRecentApplicationsList] = useState<any[]>(
-    [],
-  );
+  const [applicationsByStatusData, setApplicationsByStatusData] = useState<any[]>([]);
+  const [recentApplicationsList, setRecentApplicationsList] = useState<any[]>([]);
   const [recentJobs, setRecentJobs] = useState<any[]>([]);
 
   // Define colors for pie chart
   const statusColors = {
-    pending: "#fbbf24",
-    reviewed: "#3b82f6",
-    accepted: "#10b981",
-    rejected: "#ef4444",
+    pending: '#fbbf24',
+    reviewed: '#3b82f6',
+    accepted: '#10b981',
+    rejected: '#ef4444',
   };
 
   useEffect(() => {
@@ -35,9 +32,8 @@ export function CandidateDashboard() {
           stats.myApplicationsByStatus.map((item: any) => ({
             name: item._id,
             value: item.count,
-            color:
-              statusColors[item._id as keyof typeof statusColors] || "#94a3b8",
-          })),
+            color: statusColors[item._id as keyof typeof statusColors] || '#94a3b8',
+          }))
         );
       }
 
@@ -45,11 +41,11 @@ export function CandidateDashboard() {
       if (stats.myRecentApplications) {
         setRecentApplicationsList(
           stats.myRecentApplications.map((app: any) => ({
-            title: app.jobInfo?.title || "Unknown Job",
-            description: `at ${app.jobInfo?.companyName || "Unknown Company"}`,
-            timestamp: format(new Date(app.createdAt), "MMM dd, yyyy"),
+            title: app.jobInfo?.title || 'Unknown Job',
+            description: `at ${app.jobInfo?.companyName || 'Unknown Company'}`,
+            timestamp: format(new Date(app.createdAt), 'MMM dd, yyyy'),
             status: app.status,
-          })),
+          }))
         );
       }
 
@@ -59,8 +55,8 @@ export function CandidateDashboard() {
           stats.recentJobs.map((job: any) => ({
             title: job.title,
             description: `${job.companyName} - ${job.location}`,
-            timestamp: format(new Date(job.createdAt), "MMM dd, yyyy"),
-          })),
+            timestamp: format(new Date(job.createdAt), 'MMM dd, yyyy'),
+          }))
         );
       }
     }
@@ -104,9 +100,7 @@ export function CandidateDashboard() {
         />
         <ClickableStatCard
           title="Interview Opportunities"
-          value={countInterviewOpportunities(
-            stats?.myApplicationsByStatus || [],
-          )}
+          value={countInterviewOpportunities(stats?.myApplicationsByStatus || [])}
           description="Applications in review or accepted status"
           icon={<Clock className="h-4 w-4" />}
         />
@@ -150,21 +144,18 @@ export function CandidateDashboard() {
 }
 
 function calculateSuccessRate(applicationsByStatus: any[]): string {
-  const accepted =
-    applicationsByStatus.find((item) => item._id === "accepted")?.count || 0;
+  const accepted = applicationsByStatus.find((item) => item._id === 'accepted')?.count || 0;
   const total = applicationsByStatus.reduce((sum, item) => sum + item.count, 0);
 
-  if (total === 0) return "0";
+  if (total === 0) return '0';
 
   const rate = (accepted / total) * 100;
   return rate.toFixed(1);
 }
 
 function countInterviewOpportunities(applicationsByStatus: any[]): number {
-  const reviewed =
-    applicationsByStatus.find((item) => item._id === "reviewed")?.count || 0;
-  const accepted =
-    applicationsByStatus.find((item) => item._id === "accepted")?.count || 0;
+  const reviewed = applicationsByStatus.find((item) => item._id === 'reviewed')?.count || 0;
+  const accepted = applicationsByStatus.find((item) => item._id === 'accepted')?.count || 0;
 
   return reviewed + accepted;
 }

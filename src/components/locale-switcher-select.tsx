@@ -1,25 +1,22 @@
-"use client";
-import { useTransition } from "react";
+'use client';
+import { useTransition } from 'react';
 
 import {
   Select,
-  SelectItem,
-  SelectValue,
   SelectContent,
+  SelectItem,
   SelectTrigger,
-} from "@/components/ui/select";
-import { Locale, LocalsLanguage } from "@/i18n/config";
-import { setUserLocale } from "@/i18n/service";
+  SelectValue,
+} from '@/components/ui/select';
+import { Locale, LocalsLanguage } from '@/i18n/config';
+import { setUserLocale } from '@/i18n/service';
 
 type Props = {
   defaultValue: string;
   localsLanguages: LocalsLanguage[];
 };
 
-export default function LocaleSwitcherSelect({
-  defaultValue,
-  localsLanguages,
-}: Props) {
+export default function LocaleSwitcherSelect({ defaultValue, localsLanguages }: Props) {
   const [isPending, startTransition] = useTransition();
 
   function onChange(value: string) {
@@ -34,11 +31,7 @@ export default function LocaleSwitcherSelect({
   return (
     <div>
       {localsLanguages?.filter((lang) => lang.active)?.length > 1 && (
-        <Select
-          disabled={isPending}
-          value={defaultValue}
-          onValueChange={onChange}
-        >
+        <Select disabled={isPending} value={defaultValue} onValueChange={onChange}>
           <SelectTrigger className="w-[140px] bg-primary/10 border-primary/20 text-primary">
             <SelectValue placeholder="Select a lang" />
           </SelectTrigger>
@@ -46,11 +39,7 @@ export default function LocaleSwitcherSelect({
             {localsLanguages
               ?.filter((lang) => lang.active)
               ?.map((lang) => (
-                <SelectItem
-                  key={lang.code}
-                  value={lang.code}
-                  className="cursor-pointer"
-                >
+                <SelectItem key={lang.code} value={lang.code} className="cursor-pointer">
                   {lang.flag} {lang.name}
                 </SelectItem>
               ))}

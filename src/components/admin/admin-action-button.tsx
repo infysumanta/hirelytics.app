@@ -1,8 +1,10 @@
-"use client";
+'use client';
 
-import { useState } from "react";
-import RoleGuard from "@/components/auth/role-guard";
-import { Button } from "@/components/ui/button";
+import { useState } from 'react';
+import { toast } from 'sonner';
+
+import RoleGuard from '@/components/auth/role-guard';
+import { Button } from '@/components/ui/button';
 import {
   Dialog,
   DialogClose,
@@ -11,8 +13,7 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog";
-import { toast } from "sonner";
+} from '@/components/ui/dialog';
 
 interface AdminActionButtonProps {
   action: string;
@@ -27,9 +28,9 @@ interface AdminActionButtonProps {
 export function AdminActionButton({
   action,
   onAction,
-  dialogTitle = "Confirm Action",
-  dialogDescription = "Are you sure you want to perform this action?",
-  confirmLabel = "Confirm",
+  dialogTitle = 'Confirm Action',
+  dialogDescription = 'Are you sure you want to perform this action?',
+  confirmLabel = 'Confirm',
   children,
 }: AdminActionButtonProps) {
   const [open, setOpen] = useState(false);
@@ -40,13 +41,13 @@ export function AdminActionButton({
       setIsLoading(true);
       await onAction();
 
-      toast.success("Success", {
+      toast.success('Success', {
         description: `${action} completed successfully`,
       });
       setOpen(false);
     } catch (error) {
       console.error(`Error during ${action}:`, error);
-      toast.error("Error", {
+      toast.error('Error', {
         description: `Failed to ${action}. Please try again.`,
       });
     } finally {
@@ -55,7 +56,7 @@ export function AdminActionButton({
   }
 
   return (
-    <RoleGuard allowedRoles={["admin"]}>
+    <RoleGuard allowedRoles={['admin']}>
       <Button onClick={() => setOpen(true)} variant="default">
         {action}
       </Button>
@@ -76,7 +77,7 @@ export function AdminActionButton({
               </Button>
             </DialogClose>
             <Button onClick={handleConfirm} disabled={isLoading}>
-              {isLoading ? "Processing..." : confirmLabel}
+              {isLoading ? 'Processing...' : confirmLabel}
             </Button>
           </DialogFooter>
         </DialogContent>

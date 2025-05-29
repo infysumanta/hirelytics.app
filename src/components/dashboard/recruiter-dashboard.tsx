@@ -1,13 +1,14 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-"use client";
+'use client';
 
-import { useEffect, useState } from "react";
-import { BriefcaseIcon, Users, FileText } from "lucide-react";
-import { format } from "date-fns";
-import { ClickableStatCard } from "@/components/dashboard/clickable-stat-card";
-import { PieChartCard } from "@/components/dashboard/pie-chart-card";
-import { ActivityFeed } from "@/components/dashboard/activity-feed";
-import { useDashboardStats } from "@/hooks/use-dashboard-stats";
+import { format } from 'date-fns';
+import { BriefcaseIcon, FileText, Users } from 'lucide-react';
+import { useEffect, useState } from 'react';
+
+import { ActivityFeed } from '@/components/dashboard/activity-feed';
+import { ClickableStatCard } from '@/components/dashboard/clickable-stat-card';
+import { PieChartCard } from '@/components/dashboard/pie-chart-card';
+import { useDashboardStats } from '@/hooks/use-dashboard-stats';
 
 interface ApplicationStatusData {
   name: string;
@@ -24,19 +25,17 @@ interface ApplicationActivity {
 
 export function RecruiterDashboard() {
   const { stats, loading, error } = useDashboardStats();
-  const [applicationsByStatusData, setApplicationsByStatusData] = useState<
-    ApplicationStatusData[]
-  >([]);
-  const [recentApplicationsList, setRecentApplicationsList] = useState<
-    ApplicationActivity[]
-  >([]);
+  const [applicationsByStatusData, setApplicationsByStatusData] = useState<ApplicationStatusData[]>(
+    []
+  );
+  const [recentApplicationsList, setRecentApplicationsList] = useState<ApplicationActivity[]>([]);
 
   // Define colors for pie chart
   const statusColors = {
-    pending: "#fbbf24",
-    reviewed: "#3b82f6",
-    accepted: "#10b981",
-    rejected: "#ef4444",
+    pending: '#fbbf24',
+    reviewed: '#3b82f6',
+    accepted: '#10b981',
+    rejected: '#ef4444',
   };
 
   useEffect(() => {
@@ -47,9 +46,8 @@ export function RecruiterDashboard() {
           stats.applicationsByStatus.map((item: any) => ({
             name: item._id,
             value: item.count,
-            color:
-              statusColors[item._id as keyof typeof statusColors] || "#94a3b8",
-          })),
+            color: statusColors[item._id as keyof typeof statusColors] || '#94a3b8',
+          }))
         );
       }
 
@@ -57,16 +55,13 @@ export function RecruiterDashboard() {
       if (stats.recentApplications) {
         setRecentApplicationsList(
           stats.recentApplications.map((app: any) => ({
-            title: app.jobInfo?.title || "Unknown Job",
-            description: `Applied by ${app.candidateName || "Unknown"}`,
-            timestamp: format(new Date(app.createdAt), "MMM dd, yyyy"),
+            title: app.jobInfo?.title || 'Unknown Job',
+            description: `Applied by ${app.candidateName || 'Unknown'}`,
+            timestamp: format(new Date(app.createdAt), 'MMM dd, yyyy'),
             status: app.status,
-          })),
+          }))
         );
-        console.log(
-          "Recruiter - Recent applications:",
-          stats.recentApplications,
-        );
+        console.log('Recruiter - Recent applications:', stats.recentApplications);
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -137,11 +132,10 @@ export function RecruiterDashboard() {
 }
 
 function calculateAcceptanceRate(applicationsByStatus: any[]): string {
-  const accepted =
-    applicationsByStatus.find((item) => item._id === "accepted")?.count || 0;
+  const accepted = applicationsByStatus.find((item) => item._id === 'accepted')?.count || 0;
   const total = applicationsByStatus.reduce((sum, item) => sum + item.count, 0);
 
-  if (total === 0) return "0";
+  if (total === 0) return '0';
 
   const rate = (accepted / total) * 100;
   return rate.toFixed(1);

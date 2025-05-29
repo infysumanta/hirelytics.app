@@ -1,20 +1,21 @@
-import { NextRequest, NextResponse } from "next/server";
-import { auth } from "@/auth";
-import { z } from "zod";
-import { google } from "@ai-sdk/google";
-import { generateText } from "ai";
+import { google } from '@ai-sdk/google';
+import { generateText } from 'ai';
+import { NextRequest, NextResponse } from 'next/server';
+import { z } from 'zod';
+
+import { auth } from '@/auth';
 
 // Helper function to check if user is a recruiter
 async function isRecruiter() {
   const session = await auth();
-  return session?.user?.role === "recruiter";
+  return session?.user?.role === 'recruiter';
 }
 
 // Define schema for validation
 const generateJobDescriptionSchema = z.object({
-  jobTitle: z.string().min(1, "Job title is required"),
-  companyName: z.string().min(1, "Company name is required"),
-  skills: z.array(z.string()).min(1, "At least one skill is required"),
+  jobTitle: z.string().min(1, 'Job title is required'),
+  companyName: z.string().min(1, 'Company name is required'),
+  skills: z.array(z.string()).min(1, 'At least one skill is required'),
 });
 
 export async function POST(req: NextRequest) {
@@ -22,18 +23,17 @@ export async function POST(req: NextRequest) {
     // Check if user is a recruiter
     if (!(await isRecruiter())) {
       return NextResponse.json(
-        { error: "Unauthorized. Recruiter access required." },
-        { status: 403 },
+        { error: 'Unauthorized. Recruiter access required.' },
+        { status: 403 }
       );
     }
 
     // Parse and validate request body
     const body = await req.json();
-    const { jobTitle, companyName, skills } =
-      generateJobDescriptionSchema.parse(body);
+    const { jobTitle, companyName, skills } = generateJobDescriptionSchema.parse(body);
 
     // Format skills for the prompt
-    const skillsList = skills.join(", ");
+    const skillsList = skills.join(', ');
 
     // Create the prompt for Gemini
     const prompt = `
@@ -52,7 +52,7 @@ export async function POST(req: NextRequest) {
 
     // Use Gemini model with Vercel AI SDK
     const { text: generatedDescription } = await generateText({
-      model: google("gemini-2.0-flash-lite"),
+      model: google('gemini-2.0-flash-lite'),
       prompt: prompt,
     });
 
@@ -61,18 +61,12 @@ export async function POST(req: NextRequest) {
       description: generatedDescription,
     });
   } catch (error) {
-    console.error("Error generating job description:", error);
+    console.error('Error generating job description:', error);
 
     if (error instanceof z.ZodError) {
-      return NextResponse.json(
-        { error: error.errors[0].message },
-        { status: 400 },
-      );
+      return NextResponse.json({ error: error.errors[0].message }, { status: 400 });
     }
 
-    return NextResponse.json(
-      { error: "Failed to generate job description" },
-      { status: 500 },
-    );
+    return NextResponse.json({ error: 'Failed to generate job description' }, { status: 500 });
   }
 }

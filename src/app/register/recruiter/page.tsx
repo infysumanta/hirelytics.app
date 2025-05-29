@@ -1,24 +1,25 @@
-"use client";
+'use client';
 
-import Link from "next/link";
-import { RegisterForm } from "@/components/auth/register-form";
-import { motion } from "framer-motion";
-import { AnimatedBackground } from "@/components/ui/animated-background";
-import { AnimatedAuthCard } from "@/components/ui/auth-card";
-import { config } from "@/lib/config";
-import { useRouter } from "next/navigation";
-import { useEffect } from "react";
-import { useTranslations } from "next-intl";
+import { motion } from 'framer-motion';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { useTranslations } from 'next-intl';
+import { useEffect } from 'react';
+
+import { RegisterForm } from '@/components/auth/register-form';
+import { AnimatedBackground } from '@/components/ui/animated-background';
+import { AnimatedAuthCard } from '@/components/ui/auth-card';
+import { config } from '@/lib/config';
 
 export default function RecruiterRegisterPage() {
-  const t = useTranslations("Auth");
+  const t = useTranslations('Auth');
   const registrationEnabled = config.registrationEnabled;
   const router = useRouter();
 
   // If registration is disabled, redirect directly to the wishlist page
   useEffect(() => {
     if (!registrationEnabled) {
-      router.push("/wishlist");
+      router.push('/wishlist');
     }
   }, [registrationEnabled, router]);
 
@@ -28,8 +29,8 @@ export default function RecruiterRegisterPage() {
       <AnimatedBackground patternColor="primary" colorScheme="indigo">
         <div className="w-full max-w-md px-4">
           <AnimatedAuthCard
-            title={t("redirecting")}
-            description={t("redirectingToWaitlist")}
+            title={t('redirecting')}
+            description={t('redirectingToWaitlist')}
             colorScheme="indigo"
             contentClassName="flex flex-col space-y-4 items-center justify-center"
           >
@@ -51,12 +52,12 @@ export default function RecruiterRegisterPage() {
         transition={{ delay: 0.3 }}
         className="text-sm text-muted-foreground text-center"
       >
-        {t("hasAccount")}{" "}
+        {t('hasAccount')}{' '}
         <Link
           href="/login/recruiter"
           className="text-primary underline underline-offset-4 hover:text-primary/90"
         >
-          {t("loginAs.recruiter")}
+          {t('loginAs.recruiter')}
         </Link>
       </motion.div>
       <motion.div
@@ -65,12 +66,12 @@ export default function RecruiterRegisterPage() {
         transition={{ delay: 0.4 }}
         className="text-sm text-muted-foreground text-center"
       >
-        {t("notRecruiter")}{" "}
+        {t('notRecruiter')}{' '}
         <Link
           href="/register/candidate"
           className="text-primary underline underline-offset-4 hover:text-primary/90"
         >
-          {t("registerAs.candidate")}
+          {t('registerAs.candidate')}
         </Link>
       </motion.div>
     </>
@@ -80,8 +81,8 @@ export default function RecruiterRegisterPage() {
     <AnimatedBackground patternColor="primary" colorScheme="purple">
       <div className="w-full max-w-md px-4">
         <AnimatedAuthCard
-          title={t("recruiterRegistration.title")}
-          description={t("recruiterRegistration.description")}
+          title={t('recruiterRegistration.title')}
+          description={t('recruiterRegistration.description')}
           colorScheme="purple"
           footer={footerContent}
         >

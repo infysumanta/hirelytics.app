@@ -1,8 +1,9 @@
-"use client";
+'use client';
 
-import { Clock, X } from "lucide-react";
-import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
+import { Clock, X } from 'lucide-react';
+
+import { Button } from '@/components/ui/button';
+import { cn } from '@/lib/utils';
 
 interface AutoSendTimerProps {
   isActive: boolean;
@@ -11,20 +12,13 @@ interface AutoSendTimerProps {
   className?: string;
 }
 
-export function AutoSendTimer({
-  isActive,
-  seconds,
-  onCancel,
-  className,
-}: AutoSendTimerProps) {
+export function AutoSendTimer({ isActive, seconds, onCancel, className }: AutoSendTimerProps) {
   if (!isActive || seconds <= 0) {
     return null;
   }
 
   return (
-    <div
-      className={cn("animate-in slide-in-from-top-2 duration-300", className)}
-    >
+    <div className={cn('animate-in slide-in-from-top-2 duration-300', className)}>
       {/* Cancel button in top-right corner */}
       <Button
         variant="ghost"
@@ -40,15 +34,11 @@ export function AutoSendTimer({
         <div className="flex flex-col">
           <div className="flex items-center gap-2 justify-between">
             <Clock className="h-2 w-2 text-muted-foreground" />
-            <span className="text-sm font-medium text-muted-foreground">
-              Auto-sending in
-            </span>
+            <span className="text-sm font-medium text-muted-foreground">Auto-sending in</span>
             <div className="flex items-center gap-1">
-              <span className="text-sm font-bold text-primary tabular-nums">
-                {seconds}
-              </span>
+              <span className="text-sm font-bold text-primary tabular-nums">{seconds}</span>
               <span className="text-sm text-muted-foreground">
-                second{seconds !== 1 ? "s" : ""}
+                second{seconds !== 1 ? 's' : ''}
               </span>
             </div>
           </div>

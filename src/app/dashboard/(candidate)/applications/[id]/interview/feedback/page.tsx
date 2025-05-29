@@ -1,15 +1,16 @@
-import { Metadata } from "next";
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import { notFound } from "next/navigation";
-import { JobApplication } from "@/models/job-application";
-import { connectToDatabase } from "@/lib/mongodb";
-import { getJobById } from "@/actions/jobs";
-import { Button } from "@/components/ui/button";
-import Link from "next/link";
-import { AIInterviewBackground } from "@/components/interview/ai-interview-background";
-import { CircleCheck } from "lucide-react";
-import { AutoGenerateFeedbackEnhanced } from "@/components/interview/auto-generate-feedback-enhanced";
-import { FeedbackContent } from "@/components/interview/feedback-content";
+import { CircleCheck } from 'lucide-react';
+import { Metadata } from 'next';
+import Link from 'next/link';
+import { notFound } from 'next/navigation';
+
+import { getJobById } from '@/actions/jobs';
+import { AIInterviewBackground } from '@/components/interview/ai-interview-background';
+import { AutoGenerateFeedbackEnhanced } from '@/components/interview/auto-generate-feedback-enhanced';
+import { FeedbackContent } from '@/components/interview/feedback-content';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader } from '@/components/ui/card';
+import { connectToDatabase } from '@/lib/mongodb';
+import { JobApplication } from '@/models/job-application';
 
 type Props = {
   params: Promise<{ id: string }>;
@@ -40,7 +41,7 @@ export default async function InterviewFeedbackPage(props: Props) {
 
     // Check if interview is completed and has evaluation
     const interviewState = application.interviewState;
-    if (!interviewState || interviewState.currentPhase !== "completed") {
+    if (!interviewState || interviewState.currentPhase !== 'completed') {
       return (
         <div className="container mx-auto max-w-4xl py-12">
           <Card>
@@ -70,8 +71,7 @@ export default async function InterviewFeedbackPage(props: Props) {
             <CardHeader>
               <h1 className="text-2xl font-bold">Feedback Processing</h1>
               <p className="text-muted-foreground">
-                Your interview responses are being analyzed. This may take a
-                moment.
+                Your interview responses are being analyzed. This may take a moment.
               </p>
             </CardHeader>
             <CardContent>
@@ -96,10 +96,8 @@ export default async function InterviewFeedbackPage(props: Props) {
       communicationSkills: feedback.communicationSkills || 0,
       problemSolving: feedback.problemSolving || 0,
       cultureFit: feedback.cultureFit || 0,
-      overallImpression: feedback.overallImpression || "",
-      strengths: Array.isArray(feedback.strengths)
-        ? [...feedback.strengths]
-        : [],
+      overallImpression: feedback.overallImpression || '',
+      strengths: Array.isArray(feedback.strengths) ? [...feedback.strengths] : [],
       areasOfImprovement: Array.isArray(feedback.areasOfImprovement)
         ? [...feedback.areasOfImprovement]
         : [],
@@ -121,22 +119,17 @@ export default async function InterviewFeedbackPage(props: Props) {
 
           <Card className="mb-6 border-border/60 shadow-lg">
             <CardHeader>
-              <h1 className="text-2xl font-bold text-center">
-                {job.title} - Interview Feedback
-              </h1>
+              <h1 className="text-2xl font-bold text-center">{job.title} - Interview Feedback</h1>
               <p className="text-center text-muted-foreground">
-                AI-generated assessment for your interview with{" "}
-                {job.companyName}
+                AI-generated assessment for your interview with {job.companyName}
               </p>
             </CardHeader>
             <CardContent>
               {/* Add timestamp for when feedback was generated */}
               {interviewState.feedbackGeneratedAt && (
                 <p className="text-xs text-muted-foreground mb-4 text-center">
-                  Feedback generated:{" "}
-                  {new Date(
-                    interviewState.feedbackGeneratedAt,
-                  ).toLocaleString()}
+                  Feedback generated:{' '}
+                  {new Date(interviewState.feedbackGeneratedAt).toLocaleString()}
                 </p>
               )}
 
@@ -156,7 +149,7 @@ export default async function InterviewFeedbackPage(props: Props) {
       </div>
     );
   } catch (error) {
-    console.error("Error loading interview feedback page:", error);
+    console.error('Error loading interview feedback page:', error);
     notFound();
   }
 }

@@ -1,9 +1,9 @@
-import mongoose from "mongoose";
+import mongoose from 'mongoose';
 
 const MONGODB_URI = process.env.MONGODB_URI;
 
 if (!MONGODB_URI) {
-  throw new Error("Please define the MONGODB_URI environment variable");
+  throw new Error('Please define the MONGODB_URI environment variable');
 }
 
 /**
@@ -31,28 +31,28 @@ if (!cached) {
 
 export async function connectToDatabase() {
   if (cached.conn) {
-    console.log("[MongoDB] Using cached database connection");
+    console.log('[MongoDB] Using cached database connection');
     return cached.conn;
   }
 
   if (!cached.promise) {
-    console.log("[MongoDB] Creating new database connection");
+    console.log('[MongoDB] Creating new database connection');
     const opts = {
       bufferCommands: false,
     };
 
     cached.promise = mongoose.connect(MONGODB_URI!, opts).then((mongoose) => {
-      console.log("[MongoDB] Connection established successfully");
+      console.log('[MongoDB] Connection established successfully');
       return mongoose;
     });
   }
 
   try {
-    console.log("[MongoDB] Waiting for database connection...");
+    console.log('[MongoDB] Waiting for database connection...');
     cached.conn = await cached.promise;
-    console.log("[MongoDB] Connection ready");
+    console.log('[MongoDB] Connection ready');
   } catch (e) {
-    console.error("[MongoDB] Connection failed:", e);
+    console.error('[MongoDB] Connection failed:', e);
     cached.promise = null;
     throw e;
   }

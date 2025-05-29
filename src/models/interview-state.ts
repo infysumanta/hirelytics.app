@@ -1,4 +1,4 @@
-import { Schema } from "mongoose";
+import { Schema } from 'mongoose';
 
 // Represents the state of an interview process
 export interface InterviewState {
@@ -27,7 +27,7 @@ export interface InterviewState {
   timerDurationMinutes?: number; // Interview duration in minutes
   isTimerExpired?: boolean; // Whether the timer has expired
   interruptedAt?: Date; // When the interview was interrupted (if applicable)
-  interruptionReason?: "timer_expired" | "technical_issue" | "user_action"; // Reason for interruption
+  interruptionReason?: 'timer_expired' | 'technical_issue' | 'user_action'; // Reason for interruption
 }
 
 // Define the schema for interview state
@@ -36,16 +36,16 @@ export const InterviewStateSchema = new Schema(
     currentPhase: {
       type: String,
       enum: [
-        "introduction",
-        "candidate_introduction",
-        "technical_questions",
-        "project_discussion",
-        "behavioral_questions",
-        "conclusion",
-        "completed",
-        "interrupted",
+        'introduction',
+        'candidate_introduction',
+        'technical_questions',
+        'project_discussion',
+        'behavioral_questions',
+        'conclusion',
+        'completed',
+        'interrupted',
       ],
-      default: "introduction",
+      default: 'introduction',
     },
     technicalQuestionsAsked: {
       type: Number,
@@ -89,8 +89,8 @@ export const InterviewStateSchema = new Schema(
     interruptedAt: Date,
     interruptionReason: {
       type: String,
-      enum: ["timer_expired", "technical_issue", "user_action"],
+      enum: ['timer_expired', 'technical_issue', 'user_action'],
     },
   },
-  { _id: false },
+  { _id: false }
 );

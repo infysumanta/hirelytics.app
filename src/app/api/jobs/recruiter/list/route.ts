@@ -1,16 +1,17 @@
-import { NextResponse } from "next/server";
-import { connectToDatabase } from "@/lib/mongodb";
-import Job from "@/models/job";
-import { auth } from "@/auth";
+import { NextResponse } from 'next/server';
+
+import { auth } from '@/auth';
+import { connectToDatabase } from '@/lib/mongodb';
+import Job from '@/models/job';
 
 export async function GET() {
   try {
     // Check authentication
     const session = await auth();
-    if (!session || session.user?.role !== "recruiter") {
+    if (!session || session.user?.role !== 'recruiter') {
       return NextResponse.json(
-        { error: "Unauthorized. Recruiter access required." },
-        { status: 403 },
+        { error: 'Unauthorized. Recruiter access required.' },
+        { status: 403 }
       );
     }
 
@@ -21,7 +22,7 @@ export async function GET() {
 
     // Get all jobs for this recruiter
     const jobs = await Job.find({ recruiter: recruiterId })
-      .select("title companyName")
+      .select('title companyName')
       .sort({ createdAt: -1 })
       .lean();
 
@@ -36,10 +37,7 @@ export async function GET() {
       jobs: formattedJobs,
     });
   } catch (error) {
-    console.error("Error fetching recruiter jobs list:", error);
-    return NextResponse.json(
-      { error: "Failed to fetch jobs" },
-      { status: 500 },
-    );
+    console.error('Error fetching recruiter jobs list:', error);
+    return NextResponse.json({ error: 'Failed to fetch jobs' }, { status: 500 });
   }
 }

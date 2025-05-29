@@ -1,12 +1,13 @@
-import { NextRequest, NextResponse } from "next/server";
-import { z } from "zod";
-import { connectToDatabase } from "@/lib/mongodb";
-import { JobApplication } from "@/models/job-application";
+import { NextRequest, NextResponse } from 'next/server';
+import { z } from 'zod';
+
+import { connectToDatabase } from '@/lib/mongodb';
+import { JobApplication } from '@/models/job-application';
 
 // Schema for validating request body
 const interruptInterviewSchema = z.object({
   applicationId: z.string(),
-  reason: z.enum(["timer_expired", "technical_issue", "user_action"]),
+  reason: z.enum(['timer_expired', 'technical_issue', 'user_action']),
 });
 
 export async function POST(req: NextRequest) {
@@ -21,22 +22,20 @@ export async function POST(req: NextRequest) {
     // Get application details
     const application = await JobApplication.findById(applicationId);
     if (!application) {
-      return NextResponse.json(
-        { error: "Application not found" },
-        { status: 404 },
-      );
+      return NextResponse.json({ error: 'Application not found' }, { status: 404 });
     }
 
     // Update interview state to mark as interrupted
-    const updateData = {
-      "interviewState.currentPhase": "interrupted",
-      "interviewState.interruptedAt": new Date(),
-      "interviewState.interruptionReason": reason,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const updateData: Record<string, any> = {
+      'interviewState.currentPhase': 'interrupted',
+      'interviewState.interruptedAt': new Date(),
+      'interviewState.interruptionReason': reason,
     };
 
     // If timer expired, also mark timer as expired
-    if (reason === "timer_expired") {
-      updateData["interviewState.isTimerExpired"] = true;
+    if (reason === 'timer_expired') {
+      updateData['interviewState.isTimerExpired'] = true;
     }
 
     await JobApplication.findByIdAndUpdate(
@@ -44,26 +43,27 @@ export async function POST(req: NextRequest) {
       {
         $set: updateData,
       },
-      { new: true },
+      { new: true }
     );
 
     // Add a system message to the chat history about the interruption
-    let interruptionMessage = "";
+    let interruptionMessage = '';
     switch (reason) {
-      case "timer_expired":
-        interruptionMessage = "Interview time has expired. The interview session has been automatically ended.";
+      case 'timer_expired':
+        interruptionMessage =
+          'Interview time has expired. The interview session has been automatically ended.';
         break;
-      case "technical_issue":
-        interruptionMessage = "Interview was interrupted due to a technical issue.";
+      case 'technical_issue':
+        interruptionMessage = 'Interview was interrupted due to a technical issue.';
         break;
-      case "user_action":
-        interruptionMessage = "Interview was ended by user action.";
+      case 'user_action':
+        interruptionMessage = 'Interview was ended by user action.';
         break;
     }
 
     const systemMessage = {
       text: interruptionMessage,
-      sender: "system",
+      sender: 'system',
       timestamp: new Date(),
     };
 
@@ -74,19 +74,19 @@ export async function POST(req: NextRequest) {
           interviewChatHistory: systemMessage,
         },
       },
-      { new: true },
+      { new: true }
     );
 
     return NextResponse.json({
       success: true,
-      message: "Interview interrupted successfully",
+      message: 'Interview interrupted successfully',
       reason,
     });
   } catch (error) {
-    console.error("Error interrupting interview:", error);
+    console.error('Error interrupting interview:', error);
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : "An error occurred" },
-      { status: 500 },
+      { error: error instanceof Error ? error.message : 'An error occurred' },
+      { status: 500 }
     );
   }
 }

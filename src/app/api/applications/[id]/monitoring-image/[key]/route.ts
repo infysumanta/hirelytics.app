@@ -1,10 +1,11 @@
-import { NextRequest, NextResponse } from "next/server";
-import { GetObjectCommand, S3Client } from "@aws-sdk/client-s3";
-import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
-import { connectToDatabase } from "@/lib/mongodb";
-import { JobApplication } from "@/models/job-application";
-import { auth } from "@/auth";
-import Job from "@/models/job";
+import { GetObjectCommand, S3Client } from '@aws-sdk/client-s3';
+import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
+import { NextRequest, NextResponse } from 'next/server';
+
+import { auth } from '@/auth';
+import { connectToDatabase } from '@/lib/mongodb';
+import Job from '@/models/job';
+import { JobApplication } from '@/models/job-application';
 
 const s3Client = new S3Client({
   endpoint: process.env.AWS_ENDPOINT_URL_S3,
@@ -16,11 +17,11 @@ const s3Client = new S3Client({
   },
 });
 
-const bucketName = process.env.AWS_BUCKET_NAME || "hirelytics";
+const bucketName = process.env.AWS_BUCKET_NAME || 'hirelytics';
 
 export async function GET(
   req: NextRequest,
-  { params }: { params: Promise<{ id: string; key: string }> },
+  { params }: { params: Promise<{ id: string; key: string }> }
 ) {
   try {
     await connectToDatabase();
@@ -30,18 +31,18 @@ export async function GET(
     if (!session) {
       return NextResponse.json(
         {
-          error: "Unauthorized",
-          message: "You must be logged in to access monitoring images",
+          error: 'Unauthorized',
+          message: 'You must be logged in to access monitoring images',
         },
-        { status: 401 },
+        { status: 401 }
       );
     }
 
     // Only recruiters can access monitoring images
-    if (session.user?.role !== "recruiter") {
+    if (session.user?.role !== 'recruiter') {
       return NextResponse.json(
-        { error: "Unauthorized. Recruiter access required." },
-        { status: 403 },
+        { error: 'Unauthorized. Recruiter access required.' },
+        { status: 403 }
       );
     }
 
@@ -51,8 +52,8 @@ export async function GET(
     const application = await JobApplication.findById(id);
     if (!application) {
       return NextResponse.json(
-        { success: false, message: "Application not found" },
-        { status: 404 },
+        { success: false, message: 'Application not found' },
+        { status: 404 }
       );
     }
 
@@ -61,8 +62,8 @@ export async function GET(
     const job = await Job.findById(application.jobId);
     if (!job) {
       return NextResponse.json(
-        { success: false, message: "Associated job not found" },
-        { status: 404 },
+        { success: false, message: 'Associated job not found' },
+        { status: 404 }
       );
     }
 
@@ -71,21 +72,21 @@ export async function GET(
       return NextResponse.json(
         {
           success: false,
-          message: "Unauthorized. You are not the recruiter for this job.",
+          message: 'Unauthorized. You are not the recruiter for this job.',
         },
-        { status: 403 },
+        { status: 403 }
       );
     }
 
     // Find the requested monitoring image in the application
     const monitoringImage = application.monitoringImages?.find(
-      (img: { s3Key: string }) => img.s3Key === decodeURIComponent(key),
+      (img: { s3Key: string }) => img.s3Key === decodeURIComponent(key)
     );
 
     if (!monitoringImage) {
       return NextResponse.json(
-        { success: false, message: "Monitoring image not found" },
-        { status: 404 },
+        { success: false, message: 'Monitoring image not found' },
+        { status: 404 }
       );
     }
 
@@ -105,10 +106,10 @@ export async function GET(
       timestamp: monitoringImage.timestamp,
     });
   } catch (error) {
-    console.error("Error accessing monitoring image:", error);
+    console.error('Error accessing monitoring image:', error);
     return NextResponse.json(
-      { success: false, message: "Failed to access monitoring image" },
-      { status: 500 },
+      { success: false, message: 'Failed to access monitoring image' },
+      { status: 500 }
     );
   }
 }

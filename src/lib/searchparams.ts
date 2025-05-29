@@ -1,11 +1,7 @@
-import {
-  parseAsString,
-  createSerializer,
-  createSearchParamsCache,
-} from "nuqs/server";
+import { createSearchParamsCache, createSerializer, parseAsString } from 'nuqs/server';
 
 export const searchParams = {
-  user: parseAsString.withDefault(""),
+  user: parseAsString.withDefault(''),
 };
 
 export const searchParamsCache = createSearchParamsCache(searchParams);

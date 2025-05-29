@@ -1,9 +1,10 @@
-import { NextRequest, NextResponse } from "next/server";
-import { z } from "zod";
-import { connectToDatabase } from "@/lib/mongodb";
-import { JobApplication } from "@/models/job-application";
-import { getJobById } from "@/actions/jobs";
-import { generateGeminiText } from "@/lib/ai-utils";
+import { NextRequest, NextResponse } from 'next/server';
+import { z } from 'zod';
+
+import { getJobById } from '@/actions/jobs';
+import { generateGeminiText } from '@/lib/ai-utils';
+import { connectToDatabase } from '@/lib/mongodb';
+import { JobApplication } from '@/models/job-application';
 
 // Schema for validating the request body
 const evaluateInterviewSchema = z.object({
@@ -22,25 +23,19 @@ export async function POST(req: NextRequest) {
     // Get application details
     const application = await JobApplication.findById(applicationId);
     if (!application) {
-      return NextResponse.json(
-        { error: "Application not found" },
-        { status: 404 },
-      );
+      return NextResponse.json({ error: 'Application not found' }, { status: 404 });
     }
 
     // Get job details
     const job = await getJobById(application.jobId);
     if (!job) {
-      return NextResponse.json({ error: "Job not found" }, { status: 404 });
+      return NextResponse.json({ error: 'Job not found' }, { status: 404 });
     }
 
     // Check if interview is completed
     const interviewState = application.interviewState;
-    if (!interviewState || interviewState.currentPhase !== "completed") {
-      return NextResponse.json(
-        { error: "Interview not completed" },
-        { status: 400 },
-      );
+    if (!interviewState || interviewState.currentPhase !== 'completed') {
+      return NextResponse.json({ error: 'Interview not completed' }, { status: 400 });
     }
 
     // Compile all interview chat messages for evaluation
@@ -49,21 +44,19 @@ export async function POST(req: NextRequest) {
     // Extract only user messages (candidate responses) and AI questions
     const candidateResponses = interviewChat.filter(
       (msg: { sender: string; questionId?: string }) =>
-        msg.sender === "user" || (msg.sender === "ai" && msg.questionId),
+        msg.sender === 'user' || (msg.sender === 'ai' && msg.questionId)
     );
 
     // Format messages for evaluation
     const formattedChat = candidateResponses
-      .map(
-        (msg: { sender: string; questionCategory?: string; text: string }) => {
-          if (msg.sender === "ai") {
-            return `QUESTION (${msg.questionCategory}): ${msg.text}`;
-          } else {
-            return `CANDIDATE RESPONSE: ${msg.text}`;
-          }
-        },
-      )
-      .join("\n\n");
+      .map((msg: { sender: string; questionCategory?: string; text: string }) => {
+        if (msg.sender === 'ai') {
+          return `QUESTION (${msg.questionCategory}): ${msg.text}`;
+        } else {
+          return `CANDIDATE RESPONSE: ${msg.text}`;
+        }
+      })
+      .join('\n\n');
 
     // Create evaluation prompt
     const evaluationPrompt = `
@@ -72,10 +65,10 @@ export async function POST(req: NextRequest) {
       Your task is to provide a fair, balanced, and constructive evaluation of the candidate.
       
       JOB DESCRIPTION:
-      ${job.description || "No detailed job description available."}
+      ${job.description || 'No detailed job description available.'}
       
       REQUIRED SKILLS:
-      ${job.skills?.join(", ") || "not specified"}.
+      ${job.skills?.join(', ') || 'not specified'}.
       
       INTERVIEW TRANSCRIPT:
       ${formattedChat}
@@ -154,42 +147,29 @@ export async function POST(req: NextRequest) {
     `;
 
     // Generate evaluation
-    const evaluationResponse = await generateGeminiText(
-      evaluationPrompt,
-      "gemini-2.0-flash-lite",
-    );
+    const evaluationResponse = await generateGeminiText(evaluationPrompt, 'gemini-2.0-flash-lite');
 
     // Parse the response to extract ratings and feedback
-    const technicalMatch = evaluationResponse.match(
-      /TECHNICAL_SKILLS:\s*(\d+)/,
-    );
-    const communicationMatch = evaluationResponse.match(
-      /COMMUNICATION_SKILLS:\s*(\d+)/,
-    );
-    const problemSolvingMatch = evaluationResponse.match(
-      /PROBLEM_SOLVING:\s*(\d+)/,
-    );
+    const technicalMatch = evaluationResponse.match(/TECHNICAL_SKILLS:\s*(\d+)/);
+    const communicationMatch = evaluationResponse.match(/COMMUNICATION_SKILLS:\s*(\d+)/);
+    const problemSolvingMatch = evaluationResponse.match(/PROBLEM_SOLVING:\s*(\d+)/);
     const cultureFitMatch = evaluationResponse.match(/CULTURAL_FIT:\s*(\d+)/);
 
     const strengthsMatch = evaluationResponse.match(
-      /STRENGTHS:([\s\S]*?)(?=AREAS_OF_IMPROVEMENT:|$)/,
+      /STRENGTHS:([\s\S]*?)(?=AREAS_OF_IMPROVEMENT:|$)/
     );
     const areasMatch = evaluationResponse.match(
-      /AREAS_OF_IMPROVEMENT:([\s\S]*?)(?=OVERALL_IMPRESSION:|$)/,
+      /AREAS_OF_IMPROVEMENT:([\s\S]*?)(?=OVERALL_IMPRESSION:|$)/
     );
-    const overallMatch = evaluationResponse.match(
-      /OVERALL_IMPRESSION:([\s\S]*?)$/,
-    );
+    const overallMatch = evaluationResponse.match(/OVERALL_IMPRESSION:([\s\S]*?)$/);
 
     // Extract strengths as array
     const strengths: string[] = [];
     if (strengthsMatch && strengthsMatch[1]) {
       const strengthsText = strengthsMatch[1].trim();
-      const strengthLines = strengthsText
-        .split("\n")
-        .filter((line) => line.trim().startsWith("-"));
+      const strengthLines = strengthsText.split('\n').filter((line) => line.trim().startsWith('-'));
       strengthLines.forEach((line) => {
-        const strength = line.replace("-", "").trim();
+        const strength = line.replace('-', '').trim();
         if (strength) strengths.push(strength);
       });
     }
@@ -198,35 +178,25 @@ export async function POST(req: NextRequest) {
     const areasOfImprovement: string[] = [];
     if (areasMatch && areasMatch[1]) {
       const areasText = areasMatch[1].trim();
-      const areaLines = areasText
-        .split("\n")
-        .filter((line) => line.trim().startsWith("-"));
+      const areaLines = areasText.split('\n').filter((line) => line.trim().startsWith('-'));
       areaLines.forEach((line) => {
-        const area = line.replace("-", "").trim();
+        const area = line.replace('-', '').trim();
         if (area) areasOfImprovement.push(area);
       });
     }
 
     // Extract overall impression
-    let overallImpression = "";
+    let overallImpression = '';
     if (overallMatch && overallMatch[1]) {
       overallImpression = overallMatch[1].trim();
     }
 
     // Prepare feedback object
     const feedback = {
-      technicalSkills: technicalMatch
-        ? parseInt(technicalMatch[1], 10)
-        : undefined,
-      communicationSkills: communicationMatch
-        ? parseInt(communicationMatch[1], 10)
-        : undefined,
-      problemSolving: problemSolvingMatch
-        ? parseInt(problemSolvingMatch[1], 10)
-        : undefined,
-      cultureFit: cultureFitMatch
-        ? parseInt(cultureFitMatch[1], 10)
-        : undefined,
+      technicalSkills: technicalMatch ? parseInt(technicalMatch[1], 10) : undefined,
+      communicationSkills: communicationMatch ? parseInt(communicationMatch[1], 10) : undefined,
+      problemSolving: problemSolvingMatch ? parseInt(problemSolvingMatch[1], 10) : undefined,
+      cultureFit: cultureFitMatch ? parseInt(cultureFitMatch[1], 10) : undefined,
       overallImpression,
       strengths,
       areasOfImprovement,
@@ -237,11 +207,11 @@ export async function POST(req: NextRequest) {
       applicationId,
       {
         $set: {
-          "interviewState.feedback": feedback,
-          "interviewState.completedAt": new Date(),
+          'interviewState.feedback': feedback,
+          'interviewState.completedAt': new Date(),
         },
       },
-      { new: true },
+      { new: true }
     );
 
     // Save the full evaluation response to chat history as a system message
@@ -251,12 +221,12 @@ export async function POST(req: NextRequest) {
         $push: {
           interviewChatHistory: {
             text: `## Interview Evaluation\n\n${evaluationResponse}`,
-            sender: "system",
+            sender: 'system',
             timestamp: new Date(),
           },
         },
       },
-      { new: true },
+      { new: true }
     );
 
     return NextResponse.json({
@@ -265,10 +235,10 @@ export async function POST(req: NextRequest) {
       evaluationText: evaluationResponse,
     });
   } catch (error) {
-    console.error("Error evaluating interview:", error);
+    console.error('Error evaluating interview:', error);
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : "An error occurred" },
-      { status: 500 },
+      { error: error instanceof Error ? error.message : 'An error occurred' },
+      { status: 500 }
     );
   }
 }

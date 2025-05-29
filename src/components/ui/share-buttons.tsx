@@ -1,21 +1,22 @@
-"use client";
+'use client';
 
-import React, { useState } from "react";
+import { CheckIcon, CopyIcon } from 'lucide-react';
 import {
-  FacebookShareButton,
   FacebookIcon,
-  LinkedinShareButton,
-  LinkedinIcon,
-  TelegramShareButton,
-  TelegramIcon,
-  WhatsappShareButton,
-  WhatsappIcon,
-  FacebookMessengerShareButton,
   FacebookMessengerIcon,
-} from "next-share";
-import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
-import { CopyIcon, CheckIcon } from "lucide-react";
+  FacebookMessengerShareButton,
+  FacebookShareButton,
+  LinkedinIcon,
+  LinkedinShareButton,
+  TelegramIcon,
+  TelegramShareButton,
+  WhatsappIcon,
+  WhatsappShareButton,
+} from 'next-share';
+import React, { useState } from 'react';
+
+import { Button } from '@/components/ui/button';
+import { cn } from '@/lib/utils';
 
 interface ShareButtonsProps {
   url: string;
@@ -41,7 +42,7 @@ export function ShareButtons({
   round = true,
   facebookQuote,
   facebookHashtag,
-  appId = "", // You should provide your FB App ID here or via env variable
+  appId = '', // You should provide your FB App ID here or via env variable
   message,
   displayUrl,
 }: ShareButtonsProps) {
@@ -55,7 +56,7 @@ export function ShareButtons({
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     } catch (err) {
-      console.error("Failed to copy URL: ", err);
+      console.error('Failed to copy URL: ', err);
     }
   };
 
@@ -66,7 +67,7 @@ export function ShareButtons({
   const urlToDisplay = displayUrl || url;
 
   return (
-    <div className={cn("flex flex-col gap-3", className)}>
+    <div className={cn('flex flex-col gap-3', className)}>
       {/* Copy Link Button */}
       <Button
         variant="outline"
@@ -84,11 +85,7 @@ export function ShareButtons({
 
       <div className="flex flex-wrap gap-2">
         {/* Facebook Share Button */}
-        <FacebookShareButton
-          url={url}
-          quote={facebookQuote || title}
-          hashtag={facebookHashtag}
-        >
+        <FacebookShareButton url={url} quote={facebookQuote || title} hashtag={facebookHashtag}>
           <FacebookIcon size={iconSize} round={round} />
         </FacebookShareButton>
 

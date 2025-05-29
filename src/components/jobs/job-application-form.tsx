@@ -1,15 +1,16 @@
-"use client";
+'use client';
 
-import { useState, useCallback } from "react";
-import { useRouter } from "next/navigation";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-import * as z from "zod";
-import { toast } from "sonner";
-import { useDropzone } from "react-dropzone";
-import { useSession } from "next-auth/react";
+import { zodResolver } from '@hookform/resolvers/zod';
+import { FileIcon, Loader2, Upload, X } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { useSession } from 'next-auth/react';
+import { useCallback, useState } from 'react';
+import { useDropzone } from 'react-dropzone';
+import { useForm } from 'react-hook-form';
+import { toast } from 'sonner';
+import * as z from 'zod';
 
-import { Button } from "@/components/ui/button";
+import { Button } from '@/components/ui/button';
 import {
   Form,
   FormControl,
@@ -18,19 +19,18 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form";
-import { Label } from "@/components/ui/label";
-import { IJob } from "@/models/job";
-import { Loader2, Upload, FileIcon, X } from "lucide-react";
+} from '@/components/ui/form';
+import { Label } from '@/components/ui/label';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
-import { localsLanguages } from "@/i18n/config";
-import { processFileForStorage } from "@/lib/file-utils";
+} from '@/components/ui/select';
+import { localsLanguages } from '@/i18n/config';
+import { processFileForStorage } from '@/lib/file-utils';
+import { IJob } from '@/models/job';
 
 const formSchema = z.object({
   resumeUrl: z.string().optional(),
@@ -39,7 +39,7 @@ const formSchema = z.object({
   s3Key: z.string().optional(),
   s3Bucket: z.string().optional(),
   preferredLanguage: z.string().min(1, {
-    message: "Please select your preferred language.",
+    message: 'Please select your preferred language.',
   }),
 });
 
@@ -64,8 +64,8 @@ export function JobApplicationForm({
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      resumeUrl: "",
-      preferredLanguage: "en",
+      resumeUrl: '',
+      preferredLanguage: 'en',
     },
   });
 
@@ -81,46 +81,44 @@ export function JobApplicationForm({
 
       try {
         // Process file for storage (upload to S3 and convert to base64)
-        const { url, base64, fileName, key, bucket } =
-          await processFileForStorage(file);
+        const { url, base64, fileName, key, bucket } = await processFileForStorage(file);
 
         // Set form values
-        form.setValue("resumeUrl", url);
-        form.setValue("resumeBase64", base64);
-        form.setValue("fileName", fileName);
-        form.setValue("s3Key", key);
-        form.setValue("s3Bucket", bucket);
+        form.setValue('resumeUrl', url);
+        form.setValue('resumeBase64', base64);
+        form.setValue('fileName', fileName);
+        form.setValue('s3Key', key);
+        form.setValue('s3Bucket', bucket);
 
-        toast.success("Resume uploaded successfully", {
-          description: "Your resume has been attached to your application",
+        toast.success('Resume uploaded successfully', {
+          description: 'Your resume has been attached to your application',
         });
       } catch (error) {
-        console.error("Error uploading file:", error);
-        toast.error("Upload failed", {
-          description:
-            "There was an error uploading your resume. Please try again.",
+        console.error('Error uploading file:', error);
+        toast.error('Upload failed', {
+          description: 'There was an error uploading your resume. Please try again.',
         });
         setFileName(null);
       } finally {
         setIsUploading(false);
       }
     },
-    [form],
+    [form]
   );
 
   const removeFile = useCallback(() => {
     setFileName(null);
-    form.setValue("resumeUrl", "");
-    form.setValue("resumeBase64", "");
-    form.setValue("fileName", "");
-    form.setValue("s3Key", "");
-    form.setValue("s3Bucket", "");
+    form.setValue('resumeUrl', '');
+    form.setValue('resumeBase64', '');
+    form.setValue('fileName', '');
+    form.setValue('s3Key', '');
+    form.setValue('s3Bucket', '');
   }, [form]);
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop: handleResumeUpload,
     accept: {
-      "application/pdf": [".pdf"],
+      'application/pdf': ['.pdf'],
     },
     maxFiles: 1,
     disabled: isUploading,
@@ -133,8 +131,8 @@ export function JobApplicationForm({
 
     // Check if user is logged in
     if (!session || !session.user) {
-      toast.error("Authentication required", {
-        description: "Please log in before applying for this job.",
+      toast.error('Authentication required', {
+        description: 'Please log in before applying for this job.',
       });
       setIsSubmitting(false);
       return;
@@ -142,8 +140,8 @@ export function JobApplicationForm({
 
     // Ensure file was uploaded
     if (!values.resumeUrl || !values.resumeBase64) {
-      toast.error("Missing resume", {
-        description: "Please upload your resume before submitting.",
+      toast.error('Missing resume', {
+        description: 'Please upload your resume before submitting.',
       });
       setIsSubmitting(false);
       return;
@@ -151,13 +149,13 @@ export function JobApplicationForm({
 
     try {
       // Log job and jobId for debugging
-      console.log("Job object:", job);
-      console.log("JobId prop:", job.id);
+      console.log('Job object:', job);
+      console.log('JobId prop:', job.id);
 
       // Prepare application data - Use the URL ID which is what's used in the database as jobId
       const applicationData = {
         jobId: job._id || job.id,
-        userId: session?.user?.id || "",
+        userId: session?.user?.id || '',
         // Candidatename and email are now optional in the model
         resumeUrl: values.resumeUrl,
         resumeBase64: values.resumeBase64,
@@ -169,10 +167,10 @@ export function JobApplicationForm({
       };
 
       // Submit to API
-      const response = await fetch("/api/applications", {
-        method: "POST",
+      const response = await fetch('/api/applications', {
+        method: 'POST',
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify(applicationData),
       });
@@ -180,11 +178,11 @@ export function JobApplicationForm({
       const result = await response.json();
 
       if (!response.ok) {
-        throw new Error(result.message || "Failed to submit application");
+        throw new Error(result.message || 'Failed to submit application');
       }
 
-      toast.success("Application submitted successfully!", {
-        description: "Your resume will now be analyzed.",
+      toast.success('Application submitted successfully!', {
+        description: 'Your resume will now be analyzed.',
       });
 
       // Get the application ID from the response
@@ -193,10 +191,9 @@ export function JobApplicationForm({
       // Either call the success callback or redirect
       onSubmitSuccess?.(applicationId);
     } catch (error) {
-      console.error("Application submission error:", error);
-      toast.error("Submission failed", {
-        description:
-          "There was an error submitting your application. Please try again.",
+      console.error('Application submission error:', error);
+      toast.error('Submission failed', {
+        description: 'There was an error submitting your application. Please try again.',
       });
     } finally {
       setIsSubmitting(false);
@@ -219,8 +216,8 @@ export function JobApplicationForm({
                 {...getRootProps()}
                 className={`border-2 border-dashed rounded-md p-6 text-center cursor-pointer transition-colors ${
                   isDragActive
-                    ? "border-primary bg-primary/5"
-                    : "border-gray-300 hover:border-primary/50"
+                    ? 'border-primary bg-primary/5'
+                    : 'border-gray-300 hover:border-primary/50'
                 }`}
               >
                 <input {...getInputProps()} />
@@ -269,10 +266,7 @@ export function JobApplicationForm({
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Preferred Language</FormLabel>
-                <Select
-                  onValueChange={field.onChange}
-                  defaultValue={field.value}
-                >
+                <Select onValueChange={field.onChange} defaultValue={field.value}>
                   <FormControl>
                     <SelectTrigger>
                       <SelectValue placeholder="Select your preferred language" />
@@ -310,7 +304,7 @@ export function JobApplicationForm({
             }}
             disabled={isSubmitting}
           >
-            {inModal ? "Close" : "Cancel"}
+            {inModal ? 'Close' : 'Cancel'}
           </Button>
           <Button type="submit" disabled={isSubmitting || isUploading}>
             {isSubmitting ? (
@@ -319,7 +313,7 @@ export function JobApplicationForm({
                 Submitting...
               </>
             ) : (
-              "Submit Application"
+              'Submit Application'
             )}
           </Button>
         </div>

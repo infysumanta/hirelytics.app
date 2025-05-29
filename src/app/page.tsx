@@ -1,30 +1,31 @@
-"use client";
+'use client';
 
-import Link from "next/link";
-import { Button } from "@/components/ui/button";
-import { motion } from "framer-motion";
-import { AnimatedBackground } from "@/components/ui/animated-background";
-import { useTranslations } from "next-intl";
+import { motion } from 'framer-motion';
 import {
-  LineChart,
-  Zap,
-  Search,
-  Building2,
-  GraduationCap,
-  FileText,
-  Link as LinkIcon,
-  Upload,
-  MessageSquareText,
-  ClipboardCheck,
   ArrowRight,
-  ChevronRight,
-  Sparkles,
-  User as UserIcon,
-  Heart,
-  Users,
   Briefcase as BriefcaseIcon,
-} from "lucide-react";
-import Image from "next/image";
+  Building2,
+  ChevronRight,
+  ClipboardCheck,
+  FileText,
+  GraduationCap,
+  Heart,
+  LineChart,
+  Link as LinkIcon,
+  MessageSquareText,
+  Search,
+  Sparkles,
+  Upload,
+  User as UserIcon,
+  Users,
+  Zap,
+} from 'lucide-react';
+import Image from 'next/image';
+import Link from 'next/link';
+import { useTranslations } from 'next-intl';
+
+import { AnimatedBackground } from '@/components/ui/animated-background';
+import { Button } from '@/components/ui/button';
 
 // Animation variants
 const fadeIn = {
@@ -55,38 +56,34 @@ const featureCardVariants = {
   },
   hover: {
     y: -5,
-    boxShadow: "0 10px 30px rgba(0, 0, 0, 0.1)",
+    boxShadow: '0 10px 30px rgba(0, 0, 0, 0.1)',
     transition: { duration: 0.3 },
   },
 };
 
 export default function Home() {
-  const t = useTranslations("HomePage");
-  const common = useTranslations("Common");
+  const t = useTranslations('HomePage');
+  const common = useTranslations('Common');
 
   return (
     <div className="flex min-h-screen flex-col items-center">
       {/* Logo */}
 
       {/* Hero Section */}
-      <AnimatedBackground
-        colorScheme="indigo"
-        patternOpacity={0.2}
-        className="py-5 md:py-5"
-      >
+      <AnimatedBackground colorScheme="indigo" patternOpacity={0.2} className="py-5 md:py-5">
         <div className="absolute inset-0 z-0 opacity-40">
           <div className="absolute top-0 left-0 h-[500px] w-[500px] rounded-full bg-blue-600/30 dark:bg-blue-500/30 blur-[120px] animate-pulse-slow"></div>
           <div
             className="absolute bottom-0 right-0 h-[400px] w-[400px] rounded-full bg-purple-600/30 dark:bg-purple-500/30 blur-[120px] animate-pulse-slow"
-            style={{ animationDelay: "2s" }}
+            style={{ animationDelay: '2s' }}
           ></div>
           <div
             className="absolute top-1/2 right-1/4 h-[300px] w-[300px] rounded-full bg-indigo-600/30 dark:bg-indigo-500/30 blur-[100px] animate-pulse-slow"
-            style={{ animationDelay: "1s" }}
+            style={{ animationDelay: '1s' }}
           ></div>
           <div
             className="absolute top-1/3 left-1/4 h-[250px] w-[250px] rounded-full bg-cyan-600/30 dark:bg-cyan-500/30 blur-[90px] animate-pulse-slow"
-            style={{ animationDelay: "3s" }}
+            style={{ animationDelay: '3s' }}
           ></div>
         </div>
 
@@ -105,11 +102,11 @@ export default function Home() {
             <div className="absolute inset-0 rounded-full bg-gradient-to-br from-primary/20 via-blue-500/20 to-purple-500/20 animate-float"></div>
             <div
               className="absolute inset-0 rounded-full bg-gradient-to-br from-primary/10 via-blue-500/10 to-purple-500/10 animate-float"
-              style={{ animationDelay: "1s" }}
+              style={{ animationDelay: '1s' }}
             ></div>
             <div
               className="absolute inset-0 rounded-full border border-primary/20 animate-float"
-              style={{ animationDelay: "2s" }}
+              style={{ animationDelay: '2s' }}
             ></div>
           </motion.div>
         </div>
@@ -125,7 +122,7 @@ export default function Home() {
             variants={fadeIn}
           >
             <Sparkles size={16} className="text-primary" />
-            {t("hero.aiPoweredRecruitment")}
+            {t('hero.aiPoweredRecruitment')}
           </motion.div>
           <motion.div variants={fadeIn} className="mb-8">
             <Image
@@ -142,9 +139,9 @@ export default function Home() {
             className="mb-6 text-center text-4xl font-bold tracking-tight sm:text-5xl md:text-6xl"
             variants={fadeIn}
           >
-            <span>{t("hero.revolutionizeHiring")} </span>
+            <span>{t('hero.revolutionizeHiring')} </span>
             <span className="bg-gradient-to-r from-primary via-blue-500 to-purple-500 bg-clip-text text-transparent animate-gradient">
-              {t("title")}
+              {t('title')}
             </span>
           </motion.h1>
 
@@ -152,42 +149,28 @@ export default function Home() {
             className="mb-8 max-w-2xl text-center text-lg text-muted-foreground"
             variants={fadeIn}
           >
-            {t("hero.description")}
+            {t('hero.description')}
           </motion.p>
 
-          <motion.div
-            className="flex flex-wrap justify-center gap-4"
-            variants={fadeIn}
-          >
+          <motion.div className="flex flex-wrap justify-center gap-4" variants={fadeIn}>
             <Link href="/login">
-              <Button
-                size="lg"
-                className="gap-2 group relative overflow-hidden"
-              >
+              <Button size="lg" className="gap-2 group relative overflow-hidden">
                 <span className="absolute inset-0 bg-gradient-to-r from-blue-500/20 to-purple-500/20 opacity-0 group-hover:opacity-100 transition-opacity"></span>
                 <Zap size={18} className="relative z-10" />
-                <span className="relative z-10">
-                  {common("buttons.getStarted")}
-                </span>
+                <span className="relative z-10">{common('buttons.getStarted')}</span>
               </Button>
             </Link>
             <Link href="/jobs">
-              <Button
-                size="lg"
-                variant="outline"
-                className="gap-2 group relative overflow-hidden"
-              >
+              <Button size="lg" variant="outline" className="gap-2 group relative overflow-hidden">
                 <span className="absolute inset-0 bg-gradient-to-r from-indigo-500/20 to-cyan-500/20 opacity-0 group-hover:opacity-100 transition-opacity"></span>
                 <BriefcaseIcon size={18} className="relative z-10" />
-                <span className="relative z-10">
-                  {t("userAccess.findJobs")}
-                </span>
+                <span className="relative z-10">{t('userAccess.findJobs')}</span>
               </Button>
             </Link>
             <Link href="/learn-more">
               <Button size="lg" variant="outline" className="gap-2 group">
                 <Search size={18} />
-                <span>{common("buttons.howItWorks")}</span>
+                <span>{common('buttons.howItWorks')}</span>
                 <ChevronRight
                   size={16}
                   className="transition-transform group-hover:translate-x-1"
@@ -204,39 +187,30 @@ export default function Home() {
             className="mt-8"
           >
             <div className="flex flex-wrap justify-center gap-3">
-              <Link
-                href="/login/candidate"
-                className="group transition-all hover:text-primary"
-              >
+              <Link href="/login/candidate" className="group transition-all hover:text-primary">
                 <div className="inline-flex items-center gap-2 rounded-full border border-border px-3 py-1.5 text-xs font-medium backdrop-blur-sm hover:border-primary/30 hover:bg-primary/5">
                   <UserIcon size={14} />
-                  {t("userAccess.candidateLogin")}
+                  {t('userAccess.candidateLogin')}
                   <ChevronRight
                     size={14}
                     className="transition-transform group-hover:translate-x-0.5"
                   />
                 </div>
               </Link>
-              <Link
-                href="/login/recruiter"
-                className="group transition-all hover:text-primary"
-              >
+              <Link href="/login/recruiter" className="group transition-all hover:text-primary">
                 <div className="inline-flex items-center gap-2 rounded-full border border-border px-3 py-1.5 text-xs font-medium backdrop-blur-sm hover:border-primary/30 hover:bg-primary/5">
                   <Building2 size={14} />
-                  {t("userAccess.recruiterLogin")}
+                  {t('userAccess.recruiterLogin')}
                   <ChevronRight
                     size={14}
                     className="transition-transform group-hover:translate-x-0.5"
                   />
                 </div>
               </Link>
-              <Link
-                href="/wishlist"
-                className="group transition-all hover:text-primary"
-              >
+              <Link href="/wishlist" className="group transition-all hover:text-primary">
                 <div className="inline-flex items-center gap-2 rounded-full border border-border px-3 py-1.5 text-xs font-medium backdrop-blur-sm hover:border-primary/30 hover:bg-primary/5">
                   <Heart size={14} />
-                  {t("userAccess.wishlist")}
+                  {t('userAccess.wishlist')}
                   <ChevronRight
                     size={14}
                     className="transition-transform group-hover:translate-x-0.5"
@@ -255,7 +229,7 @@ export default function Home() {
           <div className="absolute top-0 right-0 h-[400px] w-[400px] rounded-full bg-blue-600/20 dark:bg-blue-500/20 blur-[100px] animate-pulse-slow"></div>
           <div
             className="absolute bottom-0 left-0 h-[300px] w-[300px] rounded-full bg-purple-600/20 dark:bg-purple-500/20 blur-[100px] animate-pulse-slow"
-            style={{ animationDelay: "2s" }}
+            style={{ animationDelay: '2s' }}
           ></div>
           <div className="h-full w-full bg-[url('/patterns/dots.svg')] bg-repeat opacity-10"></div>
         </div>
@@ -271,14 +245,12 @@ export default function Home() {
             <div className="mb-4 flex justify-center">
               <div className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/5 px-4 py-1.5 text-sm font-medium text-primary">
                 <Sparkles size={16} />
-                {t("featuresSection.title")}
+                {t('featuresSection.title')}
               </div>
             </div>
-            <h2 className="mb-4 text-3xl font-bold sm:text-4xl">
-              {t("featuresSection.subtitle")}
-            </h2>
+            <h2 className="mb-4 text-3xl font-bold sm:text-4xl">{t('featuresSection.subtitle')}</h2>
             <p className="mx-auto max-w-2xl text-muted-foreground">
-              {t("featuresSection.description")}
+              {t('featuresSection.description')}
             </p>
           </motion.div>
 
@@ -292,47 +264,39 @@ export default function Home() {
             {[
               {
                 icon: <FileText className="text-blue-500" />,
-                title: t("featuresSection.smartJobPosting.title"),
-                description: t("featuresSection.smartJobPosting.description"),
-                color: "blue",
+                title: t('featuresSection.smartJobPosting.title'),
+                description: t('featuresSection.smartJobPosting.description'),
+                color: 'blue',
               },
               {
                 icon: <LinkIcon className="text-indigo-500" />,
-                title: t("featuresSection.uniqueApplicationLinks.title"),
-                description: t(
-                  "featuresSection.uniqueApplicationLinks.description",
-                ),
-                color: "indigo",
+                title: t('featuresSection.uniqueApplicationLinks.title'),
+                description: t('featuresSection.uniqueApplicationLinks.description'),
+                color: 'indigo',
               },
               {
                 icon: <Upload className="text-purple-500" />,
-                title: t("featuresSection.resumeAnalysis.title"),
-                description: t("featuresSection.resumeAnalysis.description"),
-                color: "purple",
+                title: t('featuresSection.resumeAnalysis.title'),
+                description: t('featuresSection.resumeAnalysis.description'),
+                color: 'purple',
               },
               {
                 icon: <MessageSquareText className="text-pink-500" />,
-                title: t("featuresSection.aiPoweredInterviews.title"),
-                description: t(
-                  "featuresSection.aiPoweredInterviews.description",
-                ),
-                color: "pink",
+                title: t('featuresSection.aiPoweredInterviews.title'),
+                description: t('featuresSection.aiPoweredInterviews.description'),
+                color: 'pink',
               },
               {
                 icon: <ClipboardCheck className="text-green-500" />,
-                title: t("featuresSection.comprehensiveFeedback.title"),
-                description: t(
-                  "featuresSection.comprehensiveFeedback.description",
-                ),
-                color: "green",
+                title: t('featuresSection.comprehensiveFeedback.title'),
+                description: t('featuresSection.comprehensiveFeedback.description'),
+                color: 'green',
               },
               {
                 icon: <LineChart className="text-orange-500" />,
-                title: t("featuresSection.dataDrivenInsights.title"),
-                description: t(
-                  "featuresSection.dataDrivenInsights.description",
-                ),
-                color: "orange",
+                title: t('featuresSection.dataDrivenInsights.title'),
+                description: t('featuresSection.dataDrivenInsights.description'),
+                color: 'orange',
               },
             ].map((feature, index) => (
               <motion.div
@@ -347,9 +311,7 @@ export default function Home() {
                 <div
                   className={`absolute bottom-0 left-0 h-1 w-0 bg-${feature.color}-500 group-hover:w-full transition-all duration-300`}
                 ></div>
-                <div
-                  className={`mb-4 rounded-full bg-${feature.color}-500/10 p-3 w-fit`}
-                >
+                <div className={`mb-4 rounded-full bg-${feature.color}-500/10 p-3 w-fit`}>
                   {feature.icon}
                 </div>
                 <h3 className="mb-2 text-xl font-semibold">{feature.title}</h3>
@@ -370,7 +332,7 @@ export default function Home() {
           <div className="absolute top-1/4 left-0 h-[300px] w-[300px] rounded-full bg-indigo-600/10 dark:bg-indigo-500/10 blur-[100px] animate-pulse-slow"></div>
           <div
             className="absolute bottom-1/4 right-0 h-[250px] w-[250px] rounded-full bg-cyan-600/10 dark:bg-cyan-500/10 blur-[100px] animate-pulse-slow"
-            style={{ animationDelay: "3s" }}
+            style={{ animationDelay: '3s' }}
           ></div>
           <div className="h-full w-full bg-[url('/patterns/circuit.svg')] bg-repeat opacity-5"></div>
         </div>
@@ -386,15 +348,11 @@ export default function Home() {
             <div className="mb-4 flex justify-center">
               <div className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/5 px-4 py-1.5 text-sm font-medium text-primary">
                 <Zap size={16} />
-                {t("howItWorks.title")}
+                {t('howItWorks.title')}
               </div>
             </div>
-            <h2 className="mb-4 text-3xl font-bold sm:text-4xl">
-              {t("howItWorks.subtitle")}
-            </h2>
-            <p className="mx-auto max-w-2xl text-muted-foreground">
-              {t("howItWorks.description")}
-            </p>
+            <h2 className="mb-4 text-3xl font-bold sm:text-4xl">{t('howItWorks.subtitle')}</h2>
+            <p className="mx-auto max-w-2xl text-muted-foreground">{t('howItWorks.description')}</p>
           </motion.div>
 
           <div className="relative">
@@ -418,13 +376,9 @@ export default function Home() {
                     <div className="flex h-8 w-8 items-center justify-center rounded-full bg-blue-500 text-white">
                       1
                     </div>
-                    <h3 className="text-xl font-semibold">
-                      {t("howItWorks.steps.step1.title")}
-                    </h3>
+                    <h3 className="text-xl font-semibold">{t('howItWorks.steps.step1.title')}</h3>
                   </div>
-                  <p className="text-muted-foreground">
-                    {t("howItWorks.steps.step1.description")}
-                  </p>
+                  <p className="text-muted-foreground">{t('howItWorks.steps.step1.description')}</p>
                 </div>
 
                 <div className="relative mt-6 md:mt-0 md:w-5/12">
@@ -436,15 +390,13 @@ export default function Home() {
                   >
                     <div className="mb-3 flex justify-between">
                       <div className="rounded-md bg-blue-500/10 px-3 py-1 text-sm text-blue-500">
-                        {t("howItWorks.steps.step1.label")}
+                        {t('howItWorks.steps.step1.label')}
                       </div>
                       <Building2 className="text-blue-500" size={20} />
                     </div>
-                    <h4 className="mb-2 font-medium">
-                      {t("howItWorks.steps.step1.cardTitle")}
-                    </h4>
+                    <h4 className="mb-2 font-medium">{t('howItWorks.steps.step1.cardTitle')}</h4>
                     <p className="text-sm text-muted-foreground">
-                      {t("howItWorks.steps.step1.cardDescription")}
+                      {t('howItWorks.steps.step1.cardDescription')}
                     </p>
                   </motion.div>
                 </div>
@@ -460,13 +412,9 @@ export default function Home() {
                     <div className="flex h-8 w-8 items-center justify-center rounded-full bg-indigo-500 text-white">
                       2
                     </div>
-                    <h3 className="text-xl font-semibold">
-                      {t("howItWorks.steps.step2.title")}
-                    </h3>
+                    <h3 className="text-xl font-semibold">{t('howItWorks.steps.step2.title')}</h3>
                   </div>
-                  <p className="text-muted-foreground">
-                    {t("howItWorks.steps.step2.description")}
-                  </p>
+                  <p className="text-muted-foreground">{t('howItWorks.steps.step2.description')}</p>
                 </div>
 
                 <div className="relative mt-6 md:mt-0 md:w-5/12">
@@ -478,15 +426,13 @@ export default function Home() {
                   >
                     <div className="mb-3 flex justify-between">
                       <div className="rounded-md bg-indigo-500/10 px-3 py-1 text-sm text-indigo-500">
-                        {t("howItWorks.steps.step2.label")}
+                        {t('howItWorks.steps.step2.label')}
                       </div>
                       <LinkIcon className="text-indigo-500" size={20} />
                     </div>
-                    <h4 className="mb-2 font-medium">
-                      {t("howItWorks.steps.step2.cardTitle")}
-                    </h4>
+                    <h4 className="mb-2 font-medium">{t('howItWorks.steps.step2.cardTitle')}</h4>
                     <p className="text-sm text-muted-foreground">
-                      {t("howItWorks.steps.step2.cardDescription")}
+                      {t('howItWorks.steps.step2.cardDescription')}
                     </p>
                   </motion.div>
                 </div>
@@ -502,13 +448,9 @@ export default function Home() {
                     <div className="flex h-8 w-8 items-center justify-center rounded-full bg-purple-500 text-white">
                       3
                     </div>
-                    <h3 className="text-xl font-semibold">
-                      {t("howItWorks.steps.step3.title")}
-                    </h3>
+                    <h3 className="text-xl font-semibold">{t('howItWorks.steps.step3.title')}</h3>
                   </div>
-                  <p className="text-muted-foreground">
-                    {t("howItWorks.steps.step3.description")}
-                  </p>
+                  <p className="text-muted-foreground">{t('howItWorks.steps.step3.description')}</p>
                 </div>
 
                 <div className="relative mt-6 md:mt-0 md:w-5/12">
@@ -520,15 +462,13 @@ export default function Home() {
                   >
                     <div className="mb-3 flex justify-between">
                       <div className="rounded-md bg-purple-500/10 px-3 py-1 text-sm text-purple-500">
-                        {t("howItWorks.steps.step3.label")}
+                        {t('howItWorks.steps.step3.label')}
                       </div>
                       <GraduationCap className="text-purple-500" size={20} />
                     </div>
-                    <h4 className="mb-2 font-medium">
-                      {t("howItWorks.steps.step3.cardTitle")}
-                    </h4>
+                    <h4 className="mb-2 font-medium">{t('howItWorks.steps.step3.cardTitle')}</h4>
                     <p className="text-sm text-muted-foreground">
-                      {t("howItWorks.steps.step3.cardDescription")}
+                      {t('howItWorks.steps.step3.cardDescription')}
                     </p>
                   </motion.div>
                 </div>
@@ -544,13 +484,9 @@ export default function Home() {
                     <div className="flex h-8 w-8 items-center justify-center rounded-full bg-pink-500 text-white">
                       4
                     </div>
-                    <h3 className="text-xl font-semibold">
-                      {t("howItWorks.steps.step4.title")}
-                    </h3>
+                    <h3 className="text-xl font-semibold">{t('howItWorks.steps.step4.title')}</h3>
                   </div>
-                  <p className="text-muted-foreground">
-                    {t("howItWorks.steps.step4.description")}
-                  </p>
+                  <p className="text-muted-foreground">{t('howItWorks.steps.step4.description')}</p>
                 </div>
 
                 <div className="relative mt-6 md:mt-0 md:w-5/12">
@@ -562,15 +498,13 @@ export default function Home() {
                   >
                     <div className="mb-3 flex justify-between">
                       <div className="rounded-md bg-pink-500/10 px-3 py-1 text-sm text-pink-500">
-                        {t("howItWorks.steps.step4.label")}
+                        {t('howItWorks.steps.step4.label')}
                       </div>
                       <Upload className="text-pink-500" size={20} />
                     </div>
-                    <h4 className="mb-2 font-medium">
-                      {t("howItWorks.steps.step4.cardTitle")}
-                    </h4>
+                    <h4 className="mb-2 font-medium">{t('howItWorks.steps.step4.cardTitle')}</h4>
                     <p className="text-sm text-muted-foreground">
-                      {t("howItWorks.steps.step4.cardDescription")}
+                      {t('howItWorks.steps.step4.cardDescription')}
                     </p>
                   </motion.div>
                 </div>
@@ -586,13 +520,9 @@ export default function Home() {
                     <div className="flex h-8 w-8 items-center justify-center rounded-full bg-blue-600 text-white">
                       5
                     </div>
-                    <h3 className="text-xl font-semibold">
-                      {t("howItWorks.steps.step5.title")}
-                    </h3>
+                    <h3 className="text-xl font-semibold">{t('howItWorks.steps.step5.title')}</h3>
                   </div>
-                  <p className="text-muted-foreground">
-                    {t("howItWorks.steps.step5.description")}
-                  </p>
+                  <p className="text-muted-foreground">{t('howItWorks.steps.step5.description')}</p>
                 </div>
 
                 <div className="relative mt-6 md:mt-0 md:w-5/12">
@@ -604,15 +534,13 @@ export default function Home() {
                   >
                     <div className="mb-3 flex justify-between">
                       <div className="rounded-md bg-blue-600/10 px-3 py-1 text-sm text-blue-600">
-                        {t("howItWorks.steps.step5.label")}
+                        {t('howItWorks.steps.step5.label')}
                       </div>
                       <MessageSquareText className="text-blue-600" size={20} />
                     </div>
-                    <h4 className="mb-2 font-medium">
-                      {t("howItWorks.steps.step5.cardTitle")}
-                    </h4>
+                    <h4 className="mb-2 font-medium">{t('howItWorks.steps.step5.cardTitle')}</h4>
                     <p className="text-sm text-muted-foreground">
-                      {t("howItWorks.steps.step5.cardDescription")}
+                      {t('howItWorks.steps.step5.cardDescription')}
                     </p>
                   </motion.div>
                 </div>
@@ -628,13 +556,9 @@ export default function Home() {
                     <div className="flex h-8 w-8 items-center justify-center rounded-full bg-green-500 text-white">
                       6
                     </div>
-                    <h3 className="text-xl font-semibold">
-                      {t("howItWorks.steps.step6.title")}
-                    </h3>
+                    <h3 className="text-xl font-semibold">{t('howItWorks.steps.step6.title')}</h3>
                   </div>
-                  <p className="text-muted-foreground">
-                    {t("howItWorks.steps.step6.description")}
-                  </p>
+                  <p className="text-muted-foreground">{t('howItWorks.steps.step6.description')}</p>
                 </div>
 
                 <div className="relative mt-6 md:mt-0 md:w-5/12">
@@ -646,15 +570,13 @@ export default function Home() {
                   >
                     <div className="mb-3 flex justify-between">
                       <div className="rounded-md bg-green-500/10 px-3 py-1 text-sm text-green-500">
-                        {t("howItWorks.steps.step6.label")}
+                        {t('howItWorks.steps.step6.label')}
                       </div>
                       <ClipboardCheck className="text-green-500" size={20} />
                     </div>
-                    <h4 className="mb-2 font-medium">
-                      {t("howItWorks.steps.step6.cardTitle")}
-                    </h4>
+                    <h4 className="mb-2 font-medium">{t('howItWorks.steps.step6.cardTitle')}</h4>
                     <p className="text-sm text-muted-foreground">
-                      {t("howItWorks.steps.step6.cardDescription")}
+                      {t('howItWorks.steps.step6.cardDescription')}
                     </p>
                   </motion.div>
                 </div>
@@ -672,7 +594,7 @@ export default function Home() {
             <Link href="/login">
               <Button size="lg" className="gap-2">
                 <ArrowRight size={18} />
-                {t("howItWorks.getStarted")}
+                {t('howItWorks.getStarted')}
               </Button>
             </Link>
           </motion.div>
@@ -686,7 +608,7 @@ export default function Home() {
           <div className="absolute top-0 left-1/4 h-[350px] w-[350px] rounded-full bg-purple-600/10 dark:bg-purple-500/10 blur-[120px] animate-pulse-slow"></div>
           <div
             className="absolute bottom-0 right-1/4 h-[300px] w-[300px] rounded-full bg-blue-600/10 dark:bg-blue-500/10 blur-[120px] animate-pulse-slow"
-            style={{ animationDelay: "2.5s" }}
+            style={{ animationDelay: '2.5s' }}
           ></div>
           <div className="h-full w-full bg-[url('/patterns/waves.svg')] bg-repeat opacity-5"></div>
         </div>
@@ -700,17 +622,15 @@ export default function Home() {
             variants={fadeIn}
           >
             <div className="mb-4 flex justify-center">
-              {" "}
+              {' '}
               <div className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/5 px-4 py-1.5 text-sm font-medium text-primary">
                 <Users size={16} />
-                {t("testimonials.title")}
+                {t('testimonials.title')}
               </div>
             </div>
-            <h2 className="mb-4 text-3xl font-bold sm:text-4xl">
-              {t("testimonials.subtitle")}
-            </h2>
+            <h2 className="mb-4 text-3xl font-bold sm:text-4xl">{t('testimonials.subtitle')}</h2>
             <p className="mx-auto max-w-2xl text-muted-foreground">
-              {t("testimonials.description")}
+              {t('testimonials.description')}
             </p>
           </motion.div>
 
@@ -724,27 +644,27 @@ export default function Home() {
             {[
               {
                 quote:
-                  "Hirelytics has revolutionized our recruitment process. We&apos;ve reduced our time-to-hire by 40% and found better quality candidates.",
-                name: "Sarah Johnson",
-                role: "HR Director",
-                company: "TechCorp",
-                color: "blue",
+                  'Hirelytics has revolutionized our recruitment process. We&apos;ve reduced our time-to-hire by 40% and found better quality candidates.',
+                name: 'Sarah Johnson',
+                role: 'HR Director',
+                company: 'TechCorp',
+                color: 'blue',
               },
               {
                 quote:
-                  "The AI interview process is remarkably effective. It asks relevant questions and provides detailed feedback that helps us make better hiring decisions.",
-                name: "David Rodriguez",
-                role: "Talent Acquisition Manager",
-                company: "InnovateX",
-                color: "purple",
+                  'The AI interview process is remarkably effective. It asks relevant questions and provides detailed feedback that helps us make better hiring decisions.',
+                name: 'David Rodriguez',
+                role: 'Talent Acquisition Manager',
+                company: 'InnovateX',
+                color: 'purple',
               },
               {
                 quote:
-                  "As a candidate, I love how the platform matched me with jobs that truly aligned with my skills and career goals. The AI interview was surprisingly conversational.",
-                name: "Michael Chen",
-                role: "Software Engineer",
-                company: "Hired via Hirelytics",
-                color: "green",
+                  'As a candidate, I love how the platform matched me with jobs that truly aligned with my skills and career goals. The AI interview was surprisingly conversational.',
+                name: 'Michael Chen',
+                role: 'Software Engineer',
+                company: 'Hired via Hirelytics',
+                color: 'green',
               },
             ].map((testimonial, index) => (
               <motion.div
@@ -802,11 +722,11 @@ export default function Home() {
         <div className="absolute top-0 left-1/4 h-64 w-64 rounded-full bg-white/5 blur-3xl animate-pulse-slow"></div>
         <div
           className="absolute bottom-0 right-1/4 h-80 w-80 rounded-full bg-white/5 blur-3xl animate-pulse-slow"
-          style={{ animationDelay: "1.5s" }}
+          style={{ animationDelay: '1.5s' }}
         ></div>
         <div
           className="absolute top-1/2 right-10 h-40 w-40 -translate-y-1/2 rounded-full bg-white/5 blur-2xl animate-pulse-slow"
-          style={{ animationDelay: "0.7s" }}
+          style={{ animationDelay: '0.7s' }}
         ></div>
 
         {/* Decorative shapes */}
@@ -824,8 +744,8 @@ export default function Home() {
             transition={{
               duration: 6,
               repeat: Infinity,
-              repeatType: "reverse",
-              ease: "easeInOut",
+              repeatType: 'reverse',
+              ease: 'easeInOut',
             }}
           >
             <motion.div
@@ -836,14 +756,14 @@ export default function Home() {
               transition={{ duration: 0.4, delay: 0.2 }}
             >
               <Sparkles size={16} className="text-white" />
-              {t("footer.cta.title")}
+              {t('footer.cta.title')}
             </motion.div>
 
             <h2 className="mb-6 text-3xl font-bold sm:text-4xl md:text-5xl">
-              {t("footer.cta.heading")}
+              {t('footer.cta.heading')}
             </h2>
             <p className="mb-10 text-lg text-white/90 max-w-2xl mx-auto">
-              {t("footer.cta.description")}
+              {t('footer.cta.description')}
             </p>
 
             <div className="flex flex-wrap justify-center gap-6">
@@ -854,9 +774,7 @@ export default function Home() {
                   className="gap-2 bg-white text-primary hover:bg-white hover:shadow-lg hover:shadow-white/20 transition-all duration-300 transform hover:-translate-y-1"
                 >
                   <Zap size={18} className="text-primary" />
-                  <span className="font-medium">
-                    {t("footer.cta.getStarted")}
-                  </span>
+                  <span className="font-medium">{t('footer.cta.getStarted')}</span>
                 </Button>
               </Link>
               <Link href="#how-it-works">
@@ -866,7 +784,7 @@ export default function Home() {
                   className="gap-2 border-white text-white hover:bg-white/20 transition-all duration-300 transform hover:-translate-y-1"
                 >
                   <Search size={18} />
-                  <span>{t("footer.cta.learnMore")}</span>
+                  <span>{t('footer.cta.learnMore')}</span>
                   <ChevronRight
                     size={16}
                     className="ml-1 transition-transform group-hover:translate-x-1"
@@ -882,7 +800,7 @@ export default function Home() {
               viewport={{ once: true }}
               transition={{ duration: 0.4, delay: 0.6 }}
             >
-              {t("footer.cta.noCreditCard")}
+              {t('footer.cta.noCreditCard')}
             </motion.p>
           </motion.div>
         </div>
@@ -895,7 +813,7 @@ export default function Home() {
           <div className="absolute top-0 right-0 h-[300px] w-[300px] rounded-full bg-primary/10 blur-[80px] animate-pulse-slow"></div>
           <div
             className="absolute bottom-0 left-0 h-[250px] w-[250px] rounded-full bg-primary/10 blur-[80px] animate-pulse-slow"
-            style={{ animationDelay: "2s" }}
+            style={{ animationDelay: '2s' }}
           ></div>
           <div className="h-full w-full bg-[url('/patterns/dots.svg')] bg-repeat opacity-10"></div>
         </div>
@@ -906,25 +824,21 @@ export default function Home() {
               <div className="mr-2 flex h-10 w-10 items-center justify-center rounded-full bg-primary/10">
                 <Sparkles className="text-primary" size={20} />
               </div>
-              <h2 className="text-2xl font-bold">{t("title")}</h2>
+              <h2 className="text-2xl font-bold">{t('title')}</h2>
             </div>
-            <p className="max-w-md text-center text-muted-foreground">
-              {t("footer.description")}
-            </p>
+            <p className="max-w-md text-center text-muted-foreground">{t('footer.description')}</p>
           </div>
 
           <div className="grid gap-8 md:grid-cols-4">
             <div>
-              <h3 className="mb-4 text-lg font-semibold">
-                {t("footer.platform.title")}
-              </h3>
+              <h3 className="mb-4 text-lg font-semibold">{t('footer.platform.title')}</h3>
               <ul className="space-y-3 text-sm text-muted-foreground">
                 <li>
                   <Link
                     href="#features"
                     className="inline-flex items-center gap-1 transition-colors hover:text-primary"
                   >
-                    <span>{t("footer.platform.features")}</span>
+                    <span>{t('footer.platform.features')}</span>
                   </Link>
                 </li>
                 <li>
@@ -932,7 +846,7 @@ export default function Home() {
                     href="#how-it-works"
                     className="inline-flex items-center gap-1 transition-colors hover:text-primary"
                   >
-                    <span>{t("footer.platform.howItWorks")}</span>
+                    <span>{t('footer.platform.howItWorks')}</span>
                   </Link>
                 </li>
                 <li>
@@ -940,7 +854,7 @@ export default function Home() {
                     href="/learn-more"
                     className="inline-flex items-center gap-1 transition-colors hover:text-primary"
                   >
-                    <span>{t("footer.platform.learnMore")}</span>
+                    <span>{t('footer.platform.learnMore')}</span>
                   </Link>
                 </li>
                 <li>
@@ -948,22 +862,20 @@ export default function Home() {
                     href="/wishlist"
                     className="inline-flex items-center gap-1 transition-colors hover:text-primary"
                   >
-                    <span>{t("footer.platform.wishlist")}</span>
+                    <span>{t('footer.platform.wishlist')}</span>
                   </Link>
                 </li>
               </ul>
             </div>
             <div>
-              <h3 className="mb-4 text-lg font-semibold">
-                {t("footer.forRecruiters.title")}
-              </h3>
+              <h3 className="mb-4 text-lg font-semibold">{t('footer.forRecruiters.title')}</h3>
               <ul className="space-y-3 text-sm text-muted-foreground">
                 <li>
                   <Link
                     href="/login/recruiter"
                     className="inline-flex items-center gap-1 transition-colors hover:text-primary"
                   >
-                    <span>{t("footer.forRecruiters.login")}</span>
+                    <span>{t('footer.forRecruiters.login')}</span>
                   </Link>
                 </li>
                 <li>
@@ -971,22 +883,20 @@ export default function Home() {
                     href="/register/recruiter"
                     className="inline-flex items-center gap-1 transition-colors hover:text-primary"
                   >
-                    <span>{t("footer.forRecruiters.register")}</span>
+                    <span>{t('footer.forRecruiters.register')}</span>
                   </Link>
                 </li>
               </ul>
             </div>
             <div>
-              <h3 className="mb-4 text-lg font-semibold">
-                {t("footer.forCandidates.title")}
-              </h3>
+              <h3 className="mb-4 text-lg font-semibold">{t('footer.forCandidates.title')}</h3>
               <ul className="space-y-3 text-sm text-muted-foreground">
                 <li>
                   <Link
                     href="/jobs"
                     className="inline-flex items-center gap-1 transition-colors hover:text-primary"
                   >
-                    <span>{t("footer.forCandidates.findJobs")}</span>
+                    <span>{t('footer.forCandidates.findJobs')}</span>
                   </Link>
                 </li>
                 <li>
@@ -994,7 +904,7 @@ export default function Home() {
                     href="/login/candidate"
                     className="inline-flex items-center gap-1 transition-colors hover:text-primary"
                   >
-                    <span>{t("footer.forCandidates.login")}</span>
+                    <span>{t('footer.forCandidates.login')}</span>
                   </Link>
                 </li>
                 <li>
@@ -1002,22 +912,20 @@ export default function Home() {
                     href="/register/candidate"
                     className="inline-flex items-center gap-1 transition-colors hover:text-primary"
                   >
-                    <span>{t("footer.forCandidates.register")}</span>
+                    <span>{t('footer.forCandidates.register')}</span>
                   </Link>
                 </li>
               </ul>
             </div>
             <div>
-              <h3 className="mb-4 text-lg font-semibold">
-                {t("footer.company.title")}
-              </h3>
+              <h3 className="mb-4 text-lg font-semibold">{t('footer.company.title')}</h3>
               <ul className="space-y-3 text-sm text-muted-foreground">
                 <li>
                   <Link
                     href="#"
                     className="inline-flex items-center gap-1 transition-colors hover:text-primary"
                   >
-                    <span>{t("footer.company.aboutUs")}</span>
+                    <span>{t('footer.company.aboutUs')}</span>
                   </Link>
                 </li>
                 <li>
@@ -1025,7 +933,7 @@ export default function Home() {
                     href="#"
                     className="inline-flex items-center gap-1 transition-colors hover:text-primary"
                   >
-                    <span>{t("footer.company.contact")}</span>
+                    <span>{t('footer.company.contact')}</span>
                   </Link>
                 </li>
                 <li>
@@ -1033,7 +941,7 @@ export default function Home() {
                     href="#"
                     className="inline-flex items-center gap-1 transition-colors hover:text-primary"
                   >
-                    <span>{t("footer.company.privacyPolicy")}</span>
+                    <span>{t('footer.company.privacyPolicy')}</span>
                   </Link>
                 </li>
                 <li>
@@ -1041,7 +949,7 @@ export default function Home() {
                     href="#"
                     className="inline-flex items-center gap-1 transition-colors hover:text-primary"
                   >
-                    <span>{t("footer.company.termsOfService")}</span>
+                    <span>{t('footer.company.termsOfService')}</span>
                   </Link>
                 </li>
               </ul>
@@ -1050,10 +958,7 @@ export default function Home() {
 
           <div className="mt-12 border-t pt-8 text-center">
             <div className="mb-4 flex justify-center space-x-6">
-              <Link
-                href="#"
-                className="text-muted-foreground transition-colors hover:text-primary"
-              >
+              <Link href="#" className="text-muted-foreground transition-colors hover:text-primary">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   width="24"
@@ -1071,10 +976,7 @@ export default function Home() {
                   <circle cx="4" cy="4" r="2"></circle>
                 </svg>
               </Link>
-              <Link
-                href="#"
-                className="text-muted-foreground transition-colors hover:text-primary"
-              >
+              <Link href="#" className="text-muted-foreground transition-colors hover:text-primary">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   width="24"
@@ -1090,10 +992,7 @@ export default function Home() {
                   <path d="M22 4s-.7 2.1-2 3.4c1.6 10-9.4 17.3-18 11.6 2.2.1 4.4-.6 6-2C3 15.5.5 9.6 3 5c2.2 2.6 5.6 4.1 9 4-.9-4.2 4-6.6 7-3.8 1.1 0 3-1.2 3-1.2z"></path>
                 </svg>
               </Link>
-              <Link
-                href="#"
-                className="text-muted-foreground transition-colors hover:text-primary"
-              >
+              <Link href="#" className="text-muted-foreground transition-colors hover:text-primary">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   width="24"
@@ -1113,7 +1012,7 @@ export default function Home() {
               </Link>
             </div>
             <p className="text-sm text-muted-foreground">
-              {t("footer.copyright", { year: new Date().getFullYear() })}
+              {t('footer.copyright', { year: new Date().getFullYear() })}
             </p>
           </div>
         </div>

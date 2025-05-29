@@ -1,22 +1,15 @@
-"use client";
+'use client';
 
-import { motion } from "framer-motion";
-import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import {
-  Loader2,
-  CheckCircle,
-  Briefcase,
-  GraduationCap,
-  Code,
-  User,
-  Brain,
-} from "lucide-react";
-import { IJobApplication } from "@/models/job-application";
-import { toast } from "sonner";
-import { Badge } from "@/components/ui/badge";
+import { motion } from 'framer-motion';
+import { Brain, Briefcase, CheckCircle, Code, GraduationCap, Loader2, User } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
+import { toast } from 'sonner';
+
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader } from '@/components/ui/card';
+import { IJobApplication } from '@/models/job-application';
 
 // Animation variants
 const containerVariants = {
@@ -26,7 +19,7 @@ const containerVariants = {
     y: 0,
     transition: {
       duration: 0.5,
-      when: "beforeChildren",
+      when: 'beforeChildren',
       staggerChildren: 0.1,
     },
   },
@@ -38,7 +31,7 @@ const itemVariants = {
     opacity: 1,
     y: 0,
     transition: {
-      type: "spring",
+      type: 'spring',
       stiffness: 200,
       damping: 20,
     },
@@ -61,22 +54,19 @@ export function ResumeAnalysis({ applicationId }: ResumeAnalysisProps) {
       try {
         setIsLoading(true);
 
-        const response = await fetch(
-          `/api/applications/${applicationId}/analyze`,
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              runMatching: true,
-            }),
+        const response = await fetch(`/api/applications/${applicationId}/analyze`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
           },
-        );
+          body: JSON.stringify({
+            runMatching: true,
+          }),
+        });
 
         if (!response.ok) {
           const errorData = await response.json();
-          throw new Error(errorData.message || "Failed to analyze resume");
+          throw new Error(errorData.message || 'Failed to analyze resume');
         }
 
         const result = await response.json();
@@ -84,13 +74,11 @@ export function ResumeAnalysis({ applicationId }: ResumeAnalysisProps) {
         setApplication(result.application);
         setIsLoading(false);
       } catch (err) {
-        console.error("Error during resume analysis:", err);
-        setError(
-          err instanceof Error ? err.message : "An unknown error occurred",
-        );
+        console.error('Error during resume analysis:', err);
+        setError(err instanceof Error ? err.message : 'An unknown error occurred');
         setIsLoading(false);
-        toast.error("Analysis failed", {
-          description: "There was a problem analyzing your resume.",
+        toast.error('Analysis failed', {
+          description: 'There was a problem analyzing your resume.',
         });
       }
     }
@@ -100,35 +88,31 @@ export function ResumeAnalysis({ applicationId }: ResumeAnalysisProps) {
 
   const handleContinue = () => {
     fetch(`/api/applications/${applicationId}`, {
-      method: "PATCH",
+      method: 'PATCH',
       headers: {
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ status: "reviewed" }),
+      body: JSON.stringify({ status: 'reviewed' }),
     })
       .then(() => {
         router.push(`/dashboard/applications/${applicationId}/interview`);
       })
       .catch((err) => {
-        console.error("Failed to update application status:", err);
+        console.error('Failed to update application status:', err);
         router.push(`/dashboard/applications/${applicationId}/interview`);
       });
   };
 
   if (error) {
     return (
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
-      >
+      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
         <Card className="p-4 border-none bg-[#121212]">
           <div className="text-center">
             <motion.h1
               className="text-xl font-bold mb-3"
               initial={{ scale: 0.9 }}
               animate={{ scale: 1 }}
-              transition={{ type: "spring", stiffness: 200 }}
+              transition={{ type: 'spring', stiffness: 200 }}
             >
               Resume Analysis Failed
             </motion.h1>
@@ -157,10 +141,7 @@ export function ResumeAnalysis({ applicationId }: ResumeAnalysisProps) {
     <motion.div initial="hidden" animate="visible" variants={containerVariants}>
       <Card className="border-none bg-[#121212] shadow-none overflow-hidden">
         <CardHeader className="text-center py-6 px-4">
-          <motion.h1
-            className="text-2xl font-bold mb-3"
-            variants={itemVariants}
-          >
+          <motion.h1 className="text-2xl font-bold mb-3" variants={itemVariants}>
             Resume Analysis
           </motion.h1>
         </CardHeader>
@@ -175,7 +156,7 @@ export function ResumeAnalysis({ applicationId }: ResumeAnalysisProps) {
             >
               <motion.div
                 animate={{ rotate: 360 }}
-                transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
+                transition={{ duration: 2, repeat: Infinity, ease: 'linear' }}
               >
                 <Loader2 className="h-12 w-12 text-primary mb-4" />
               </motion.div>
@@ -211,18 +192,15 @@ export function ResumeAnalysis({ applicationId }: ResumeAnalysisProps) {
                 <motion.div variants={itemVariants}>
                   <Card className="p-6 border-none bg-[#1c1c1c] shadow-none hover:bg-[#242424] transition-colors">
                     <div className="w-full">
-                      <h3 className="text-base font-medium mb-4">
-                        Match Score
-                      </h3>
+                      <h3 className="text-base font-medium mb-4">Match Score</h3>
                       <div className="flex items-center gap-8">
                         <div
                           className={`text-5xl font-bold ${
                             (application?.parsedResume?.matchScore ?? 0) >= 70
-                              ? "text-green-500"
-                              : (application?.parsedResume?.matchScore ?? 0) >=
-                                  50
-                                ? "text-yellow-500"
-                                : "text-red-500"
+                              ? 'text-green-500'
+                              : (application?.parsedResume?.matchScore ?? 0) >= 50
+                                ? 'text-yellow-500'
+                                : 'text-red-500'
                           }`}
                         >
                           {application?.parsedResume?.matchScore ?? 0}%
@@ -234,23 +212,19 @@ export function ResumeAnalysis({ applicationId }: ResumeAnalysisProps) {
                               style={{
                                 width: `${application?.parsedResume?.matchScore ?? 0}%`,
                                 backgroundColor:
-                                  (application?.parsedResume?.matchScore ??
-                                    0) >= 70
-                                    ? "rgb(34, 197, 94)"
-                                    : (application?.parsedResume?.matchScore ??
-                                          0) >= 50
-                                      ? "rgb(251, 191, 36)"
-                                      : "rgb(239, 68, 68)",
+                                  (application?.parsedResume?.matchScore ?? 0) >= 70
+                                    ? 'rgb(34, 197, 94)'
+                                    : (application?.parsedResume?.matchScore ?? 0) >= 50
+                                      ? 'rgb(251, 191, 36)'
+                                      : 'rgb(239, 68, 68)',
                               }}
                             />
                           </div>
                           <p className="text-xs text-muted-foreground mt-2">
-                            Last analyzed:{" "}
+                            Last analyzed:{' '}
                             {application?.parsedResume?.analyzedAt
-                              ? new Date(
-                                  application.parsedResume.analyzedAt,
-                                ).toLocaleDateString()
-                              : "Not yet analyzed"}
+                              ? new Date(application.parsedResume.analyzedAt).toLocaleDateString()
+                              : 'Not yet analyzed'}
                           </p>
                         </div>
                       </div>
@@ -264,12 +238,9 @@ export function ResumeAnalysis({ applicationId }: ResumeAnalysisProps) {
                     <div className="flex items-start gap-4">
                       <User className="h-6 w-6 text-purple-400 flex-shrink-0" />
                       <div className="w-full">
-                        <h3 className="text-base font-medium mb-3">
-                          About Candidate
-                        </h3>
+                        <h3 className="text-base font-medium mb-3">About Candidate</h3>
                         <p className="text-sm leading-relaxed text-muted-foreground whitespace-pre-wrap">
-                          {application?.parsedResume?.about ??
-                            "No summary information available"}
+                          {application?.parsedResume?.about ?? 'No summary information available'}
                         </p>
                       </div>
                     </div>
@@ -284,17 +255,15 @@ export function ResumeAnalysis({ applicationId }: ResumeAnalysisProps) {
                       <div className="w-full">
                         <h3 className="text-base font-medium mb-3">Skills</h3>
                         <div className="flex flex-wrap gap-2">
-                          {(application?.parsedResume?.skills ?? []).map(
-                            (skill, index) => (
-                              <Badge
-                                key={index}
-                                variant="outline"
-                                className="text-sm py-1 px-3 bg-[#2a2a2a] border-[#404040] text-[#f1f1f1] font-medium"
-                              >
-                                {skill}
-                              </Badge>
-                            ),
-                          )}
+                          {(application?.parsedResume?.skills ?? []).map((skill, index) => (
+                            <Badge
+                              key={index}
+                              variant="outline"
+                              className="text-sm py-1 px-3 bg-[#2a2a2a] border-[#404040] text-[#f1f1f1] font-medium"
+                            >
+                              {skill}
+                            </Badge>
+                          ))}
                           {(!application?.parsedResume?.skills ||
                             application.parsedResume.skills.length === 0) && (
                             <p className="text-sm text-muted-foreground">
@@ -313,11 +282,8 @@ export function ResumeAnalysis({ applicationId }: ResumeAnalysisProps) {
                     <div className="flex items-start gap-4">
                       <Briefcase className="h-6 w-6 text-yellow-400 flex-shrink-0" />
                       <div className="w-full">
-                        <h3 className="text-base font-medium mb-3">
-                          Experience
-                        </h3>
-                        {(application?.parsedResume?.experience?.years ?? 0) >
-                        0 ? (
+                        <h3 className="text-base font-medium mb-3">Experience</h3>
+                        {(application?.parsedResume?.experience?.years ?? 0) > 0 ? (
                           <div className="space-y-4">
                             <div className="flex items-center">
                               <span className="text-2xl font-bold text-white">
@@ -327,21 +293,20 @@ export function ResumeAnalysis({ applicationId }: ResumeAnalysisProps) {
                                 years of professional experience
                               </span>
                             </div>
-                            {(application?.parsedResume?.experience?.companies
-                              ?.length ?? 0) > 0 && (
+                            {(application?.parsedResume?.experience?.companies?.length ?? 0) >
+                              0 && (
                               <div className="flex flex-wrap gap-2">
-                                {(
-                                  application?.parsedResume?.experience
-                                    ?.companies ?? []
-                                ).map((company, index) => (
-                                  <Badge
-                                    key={index}
-                                    variant="outline"
-                                    className="text-sm py-1 px-3 bg-[#2a2a2a] border-[#404040] text-[#f1f1f1] font-medium"
-                                  >
-                                    {company}
-                                  </Badge>
-                                ))}
+                                {(application?.parsedResume?.experience?.companies ?? []).map(
+                                  (company, index) => (
+                                    <Badge
+                                      key={index}
+                                      variant="outline"
+                                      className="text-sm py-1 px-3 bg-[#2a2a2a] border-[#404040] text-[#f1f1f1] font-medium"
+                                    >
+                                      {company}
+                                    </Badge>
+                                  )
+                                )}
                               </div>
                             )}
                           </div>
@@ -361,27 +326,15 @@ export function ResumeAnalysis({ applicationId }: ResumeAnalysisProps) {
                     <div className="flex items-start gap-4">
                       <GraduationCap className="h-6 w-6 text-green-400 flex-shrink-0" />
                       <div className="w-full">
-                        <h3 className="text-base font-medium mb-3">
-                          Education
-                        </h3>
-                        {(application?.parsedResume?.education?.length ?? 0) >
-                        0 ? (
+                        <h3 className="text-base font-medium mb-3">Education</h3>
+                        {(application?.parsedResume?.education?.length ?? 0) > 0 ? (
                           <div className="space-y-4">
-                            {(application?.parsedResume?.education ?? []).map(
-                              (edu, index) => (
-                                <div
-                                  key={index}
-                                  className="border-l-2 border-[#2a2a2a] pl-4 py-1"
-                                >
-                                  <p className="text-sm font-medium mb-1">
-                                    {edu.degree}
-                                  </p>
-                                  <p className="text-sm text-muted-foreground">
-                                    {edu.institution}
-                                  </p>
-                                </div>
-                              ),
-                            )}
+                            {(application?.parsedResume?.education ?? []).map((edu, index) => (
+                              <div key={index} className="border-l-2 border-[#2a2a2a] pl-4 py-1">
+                                <p className="text-sm font-medium mb-1">{edu.degree}</p>
+                                <p className="text-sm text-muted-foreground">{edu.institution}</p>
+                              </div>
+                            ))}
                           </div>
                         ) : (
                           <p className="text-sm text-muted-foreground">
@@ -399,62 +352,49 @@ export function ResumeAnalysis({ applicationId }: ResumeAnalysisProps) {
                     <div className="flex items-start gap-4">
                       <Brain className="h-6 w-6 text-indigo-400 flex-shrink-0" />
                       <div className="w-full">
-                        <h3 className="text-base font-medium mb-3">
-                          AI Analysis
-                        </h3>
+                        <h3 className="text-base font-medium mb-3">AI Analysis</h3>
                         <p className="text-sm leading-relaxed text-muted-foreground whitespace-pre-wrap">
-                          {application?.parsedResume?.aiComments ??
-                            "No AI analysis available"}
+                          {application?.parsedResume?.aiComments ?? 'No AI analysis available'}
                         </p>
 
                         {/* Skills Analysis */}
-                        {((application?.parsedResume?.topSkillMatches?.length ??
-                          0) > 0 ||
-                          (application?.parsedResume?.missingSkills?.length ??
-                            0) > 0) && (
+                        {((application?.parsedResume?.topSkillMatches?.length ?? 0) > 0 ||
+                          (application?.parsedResume?.missingSkills?.length ?? 0) > 0) && (
                           <div className="mt-6 space-y-4">
-                            {(application?.parsedResume?.topSkillMatches
-                              ?.length ?? 0) > 0 && (
+                            {(application?.parsedResume?.topSkillMatches?.length ?? 0) > 0 && (
                               <div>
-                                <p className="text-sm font-medium mb-2">
-                                  Top Matching Skills:
-                                </p>
+                                <p className="text-sm font-medium mb-2">Top Matching Skills:</p>
                                 <div className="flex flex-wrap gap-2">
-                                  {(
-                                    application?.parsedResume
-                                      ?.topSkillMatches ?? []
-                                  ).map((skill, index) => (
-                                    <Badge
-                                      key={index}
-                                      variant="outline"
-                                      className="text-sm py-1 px-3 bg-[#2a2a2a] border-[#404040] text-green-400 font-medium"
-                                    >
-                                      {skill}
-                                    </Badge>
-                                  ))}
+                                  {(application?.parsedResume?.topSkillMatches ?? []).map(
+                                    (skill, index) => (
+                                      <Badge
+                                        key={index}
+                                        variant="outline"
+                                        className="text-sm py-1 px-3 bg-[#2a2a2a] border-[#404040] text-green-400 font-medium"
+                                      >
+                                        {skill}
+                                      </Badge>
+                                    )
+                                  )}
                                 </div>
                               </div>
                             )}
 
-                            {(application?.parsedResume?.missingSkills
-                              ?.length ?? 0) > 0 && (
+                            {(application?.parsedResume?.missingSkills?.length ?? 0) > 0 && (
                               <div>
-                                <p className="text-sm font-medium mb-2">
-                                  Missing Skills:
-                                </p>
+                                <p className="text-sm font-medium mb-2">Missing Skills:</p>
                                 <div className="flex flex-wrap gap-2">
-                                  {(
-                                    application?.parsedResume?.missingSkills ??
-                                    []
-                                  ).map((skill, index) => (
-                                    <Badge
-                                      key={index}
-                                      variant="outline"
-                                      className="text-sm py-1 px-3 bg-[#2a2a2a] border-[#404040] text-red-400 font-medium"
-                                    >
-                                      {skill}
-                                    </Badge>
-                                  ))}
+                                  {(application?.parsedResume?.missingSkills ?? []).map(
+                                    (skill, index) => (
+                                      <Badge
+                                        key={index}
+                                        variant="outline"
+                                        className="text-sm py-1 px-3 bg-[#2a2a2a] border-[#404040] text-red-400 font-medium"
+                                      >
+                                        {skill}
+                                      </Badge>
+                                    )
+                                  )}
                                 </div>
                               </div>
                             )}

@@ -1,12 +1,13 @@
-import { Metadata } from "next";
-import { JobApplication } from "@/models/job-application";
-import { connectToDatabase } from "@/lib/mongodb";
-import { getJobById } from "@/actions/jobs";
-import { notFound } from "next/navigation";
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import { InterviewSession } from "@/components/interview/interview-session";
-import { InterviewCompletion } from "@/components/interview/interview-completion";
-import { AIInterviewBackground } from "@/components/interview/ai-interview-background";
+import { Metadata } from 'next';
+import { notFound } from 'next/navigation';
+
+import { getJobById } from '@/actions/jobs';
+import { AIInterviewBackground } from '@/components/interview/ai-interview-background';
+import { InterviewCompletion } from '@/components/interview/interview-completion';
+import { InterviewSession } from '@/components/interview/interview-session';
+import { Card, CardContent, CardHeader } from '@/components/ui/card';
+import { connectToDatabase } from '@/lib/mongodb';
+import { JobApplication } from '@/models/job-application';
 
 type Props = {
   params: Promise<{ id: string }>;
@@ -22,8 +23,8 @@ export async function generateMetadata(props: Props): Promise<Metadata> {
 
     if (!application) {
       return {
-        title: "Interview Session | Hirelytics",
-        description: "AI-powered interview session",
+        title: 'Interview Session | Hirelytics',
+        description: 'AI-powered interview session',
       };
     }
 
@@ -35,8 +36,8 @@ export async function generateMetadata(props: Props): Promise<Metadata> {
     };
   } catch {
     return {
-      title: "Interview Session | Hirelytics",
-      description: "AI-powered interview session",
+      title: 'Interview Session | Hirelytics',
+      description: 'AI-powered interview session',
     };
   }
 }
@@ -68,8 +69,7 @@ export default async function InterviewSessionPage(props: Props) {
           <Card>
             <CardContent className="p-8 text-center">
               <p className="text-muted-foreground">
-                Interview configuration is incomplete. Please contact the
-                recruiter.
+                Interview configuration is incomplete. Please contact the recruiter.
               </p>
             </CardContent>
           </Card>
@@ -79,7 +79,7 @@ export default async function InterviewSessionPage(props: Props) {
 
     // Check if interview is already completed
     const interviewState = application.interviewState;
-    if (interviewState?.currentPhase === "completed") {
+    if (interviewState?.currentPhase === 'completed') {
       // Redirect to feedback page
       return (
         <div className="container px-4 py-4 mx-auto relative">
@@ -90,12 +90,8 @@ export default async function InterviewSessionPage(props: Props) {
           <div className="mx-auto relative z-10">
             <Card className="mb-2 border-border/60 shadow-lg">
               <CardHeader className="py-3">
-                <h1 className="text-xl font-bold">
-                  {job.title} - Interview Complete
-                </h1>
-                <p className="text-sm text-muted-foreground">
-                  Your interview is already completed
-                </p>
+                <h1 className="text-xl font-bold">{job.title} - Interview Complete</h1>
+                <p className="text-sm text-muted-foreground">Your interview is already completed</p>
               </CardHeader>
               <CardContent className="p-4">
                 <InterviewCompletion
@@ -121,9 +117,7 @@ export default async function InterviewSessionPage(props: Props) {
         <div className="mx-auto relative z-10">
           <Card className="border-border/60 shadow-lg">
             <CardHeader>
-              <h1 className="text-xl font-bold">
-                {job.title} - Live Interview
-              </h1>
+              <h1 className="text-xl font-bold">{job.title} - Live Interview</h1>
               <p className="text-sm text-muted-foreground">
                 AI Interview session for {job.companyName}
               </p>
@@ -141,7 +135,7 @@ export default async function InterviewSessionPage(props: Props) {
       </div>
     );
   } catch (error) {
-    console.error("Error loading interview session page:", error);
+    console.error('Error loading interview session page:', error);
     notFound();
   }
 }

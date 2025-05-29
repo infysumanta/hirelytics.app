@@ -1,10 +1,11 @@
-"use client";
+'use client';
 
-import { Button } from "@/components/ui/button";
-import { useRouter } from "next/navigation";
-import { Star, StarHalf, ThumbsUp, Lightbulb } from "lucide-react";
-import { useState } from "react";
-import Link from "next/link";
+import { Lightbulb, Star, StarHalf, ThumbsUp } from 'lucide-react';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { useState } from 'react';
+
+import { Button } from '@/components/ui/button';
 
 interface FeedbackData {
   technicalSkills?: number;
@@ -22,10 +23,7 @@ interface FeedbackContentProps {
   jobId: string;
 }
 
-export function FeedbackContent({
-  initialFeedback,
-  applicationId,
-}: FeedbackContentProps) {
+export function FeedbackContent({ initialFeedback, applicationId }: FeedbackContentProps) {
   const [feedback, setFeedback] = useState<FeedbackData>(initialFeedback);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const router = useRouter();
@@ -36,11 +34,11 @@ export function FeedbackContent({
     try {
       const response = await fetch(
         `/api/ai/interview/autoevaluate?applicationId=${applicationId}`,
-        { method: "GET" },
+        { method: 'GET' }
       );
 
       if (!response.ok) {
-        console.error("Failed to refresh feedback");
+        console.error('Failed to refresh feedback');
         return;
       }
 
@@ -52,7 +50,7 @@ export function FeedbackContent({
         router.refresh();
       }
     } catch (error) {
-      console.error("Error refreshing feedback:", error);
+      console.error('Error refreshing feedback:', error);
     } finally {
       setIsRefreshing(false);
     }
@@ -65,21 +63,11 @@ export function FeedbackContent({
     const hasHalfStar = rating % 1 >= 0.5;
 
     for (let i = 0; i < fullStars; i++) {
-      stars.push(
-        <Star
-          key={`full-${i}`}
-          className="h-5 w-5 fill-yellow-500 text-yellow-500"
-        />,
-      );
+      stars.push(<Star key={`full-${i}`} className="h-5 w-5 fill-yellow-500 text-yellow-500" />);
     }
 
     if (hasHalfStar) {
-      stars.push(
-        <StarHalf
-          key="half"
-          className="h-5 w-5 fill-yellow-500 text-yellow-500"
-        />,
-      );
+      stars.push(<StarHalf key="half" className="h-5 w-5 fill-yellow-500 text-yellow-500" />);
     }
 
     const emptyStars = 5 - stars.length;
@@ -103,11 +91,11 @@ export function FeedbackContent({
             disabled={isRefreshing}
             className="text-xs h-8"
           >
-            {isRefreshing ? "Refreshing..." : "Refresh Analysis"}
+            {isRefreshing ? 'Refreshing...' : 'Refresh Analysis'}
           </Button>
         </div>
         <p className="text-muted-foreground">
-          {feedback.overallImpression || "No overall impression provided"}
+          {feedback.overallImpression || 'No overall impression provided'}
         </p>
       </div>
 
@@ -151,9 +139,7 @@ export function FeedbackContent({
           <h3 className="text-sm font-medium mb-2">Culture Fit</h3>
           <div className="flex items-center mb-2">
             {renderStars(feedback.cultureFit)}
-            <span className="ml-2 text-sm text-muted-foreground">
-              ({feedback.cultureFit}/5)
-            </span>
+            <span className="ml-2 text-sm text-muted-foreground">({feedback.cultureFit}/5)</span>
           </div>
         </div>
       </div>
@@ -172,9 +158,7 @@ export function FeedbackContent({
               </div>
               <span>{strength}</span>
             </li>
-          )) || (
-            <li className="text-muted-foreground">No strengths identified</li>
-          )}
+          )) || <li className="text-muted-foreground">No strengths identified</li>}
         </ul>
       </div>
 
@@ -192,20 +176,13 @@ export function FeedbackContent({
               </div>
               <span>{area}</span>
             </li>
-          )) || (
-            <li className="text-muted-foreground">
-              No improvement areas identified
-            </li>
-          )}
+          )) || <li className="text-muted-foreground">No improvement areas identified</li>}
         </ul>
       </div>
 
       {/* Action Buttons */}
       <div className="flex flex-col sm:flex-row gap-4 pt-4">
-        <Link
-          href={`/dashboard/applications/${applicationId}`}
-          className="flex-1"
-        >
+        <Link href={`/dashboard/applications/${applicationId}`} className="flex-1">
           <Button variant="default" className="w-full">
             View Application Status
           </Button>

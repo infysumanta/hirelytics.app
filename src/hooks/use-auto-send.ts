@@ -1,8 +1,9 @@
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useCallback, useEffect, useRef, useState } from 'react';
+
 import {
-  AUTO_SEND_SILENT_PERIOD,
   AUTO_SEND_COUNTDOWN_PERIOD,
-} from "@/constants/speech-recognition-config";
+  AUTO_SEND_SILENT_PERIOD,
+} from '@/constants/speech-recognition-config';
 
 interface UseAutoSendOptions {
   value: string;
@@ -59,7 +60,7 @@ export function useAutoSend({
 
   // Cancel timer (same as reset but with different logging)
   const cancelTimer = useCallback(() => {
-    console.log("[Auto-Send] Timer manually cancelled");
+    console.log('[Auto-Send] Timer manually cancelled');
     resetTimer();
   }, [resetTimer]);
 
@@ -67,7 +68,7 @@ export function useAutoSend({
   const startCountdown = useCallback(() => {
     if (disabled || paused) return;
 
-    console.log("[Auto-Send] Starting 10-second countdown");
+    console.log('[Auto-Send] Starting 10-second countdown');
     setIsCountdownActive(true);
     setCountdownSeconds(AUTO_SEND_COUNTDOWN_PERIOD / 1000);
 
@@ -88,7 +89,7 @@ export function useAutoSend({
 
     // Set timer to auto-send after countdown period
     countdownTimerRef.current = setTimeout(() => {
-      console.log("[Auto-Send] Countdown completed, auto-sending message");
+      console.log('[Auto-Send] Countdown completed, auto-sending message');
       setIsCountdownActive(false);
       setCountdownSeconds(0);
 
@@ -103,20 +104,20 @@ export function useAutoSend({
   // Start silent period timer
   const startSilentPeriod = useCallback(() => {
     if (disabled || !value.trim()) {
-      console.log("[Auto-Send] Not starting silent period", {
+      console.log('[Auto-Send] Not starting silent period', {
         disabled,
         valueEmpty: !value.trim(),
       });
       return;
     }
 
-    console.log("[Auto-Send] Starting 5-second silent period", {
+    console.log('[Auto-Send] Starting 5-second silent period', {
       value: value.trim(),
     });
 
     silentTimerRef.current = setTimeout(() => {
       // After silent period, start countdown if value still exists and not disabled
-      console.log("[Auto-Send] Silent period ended, checking conditions", {
+      console.log('[Auto-Send] Silent period ended, checking conditions', {
         valueExists: !!value.trim(),
         disabled,
         paused,
@@ -144,7 +145,7 @@ export function useAutoSend({
 
     // If value changed (user is typing), reset and restart timer
     if (value !== lastValueRef.current) {
-      console.log("[Auto-Send] Text changed, resetting timer", {
+      console.log('[Auto-Send] Text changed, resetting timer', {
         oldValue: lastValueRef.current,
         newValue: value,
         disabled,

@@ -1,27 +1,21 @@
-"use client";
+'use client';
 
-import { useState, useRef, useCallback, useEffect } from "react";
-import { Button } from "@/components/ui/button";
-import { Video, Mic, Check, RefreshCw, Settings } from "lucide-react";
-import Webcam from "react-webcam";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { MediaDeviceSelector } from "./media-device-selector";
-import {
-  Dialog,
-  DialogContent,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import { CustomReactMic } from "./custom-react-mic";
+import { Check, Mic, RefreshCw, Settings, Video } from 'lucide-react';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import Webcam from 'react-webcam';
+
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Button } from '@/components/ui/button';
+import { Dialog, DialogContent, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+
+import { CustomReactMic } from './custom-react-mic';
+import { MediaDeviceSelector } from './media-device-selector';
 
 interface DeviceCheckProps {
   onComplete: (cameraChecked: boolean, microphoneChecked: boolean) => void;
   initialVideoDeviceId?: string | null;
   initialAudioDeviceId?: string | null;
-  onDeviceChange?: (
-    videoDeviceId: string | null,
-    audioDeviceId: string | null,
-  ) => void;
+  onDeviceChange?: (videoDeviceId: string | null, audioDeviceId: string | null) => void;
 }
 
 export function DeviceCheck({
@@ -35,19 +29,18 @@ export function DeviceCheck({
   const [showCamera, setShowCamera] = useState(false);
   const [cameraError, setCameraError] = useState<string | null>(null);
   const [microphoneError, setMicrophoneError] = useState<string | null>(null);
-  const [selectedVideoDeviceId, setSelectedVideoDeviceId] = useState<
-    string | null
-  >(initialVideoDeviceId || null);
-  const [selectedAudioDeviceId, setSelectedAudioDeviceId] = useState<
-    string | null
-  >(initialAudioDeviceId || null);
+  const [selectedVideoDeviceId, setSelectedVideoDeviceId] = useState<string | null>(
+    initialVideoDeviceId || null
+  );
+  const [selectedAudioDeviceId, setSelectedAudioDeviceId] = useState<string | null>(
+    initialAudioDeviceId || null
+  );
   const [showDeviceSelector, setShowDeviceSelector] = useState(false);
 
   // Audio recording states
   const [isRecording, setIsRecording] = useState(false);
   const [audioBlob, setAudioBlob] = useState<Blob | null>(null);
-  const [recordingTimeout, setRecordingTimeout] =
-    useState<NodeJS.Timeout | null>(null);
+  const [recordingTimeout, setRecordingTimeout] = useState<NodeJS.Timeout | null>(null);
 
   const webcamRef = useRef<Webcam>(null);
 
@@ -70,9 +63,7 @@ export function DeviceCheck({
     setShowCamera(true);
 
     const videoConstraints: MediaStreamConstraints = {
-      video: selectedVideoDeviceId
-        ? { deviceId: { exact: selectedVideoDeviceId } }
-        : true,
+      video: selectedVideoDeviceId ? { deviceId: { exact: selectedVideoDeviceId } } : true,
     };
 
     navigator.mediaDevices
@@ -95,9 +86,7 @@ export function DeviceCheck({
     setAudioBlob(null);
 
     const audioConstraints: MediaStreamConstraints = {
-      audio: selectedAudioDeviceId
-        ? { deviceId: { exact: selectedAudioDeviceId } }
-        : true,
+      audio: selectedAudioDeviceId ? { deviceId: { exact: selectedAudioDeviceId } } : true,
     };
 
     // Request microphone permission first
@@ -142,7 +131,7 @@ export function DeviceCheck({
           className="gap-2 mb-2"
           onClick={handleCameraCheck}
           disabled={cameraChecked}
-          variant={cameraChecked ? "outline" : "default"}
+          variant={cameraChecked ? 'outline' : 'default'}
         >
           {cameraChecked ? (
             <>
@@ -169,9 +158,7 @@ export function DeviceCheck({
               width={400}
               height={300}
               videoConstraints={
-                selectedVideoDeviceId
-                  ? { deviceId: selectedVideoDeviceId }
-                  : { facingMode: "user" }
+                selectedVideoDeviceId ? { deviceId: selectedVideoDeviceId } : { facingMode: 'user' }
               }
               className="rounded-md"
             />
@@ -186,13 +173,7 @@ export function DeviceCheck({
           className="gap-2 mb-2"
           onClick={handleMicrophoneCheck}
           disabled={microphoneChecked || isRecording}
-          variant={
-            microphoneChecked
-              ? "outline"
-              : isRecording
-                ? "secondary"
-                : "default"
-          }
+          variant={microphoneChecked ? 'outline' : isRecording ? 'secondary' : 'default'}
         >
           {microphoneChecked ? (
             <>
@@ -217,7 +198,7 @@ export function DeviceCheck({
 
         <div className="w-full max-w-xs mt-2">
           {/* Show the ReactMic component only during recording, hide once test is complete */}
-          <div style={{ display: isRecording ? "block" : "none" }}>
+          <div style={{ display: isRecording ? 'block' : 'none' }}>
             <CustomReactMic
               record={isRecording}
               deviceId={selectedAudioDeviceId}
@@ -232,13 +213,12 @@ export function DeviceCheck({
 
                 // Check if the recorded blob has significant audio data
                 const blobSize = recordedBlob.blob.size;
-                const recordingDuration =
-                  recordedBlob.stopTime - recordedBlob.startTime;
+                const recordingDuration = recordedBlob.stopTime - recordedBlob.startTime;
 
                 // If the blob is too small, it might not have captured significant sound
                 if (blobSize < 1000 && recordingDuration > 2000) {
                   setMicrophoneError(
-                    "No significant audio detected. Please check your microphone and try again.",
+                    'No significant audio detected. Please check your microphone and try again.'
                   );
                   return;
                 }
@@ -248,9 +228,7 @@ export function DeviceCheck({
               }}
               onData={() => {}}
               onError={(err: Error) => {
-                setMicrophoneError(
-                  `Error accessing microphone: ${err.message || "Unknown error"}`,
-                );
+                setMicrophoneError(`Error accessing microphone: ${err.message || 'Unknown error'}`);
                 setIsRecording(false);
               }}
               strokeColor="#09f"

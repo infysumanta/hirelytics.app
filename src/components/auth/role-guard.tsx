@@ -1,8 +1,9 @@
-"use client";
+'use client';
 
-import { useRoleProtection } from "@/lib/auth-utils";
-import { UserRole } from "@/models/user";
-import { Loader2 } from "lucide-react";
+import { Loader2 } from 'lucide-react';
+
+import { useRoleProtection } from '@/lib/auth-utils';
+import { UserRole } from '@/models/user';
 
 interface RoleGuardProps {
   allowedRoles: UserRole[];
@@ -34,9 +35,7 @@ function AuthLoading() {
       <div className="flex flex-col items-center gap-2">
         <Loader2 className="h-8 w-8 animate-spin text-primary" />
         <h3 className="text-lg font-medium">Loading...</h3>
-        <p className="text-sm text-muted-foreground">
-          Verifying your access permissions
-        </p>
+        <p className="text-sm text-muted-foreground">Verifying your access permissions</p>
       </div>
     </div>
   );

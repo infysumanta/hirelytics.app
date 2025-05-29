@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 /**
  * Convert a File object to base64 string
@@ -22,7 +22,7 @@ export const fileToBase64 = (file: File): Promise<string> => {
  * @returns Promise with file information including URL, base64, key and bucket
  */
 export const uploadFileToServer = async (
-  file: File,
+  file: File
 ): Promise<{
   url: string;
   fileName: string;
@@ -33,28 +33,28 @@ export const uploadFileToServer = async (
   try {
     // Create a FormData object to send the file
     const formData = new FormData();
-    formData.append("file", file);
+    formData.append('file', file);
 
     // Send to our API endpoint
-    const response = await fetch("/api/upload", {
-      method: "POST",
+    const response = await fetch('/api/upload', {
+      method: 'POST',
       body: formData,
     });
 
     if (!response.ok) {
       const errorData = await response.json();
-      throw new Error(errorData.message || "Failed to upload file");
+      throw new Error(errorData.message || 'Failed to upload file');
     }
 
     const result = await response.json();
 
     if (!result.success) {
-      throw new Error(result.message || "Upload was not successful");
+      throw new Error(result.message || 'Upload was not successful');
     }
 
     return result.file;
   } catch (error) {
-    console.error("Error uploading file:", error);
+    console.error('Error uploading file:', error);
     throw error;
   }
 };
@@ -65,7 +65,7 @@ export const uploadFileToServer = async (
  * @returns Object containing S3 URL, base64 string, filename, key and bucket
  */
 export const processFileForStorage = async (
-  file: File,
+  file: File
 ): Promise<{
   url: string;
   base64: string;
@@ -79,7 +79,7 @@ export const processFileForStorage = async (
 
     return result;
   } catch (error) {
-    console.error("Error processing file for storage:", error);
+    console.error('Error processing file for storage:', error);
     throw error;
   }
 };

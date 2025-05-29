@@ -1,8 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 // React Mic declaration file
-declare module "react-mic" {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  import { Component, ReactNode } from "react";
+declare module 'react-mic' {
+  import { Component } from 'react';
 
   export interface ReactMicProps {
     /** Whether or not audio is being recorded */
@@ -36,7 +35,7 @@ declare module "react-mic" {
     /** Height of the component */
     height?: string | number;
     /** Visual settings (sinewave/frequencyBars) */
-    visualSetting?: "sinewave" | "frequencyBars";
+    visualSetting?: 'sinewave' | 'frequencyBars';
     /** Whether or not to echo audio through speakers */
     echoCancellation?: boolean;
     /** Whether or not to autoGainControl */

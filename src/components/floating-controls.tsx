@@ -1,25 +1,23 @@
-"use client";
+'use client';
 
-import * as React from "react";
-import { ThemeToggle } from "@/components/theme-toggle";
-import { LanguageSelector } from "@/components/language-selector";
-import { cn } from "@/lib/utils";
-import { motion } from "framer-motion";
+import { motion } from 'framer-motion';
+import * as React from 'react';
+
+import { LanguageSelector } from '@/components/language-selector';
+import { ThemeToggle } from '@/components/theme-toggle';
+import { cn } from '@/lib/utils';
 
 interface FloatingControlsProps {
   className?: string;
-  position?: "top-right" | "top-left" | "bottom-right" | "bottom-left";
+  position?: 'top-right' | 'top-left' | 'bottom-right' | 'bottom-left';
 }
 
-export function FloatingControls({
-  className,
-  position = "top-right",
-}: FloatingControlsProps) {
+export function FloatingControls({ className, position = 'top-right' }: FloatingControlsProps) {
   const positionClasses = {
-    "top-right": "top-4 right-4",
-    "top-left": "top-4 left-4",
-    "bottom-right": "bottom-4 right-4",
-    "bottom-left": "bottom-4 left-4",
+    'top-right': 'top-4 right-4',
+    'top-left': 'top-4 left-4',
+    'bottom-right': 'bottom-4 right-4',
+    'bottom-left': 'bottom-4 left-4',
   };
 
   return (
@@ -28,9 +26,9 @@ export function FloatingControls({
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
       className={cn(
-        "fixed z-50 flex items-center gap-2 p-2 rounded-full bg-background/80 backdrop-blur-sm border shadow-sm",
+        'fixed z-50 flex items-center gap-2 p-2 rounded-full bg-background/80 backdrop-blur-sm border shadow-sm',
         positionClasses[position],
-        className,
+        className
       )}
     >
       <ThemeToggle />

@@ -1,5 +1,6 @@
-import mongoose, { Document, Schema } from "mongoose";
-import { InterviewState, InterviewStateSchema } from "./interview-state";
+import mongoose, { Document, Schema } from 'mongoose';
+
+import { InterviewState, InterviewStateSchema } from './interview-state';
 
 export interface ParsedResume {
   extractedText: string;
@@ -32,7 +33,7 @@ interface MonitoringImage {
 // Interface for interview chat messages
 interface InterviewMessage {
   text: string;
-  sender: "ai" | "user" | "system";
+  sender: 'ai' | 'user' | 'system';
   timestamp: Date;
   questionId?: string; // Optional field to link messages to specific questions
   questionCategory?: string; // Technical, project, or behavioral
@@ -53,7 +54,7 @@ export interface IJobApplication extends Document {
   s3Key?: string; // S3 object key for generating signed URLs
   s3Bucket?: string; // S3 bucket name for generating signed URLs
   preferredLanguage: string;
-  status: "pending" | "reviewed" | "accepted" | "rejected";
+  status: 'pending' | 'reviewed' | 'accepted' | 'rejected';
   parsedResume?: ParsedResume; // Parsed resume data including match score and AI comments
   interviewState?: InterviewState; // Track the state of the interview process
   monitoringEnabled?: boolean; // Whether camera monitoring is enabled
@@ -68,38 +69,38 @@ const JobApplicationSchema = new Schema(
   {
     jobId: {
       type: Schema.Types.ObjectId,
-      ref: "Job",
-      required: [true, "Job ID is required"],
+      ref: 'Job',
+      required: [true, 'Job ID is required'],
     },
     userId: {
       type: Schema.Types.ObjectId,
-      ref: "User",
-      required: [true, "User ID is required"],
+      ref: 'User',
+      required: [true, 'User ID is required'],
     },
     candidateName: String,
     email: String,
     resumeUrl: {
       type: String,
-      required: [true, "Resume URL is required"],
+      required: [true, 'Resume URL is required'],
     },
     resumeBase64: {
       type: String,
-      required: [true, "Resume base64 content is required"],
+      required: [true, 'Resume base64 content is required'],
     },
     fileName: {
       type: String,
-      required: [true, "File name is required"],
+      required: [true, 'File name is required'],
     },
     s3Key: String,
     s3Bucket: String,
     preferredLanguage: {
       type: String,
-      required: [true, "Preferred language is required"],
+      required: [true, 'Preferred language is required'],
     },
     status: {
       type: String,
-      enum: ["pending", "reviewed", "accepted", "rejected"],
-      default: "pending",
+      enum: ['pending', 'reviewed', 'accepted', 'rejected'],
+      default: 'pending',
     },
     parsedResume: {
       extractedText: String,
@@ -141,7 +142,7 @@ const JobApplicationSchema = new Schema(
         text: String,
         sender: {
           type: String,
-          enum: ["ai", "user", "system"],
+          enum: ['ai', 'user', 'system'],
         },
         timestamp: Date,
         questionId: String,
@@ -155,10 +156,10 @@ const JobApplicationSchema = new Schema(
   },
   {
     timestamps: true,
-  },
+  }
 );
 
 // Prevent duplicate exports with NextJS hot reloading
 export const JobApplication =
   mongoose.models.JobApplication ||
-  mongoose.model<IJobApplication>("JobApplication", JobApplicationSchema);
+  mongoose.model<IJobApplication>('JobApplication', JobApplicationSchema);

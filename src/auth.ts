@@ -1,13 +1,14 @@
-import NextAuth from "next-auth";
-import CredentialsProvider from "next-auth/providers/credentials";
-import { UserRole } from "@/models/user";
-import { z } from "zod";
+import NextAuth from 'next-auth';
+import CredentialsProvider from 'next-auth/providers/credentials';
+import { z } from 'zod';
+
+import { UserRole } from '@/models/user';
 
 // Define login schema for validation
 const loginSchema = z.object({
-  email: z.string().email("Invalid email address"),
-  password: z.string().min(6, "Password must be at least 6 characters"),
-  role: z.enum(["admin", "recruiter", "candidate"]),
+  email: z.string().email('Invalid email address'),
+  password: z.string().min(6, 'Password must be at least 6 characters'),
+  role: z.enum(['admin', 'recruiter', 'candidate']),
 });
 
 export const {
@@ -17,11 +18,11 @@ export const {
   signOut,
 } = NextAuth({
   pages: {
-    signIn: "/login",
-    error: "/error",
+    signIn: '/login',
+    error: '/error',
   },
   session: {
-    strategy: "jwt",
+    strategy: 'jwt',
     maxAge: 30 * 24 * 60 * 60, // 30 days
   },
   callbacks: {
@@ -50,18 +51,18 @@ export const {
       const { pathname } = request.nextUrl;
 
       // Public routes that don't require authentication
-      const publicRoutes = ["/", "/login", "/register", "/learn-more"];
+      const publicRoutes = ['/', '/login', '/register', '/learn-more'];
       const isPublicRoute = publicRoutes.some(
-        (route) => pathname === route || pathname.startsWith(`${route}/`),
+        (route) => pathname === route || pathname.startsWith(`${route}/`)
       );
 
       // If it's a public route and user is logged in, redirect to dashboard
       if (
         isPublicRoute &&
         isLoggedIn &&
-        (pathname.startsWith("/login") || pathname.startsWith("/register"))
+        (pathname.startsWith('/login') || pathname.startsWith('/register'))
       ) {
-        return Response.redirect(new URL("/dashboard", request.nextUrl));
+        return Response.redirect(new URL('/dashboard', request.nextUrl));
       }
 
       // If it's a public route, allow access
@@ -73,63 +74,47 @@ export const {
       if (!isLoggedIn) {
         // Store the original URL to redirect back after login
         const redirectUrl = encodeURIComponent(request.nextUrl.pathname);
-        return Response.redirect(
-          new URL(`/login?callbackUrl=${redirectUrl}`, request.nextUrl),
-        );
+        return Response.redirect(new URL(`/login?callbackUrl=${redirectUrl}`, request.nextUrl));
       }
 
       // If user is logged in but account is disabled, redirect to login with error
       if (isLoggedIn && !isActive) {
-        return Response.redirect(
-          new URL("/login?error=Account+is+disabled", request.nextUrl),
-        );
+        return Response.redirect(new URL('/login?error=Account+is+disabled', request.nextUrl));
       }
 
       // Define role-based access rules
-      const adminOnlyRoutes = ["/admin", "/dashboard/admin"];
+      const adminOnlyRoutes = ['/admin', '/dashboard/admin'];
       const isAdminOnlyRoute = adminOnlyRoutes.some(
-        (route) => pathname === route || pathname.startsWith(`${route}/`),
+        (route) => pathname === route || pathname.startsWith(`${route}/`)
       );
 
-      const recruiterOnlyRoutes = [
-        "/dashboard/recruiters",
-        "/jobs/create",
-        "/jobs/manage",
-      ];
+      const recruiterOnlyRoutes = ['/dashboard/recruiters', '/jobs/create', '/jobs/manage'];
       const isRecruiterOnlyRoute = recruiterOnlyRoutes.some(
-        (route) => pathname === route || pathname.startsWith(`${route}/`),
+        (route) => pathname === route || pathname.startsWith(`${route}/`)
       );
 
-      const candidateOnlyRoutes = ["/dashboard/candidates", "/applications/my"];
+      const candidateOnlyRoutes = ['/dashboard/candidates', '/applications/my'];
       const isCandidateOnlyRoute = candidateOnlyRoutes.some(
-        (route) => pathname === route || pathname.startsWith(`${route}/`),
+        (route) => pathname === route || pathname.startsWith(`${route}/`)
       );
 
       // Admin access check
-      if (isAdminOnlyRoute && userRole !== "admin") {
-        return Response.redirect(new URL("/unauthorized", request.nextUrl));
+      if (isAdminOnlyRoute && userRole !== 'admin') {
+        return Response.redirect(new URL('/unauthorized', request.nextUrl));
       }
 
       // Recruiter access check
-      if (
-        isRecruiterOnlyRoute &&
-        userRole !== "recruiter" &&
-        userRole !== "admin"
-      ) {
-        return Response.redirect(new URL("/unauthorized", request.nextUrl));
+      if (isRecruiterOnlyRoute && userRole !== 'recruiter' && userRole !== 'admin') {
+        return Response.redirect(new URL('/unauthorized', request.nextUrl));
       }
 
       // Candidate access check
-      if (
-        isCandidateOnlyRoute &&
-        userRole !== "candidate" &&
-        userRole !== "admin"
-      ) {
-        return Response.redirect(new URL("/unauthorized", request.nextUrl));
+      if (isCandidateOnlyRoute && userRole !== 'candidate' && userRole !== 'admin') {
+        return Response.redirect(new URL('/unauthorized', request.nextUrl));
       }
 
       // Dashboard is accessible to all authenticated and active users
-      if (pathname === "/dashboard") {
+      if (pathname === '/dashboard') {
         return isActive;
       }
 
@@ -139,12 +124,12 @@ export const {
   },
   providers: [
     CredentialsProvider({
-      id: "credentials",
-      name: "Credentials",
+      id: 'credentials',
+      name: 'Credentials',
       credentials: {
-        email: { label: "Email", type: "email" },
-        password: { label: "Password", type: "password" },
-        role: { label: "Role", type: "text" },
+        email: { label: 'Email', type: 'email' },
+        password: { label: 'Password', type: 'password' },
+        role: { label: 'Role', type: 'text' },
       },
       async authorize(credentials) {
         if (!credentials) return null;
@@ -154,26 +139,23 @@ export const {
           const { email, password, role } = loginSchema.parse(credentials);
 
           // Make a request to our API route for authentication
-          const response = await fetch(
-            `${process.env.AUTH_URL}/api/auth/login`,
-            {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify({ email, password, role }),
+          const response = await fetch(`${process.env.AUTH_URL}/api/auth/login`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
             },
-          );
+            body: JSON.stringify({ email, password, role }),
+          });
 
           const data = await response.json();
 
           if (!response.ok) {
-            throw new Error(data.error || "Authentication failed");
+            throw new Error(data.error || 'Authentication failed');
           }
 
           return data.user;
         } catch (error) {
-          console.error("Auth error:", error);
+          console.error('Auth error:', error);
           return null;
         }
       },

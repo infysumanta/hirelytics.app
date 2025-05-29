@@ -1,27 +1,24 @@
-"use client";
+'use client';
 
-import { useState, useEffect, useRef, useCallback } from "react";
-import { Mic, MicOff, Volume2 } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
-import { cn } from "@/lib/utils";
-import { VoiceIndicator } from "./voice-indicator";
-import { AutoSendTimer } from "./auto-send-timer";
+import { Mic, MicOff, Volume2 } from 'lucide-react';
+import { useCallback, useEffect, useRef, useState } from 'react';
+
+import { Button } from '@/components/ui/button';
+import { Textarea } from '@/components/ui/textarea';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
-import {
-  SPEECH_RECOGNITION_LANGUAGE,
-  SPEECH_RECOGNITION_MAX_ALTERNATIVES,
-  SPEECH_RECOGNITION_CONTINUOUS,
-  SPEECH_RECOGNITION_INTERIM_RESULTS,
   AUTO_STOP_ENABLED,
   DEFAULT_SILENCE_TIMEOUT,
-} from "@/constants/speech-recognition-config";
-import { useAutoSend } from "@/hooks/use-auto-send";
+  SPEECH_RECOGNITION_CONTINUOUS,
+  SPEECH_RECOGNITION_INTERIM_RESULTS,
+  SPEECH_RECOGNITION_LANGUAGE,
+  SPEECH_RECOGNITION_MAX_ALTERNATIVES,
+} from '@/constants/speech-recognition-config';
+import { useAutoSend } from '@/hooks/use-auto-send';
+import { cn } from '@/lib/utils';
+
+import { AutoSendTimer } from './auto-send-timer';
+import { VoiceIndicator } from './voice-indicator';
 
 interface SpeechRecognitionInputProps {
   value: string;
@@ -99,7 +96,7 @@ export function SpeechRecognitionInput({
   value,
   onChange,
   onSend,
-  placeholder = "Type your message...",
+  placeholder = 'Type your message...',
   className,
   disabled = false,
   rows = 5,
@@ -113,18 +110,17 @@ export function SpeechRecognitionInput({
   const recognitionRef = useRef<SpeechRecognition | null>(null);
 
   // Auto-send functionality
-  const { isCountdownActive, countdownSeconds, resetTimer, cancelTimer } =
-    useAutoSend({
-      value,
-      onSend,
-      disabled,
-      paused: audioIsPlaying, // Pause auto-send when audio is playing
-    });
+  const { isCountdownActive, countdownSeconds, resetTimer, cancelTimer } = useAutoSend({
+    value,
+    onSend,
+    disabled,
+    paused: audioIsPlaying, // Pause auto-send when audio is playing
+  });
 
   // Check if speech recognition is available
   useEffect(() => {
     const speechRecognitionAvailable =
-      "SpeechRecognition" in window || "webkitSpeechRecognition" in window;
+      'SpeechRecognition' in window || 'webkitSpeechRecognition' in window;
 
     setIsSpeechEnabled(speechRecognitionAvailable);
   }, []);
@@ -132,22 +128,22 @@ export function SpeechRecognitionInput({
   // Track audio playback state
   useEffect(() => {
     const handleAudioStart = () => {
-      console.log("[Speech Recognition] Audio playback started");
+      console.log('[Speech Recognition] Audio playback started');
       setAudioIsPlaying(true);
     };
 
     const handleAudioEnd = () => {
-      console.log("[Speech Recognition] Audio playback ended");
+      console.log('[Speech Recognition] Audio playback ended');
       setAudioIsPlaying(false);
     };
 
     // Listen for audio playback events
-    document.addEventListener("audio-playback-started", handleAudioStart);
-    document.addEventListener("audio-playback-ended", handleAudioEnd);
+    document.addEventListener('audio-playback-started', handleAudioStart);
+    document.addEventListener('audio-playback-ended', handleAudioEnd);
 
     return () => {
-      document.removeEventListener("audio-playback-started", handleAudioStart);
-      document.removeEventListener("audio-playback-ended", handleAudioEnd);
+      document.removeEventListener('audio-playback-started', handleAudioStart);
+      document.removeEventListener('audio-playback-ended', handleAudioEnd);
     };
   }, []);
 
@@ -168,35 +164,33 @@ export function SpeechRecognitionInput({
       recognition.maxAlternatives = SPEECH_RECOGNITION_MAX_ALTERNATIVES;
 
       recognition.onstart = () => {
-        console.log("Speech recognition started");
+        console.log('Speech recognition started');
         setIsListening(true);
 
         // Broadcast speech recognition status
         document.dispatchEvent(
-          new CustomEvent("speech-recognition-status", {
+          new CustomEvent('speech-recognition-status', {
             detail: { isListening: true },
-          }),
+          })
         );
 
         // Stop all audio playback when speech recognition starts
         if (audioIsPlaying) {
-          console.log(
-            "Stopping audio playback because speech recognition started",
-          );
-          document.querySelectorAll("audio").forEach((audio) => audio.pause());
-          document.dispatchEvent(new CustomEvent("audio-playback-ended"));
+          console.log('Stopping audio playback because speech recognition started');
+          document.querySelectorAll('audio').forEach((audio) => audio.pause());
+          document.dispatchEvent(new CustomEvent('audio-playback-ended'));
         }
       };
 
       recognition.onend = () => {
-        console.log("Speech recognition ended");
+        console.log('Speech recognition ended');
         setIsListening(false);
 
         // Broadcast speech recognition status
         document.dispatchEvent(
-          new CustomEvent("speech-recognition-status", {
+          new CustomEvent('speech-recognition-status', {
             detail: { isListening: false },
-          }),
+          })
         );
       };
 
@@ -210,9 +204,9 @@ export function SpeechRecognitionInput({
         // Process the transcription result
         const transcript = Array.from(event.results)
           .map((result) => result[0].transcript)
-          .join("");
+          .join('');
 
-        console.log("Speech recognition result:", transcript);
+        console.log('Speech recognition result:', transcript);
         onChange(transcript);
 
         // Check if the result is final
@@ -220,13 +214,13 @@ export function SpeechRecognitionInput({
         if (isFinalResult) {
           // Don't call resetTimer() here - let the auto-send hook handle value changes naturally
           console.log(
-            "[Auto-Send] Speech recognition final result - auto-send will start automatically",
+            '[Auto-Send] Speech recognition final result - auto-send will start automatically'
           );
 
           // If AUTO_STOP_ENABLED is true, set a timer to stop listening after silence
           if (AUTO_STOP_ENABLED) {
             console.log(
-              `Final result detected, setting silence timer (${DEFAULT_SILENCE_TIMEOUT}ms)`,
+              `Final result detected, setting silence timer (${DEFAULT_SILENCE_TIMEOUT}ms)`
             );
 
             // Clear any existing timer
@@ -237,8 +231,8 @@ export function SpeechRecognitionInput({
 
             // Set a new timer to stop listening after configured silence timeout
             const timer = setTimeout(() => {
-              if (transcript.trim() !== "") {
-                console.log("Stopping listening after silence period");
+              if (transcript.trim() !== '') {
+                console.log('Stopping listening after silence period');
                 stopListening();
               }
             }, DEFAULT_SILENCE_TIMEOUT);
@@ -258,26 +252,26 @@ export function SpeechRecognitionInput({
 
       recognition.onerror = (event: SpeechRecognitionError) => {
         // Handle different error types appropriately
-        if (event.error === "aborted") {
-          console.log("Speech recognition was aborted");
-        } else if (event.error === "no-speech") {
-          console.log("No speech detected");
-        } else if (event.error === "network") {
-          console.warn("Network error in speech recognition");
+        if (event.error === 'aborted') {
+          console.log('Speech recognition was aborted');
+        } else if (event.error === 'no-speech') {
+          console.log('No speech detected');
+        } else if (event.error === 'network') {
+          console.warn('Network error in speech recognition');
         } else {
-          console.error("Speech recognition error:", event.error);
+          console.error('Speech recognition error:', event.error);
         }
 
         setIsListening(false);
       };
 
       recognition.onspeechend = () => {
-        console.log("Speech ended");
+        console.log('Speech ended');
       };
 
       return recognition;
     } catch (error) {
-      console.error("Error initializing speech recognition:", error);
+      console.error('Error initializing speech recognition:', error);
       return null;
     }
   };
@@ -296,7 +290,7 @@ export function SpeechRecognitionInput({
         try {
           recognitionRef.current.abort();
         } catch (e) {
-          console.log("Error while aborting previous recognition instance:", e);
+          console.log('Error while aborting previous recognition instance:', e);
         }
         recognitionRef.current = null;
       }
@@ -309,33 +303,30 @@ export function SpeechRecognitionInput({
         navigator.mediaDevices
           .getUserMedia({ audio: true })
           .then(() => {
-            console.log("Microphone permission granted");
+            console.log('Microphone permission granted');
 
             // Start recognition after ensuring we have permission
             try {
               recognitionRef.current?.start();
-              console.log("Started speech recognition");
+              console.log('Started speech recognition');
             } catch (error) {
-              if (
-                error instanceof DOMException &&
-                error.name === "NotAllowedError"
-              ) {
-                console.error("Microphone permission denied", error);
+              if (error instanceof DOMException && error.name === 'NotAllowedError') {
+                console.error('Microphone permission denied', error);
               } else {
-                console.error("Failed to start speech recognition:", error);
+                console.error('Failed to start speech recognition:', error);
               }
               setIsListening(false);
             }
           })
           .catch((err) => {
-            console.error("Microphone permission denied:", err);
+            console.error('Microphone permission denied:', err);
             setIsListening(false);
           });
       } else {
-        console.warn("Could not initialize speech recognition");
+        console.warn('Could not initialize speech recognition');
       }
     } catch (error) {
-      console.error("Error in startListening:", error);
+      console.error('Error in startListening:', error);
       setIsListening(false);
     }
   };
@@ -343,7 +334,7 @@ export function SpeechRecognitionInput({
   const stopListening = useCallback(() => {
     try {
       if (recognitionRef.current) {
-        console.log("Stopping speech recognition");
+        console.log('Stopping speech recognition');
 
         // First clear the silence timer
         if (silenceTimer) {
@@ -355,20 +346,17 @@ export function SpeechRecognitionInput({
           // Stop the recognition instance
           recognitionRef.current.stop();
         } catch (error) {
-          console.log(
-            "Error stopping recognition, trying to abort instead:",
-            error,
-          );
+          console.log('Error stopping recognition, trying to abort instead:', error);
           try {
             // Fall back to abort if stop fails
             recognitionRef.current.abort();
           } catch (abortError) {
-            console.error("Failed to abort recognition:", abortError);
+            console.error('Failed to abort recognition:', abortError);
           }
         }
       }
     } catch (error) {
-      console.error("Error in stopListening:", error);
+      console.error('Error in stopListening:', error);
     } finally {
       // Ensure the listening state is updated regardless of errors
       setIsListening(false);
@@ -376,19 +364,17 @@ export function SpeechRecognitionInput({
   }, [silenceTimer]);
 
   const toggleListening = useCallback(() => {
-    console.log("Toggling speech recognition, current state:", isListening);
-    console.log("Component disabled state:", disabled);
-    console.log("Audio playing state:", audioIsPlaying);
+    console.log('Toggling speech recognition, current state:', isListening);
+    console.log('Component disabled state:', disabled);
+    console.log('Audio playing state:', audioIsPlaying);
 
     // We now allow starting speech recognition even during audio playback
     // If audio is playing and user wants to start talking, we'll stop the audio playback
     if (audioIsPlaying && !isListening) {
-      console.log(
-        "Audio is playing but allowing speech recognition to start - stopping audio",
-      );
+      console.log('Audio is playing but allowing speech recognition to start - stopping audio');
       // Stop audio playback
-      document.querySelectorAll("audio").forEach((audio) => audio.pause());
-      document.dispatchEvent(new CustomEvent("audio-playback-ended"));
+      document.querySelectorAll('audio').forEach((audio) => audio.pause());
+      document.dispatchEvent(new CustomEvent('audio-playback-ended'));
     }
 
     // Check if it's disabled - important for user turn state
@@ -408,7 +394,7 @@ export function SpeechRecognitionInput({
   }, [isListening, stopListening, startListening, audioIsPlaying, disabled]);
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === "Enter" && !e.shiftKey && !disabled) {
+    if (e.key === 'Enter' && !e.shiftKey && !disabled) {
       e.preventDefault();
       if (isListening) {
         stopListening();
@@ -418,7 +404,7 @@ export function SpeechRecognitionInput({
       resetTimer();
 
       // Log that Enter key was pressed to send message
-      console.log("Enter key pressed to send message, current input:", value);
+      console.log('Enter key pressed to send message, current input:', value);
 
       // Send the message which should trigger input clearing
       onSend();
@@ -427,9 +413,9 @@ export function SpeechRecognitionInput({
 
   // Force textarea to sync with value prop - useful when parent components clear the input
   useEffect(() => {
-    const textarea = document.querySelector("textarea") as HTMLTextAreaElement;
+    const textarea = document.querySelector('textarea') as HTMLTextAreaElement;
     if (textarea && textarea.value !== value) {
-      console.log("Forcing textarea sync with value prop:", {
+      console.log('Forcing textarea sync with value prop:', {
         textareaValue: textarea.value,
         propValue: value,
       });
@@ -448,21 +434,21 @@ export function SpeechRecognitionInput({
   // Listen for audio playback events
   useEffect(() => {
     const handleAudioStart = () => {
-      console.log("Audio playback started - disabling mic");
+      console.log('Audio playback started - disabling mic');
       setAudioIsPlaying(true);
     };
 
     const handleAudioEnd = () => {
-      console.log("Audio playback ended - mic can be enabled again");
+      console.log('Audio playback ended - mic can be enabled again');
       setAudioIsPlaying(false);
     };
 
-    document.addEventListener("audio-playback-started", handleAudioStart);
-    document.addEventListener("audio-playback-ended", handleAudioEnd);
+    document.addEventListener('audio-playback-started', handleAudioStart);
+    document.addEventListener('audio-playback-ended', handleAudioEnd);
 
     return () => {
-      document.removeEventListener("audio-playback-started", handleAudioStart);
-      document.removeEventListener("audio-playback-ended", handleAudioEnd);
+      document.removeEventListener('audio-playback-started', handleAudioStart);
+      document.removeEventListener('audio-playback-ended', handleAudioEnd);
     };
   }, []);
 
@@ -472,16 +458,10 @@ export function SpeechRecognitionInput({
       toggleListening();
     };
 
-    document.addEventListener(
-      "toggle-speech-recognition",
-      handleToggleSpeechRecognition,
-    );
+    document.addEventListener('toggle-speech-recognition', handleToggleSpeechRecognition);
 
     return () => {
-      document.removeEventListener(
-        "toggle-speech-recognition",
-        handleToggleSpeechRecognition,
-      );
+      document.removeEventListener('toggle-speech-recognition', handleToggleSpeechRecognition);
     };
   }, [toggleListening]);
 
@@ -489,16 +469,16 @@ export function SpeechRecognitionInput({
   useEffect(() => {
     if (hideButtons) {
       document.dispatchEvent(
-        new CustomEvent("speech-recognition-status", {
+        new CustomEvent('speech-recognition-status', {
           detail: { isListening },
-        }),
+        })
       );
     }
   }, [isListening, hideButtons]);
 
   // Enhanced logging for value prop changes to debug input clearing
   useEffect(() => {
-    console.log("SpeechRecognitionInput value changed:", {
+    console.log('SpeechRecognitionInput value changed:', {
       value,
       length: value?.length || 0,
       timestamp: new Date().toISOString(),
@@ -507,21 +487,21 @@ export function SpeechRecognitionInput({
 
     // If value becomes empty, log that the input has been cleared
     if (!value || value.length === 0) {
-      console.log("Input has been cleared at:", new Date().toISOString());
+      console.log('Input has been cleared at:', new Date().toISOString());
     }
   }, [value]);
 
   // Cleanup on unmount
   useEffect(() => {
     return () => {
-      console.log("Component unmounting, cleaning up resources");
+      console.log('Component unmounting, cleaning up resources');
       try {
         // Clean up recognition instance
         if (recognitionRef.current) {
           try {
             recognitionRef.current.abort();
           } catch (e) {
-            console.log("Error during cleanup:", e);
+            console.log('Error during cleanup:', e);
           }
           recognitionRef.current = null;
         }
@@ -532,7 +512,7 @@ export function SpeechRecognitionInput({
           setSilenceTimer(null);
         }
       } catch (error) {
-        console.error("Error in cleanup:", error);
+        console.error('Error in cleanup:', error);
       }
     };
   }, [silenceTimer]);
@@ -558,11 +538,10 @@ export function SpeechRecognitionInput({
             onKeyDown={handleKeyPress}
             disabled={disabled}
             className={cn(
-              "min-h-[5lh] resize-none rounded-lg transition-all w-full max-h-[5lh]", // Added max-h-[3lh] to limit height
-              isListening &&
-                "border-primary border-2 shadow-[0_0_15px_rgba(136,58,234,0.3)]",
-              disabled && "opacity-70 cursor-not-allowed",
-              className,
+              'min-h-[5lh] resize-none rounded-lg transition-all w-full max-h-[5lh]', // Added max-h-[3lh] to limit height
+              isListening && 'border-primary border-2 shadow-[0_0_15px_rgba(136,58,234,0.3)]',
+              disabled && 'opacity-70 cursor-not-allowed',
+              className
             )}
             rows={rows}
           />
@@ -580,14 +559,8 @@ export function SpeechRecognitionInput({
                   <Volume2 className="h-2 w-2 text-primary" />
                 </div>
                 <div className="flex flex-row justify-between gap-2">
-                  <span className="text-sm font-medium text-primary">
-                    Listening...
-                  </span>
-                  <VoiceIndicator
-                    isActive={true}
-                    variant="wave"
-                    className="h-4 mt-1"
-                  />
+                  <span className="text-sm font-medium text-primary">Listening...</span>
+                  <VoiceIndicator isActive={true} variant="wave" className="h-4 mt-1" />
                 </div>
               </div>
             </div>
@@ -604,16 +577,16 @@ export function SpeechRecognitionInput({
                   size="icon"
                   variant="outline"
                   className={cn(
-                    "flex-shrink-0 h-10 w-10 rounded-full transition-all relative overflow-hidden",
-                    isListening && "border-primary",
+                    'flex-shrink-0 h-10 w-10 rounded-full transition-all relative overflow-hidden',
+                    isListening && 'border-primary'
                   )}
                   onClick={toggleListening}
                   disabled={disabled}
                 >
                   <div
                     className={cn(
-                      "absolute inset-0 transition-all duration-300",
-                      isListening ? "opacity-100" : "opacity-0",
+                      'absolute inset-0 transition-all duration-300',
+                      isListening ? 'opacity-100' : 'opacity-0'
                     )}
                   >
                     <div className="absolute inset-0 bg-gradient-to-br from-primary via-secondary to-primary animate-gradient"></div>
@@ -622,15 +595,15 @@ export function SpeechRecognitionInput({
 
                   <div
                     className={cn(
-                      "relative z-10 transition-transform duration-300",
-                      isListening && "scale-110",
+                      'relative z-10 transition-transform duration-300',
+                      isListening && 'scale-110'
                     )}
                   >
                     {isListening ? (
                       <Mic
                         className={cn(
-                          "h-4 w-4 text-primary-foreground transition-all",
-                          isListening && "text-white",
+                          'h-4 w-4 text-primary-foreground transition-all',
+                          isListening && 'text-white'
                         )}
                       />
                     ) : (
@@ -640,7 +613,7 @@ export function SpeechRecognitionInput({
                 </Button>
               </TooltipTrigger>
               <TooltipContent side="top">
-                {isListening ? "Stop listening" : "Start voice recognition"}
+                {isListening ? 'Stop listening' : 'Start voice recognition'}
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>

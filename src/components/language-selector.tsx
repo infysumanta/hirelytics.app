@@ -1,21 +1,20 @@
-"use client";
+'use client';
 
-import * as React from "react";
+import { AnimatePresence, motion } from 'framer-motion';
+import { useLocale, useTranslations } from 'next-intl';
+import * as React from 'react';
 
-import { useLocale, useTranslations } from "next-intl";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-
-import { Locale, localsLanguages } from "@/i18n/config";
-import { motion, AnimatePresence } from "framer-motion";
-import { setUserLocale } from "@/i18n/service";
+} from '@/components/ui/dropdown-menu';
+import { Locale, localsLanguages } from '@/i18n/config';
+import { setUserLocale } from '@/i18n/service';
 export function LanguageSelector() {
   const locale = useLocale();
-  const t = useTranslations("Common.language");
+  const t = useTranslations('Common.language');
 
   // Function to handle language change
   const handleLanguageChange = async (newLocale: Locale) => {
@@ -60,13 +59,11 @@ export function LanguageSelector() {
               key={lang.code}
               onClick={() => handleLanguageChange(lang.code as Locale)}
               className={`flex items-center gap-2 cursor-pointer ${
-                locale === lang.code
-                  ? "bg-accent text-accent-foreground font-medium"
-                  : ""
+                locale === lang.code ? 'bg-accent text-accent-foreground font-medium' : ''
               }`}
             >
               <span className="text-lg">{lang.flag}</span>
-              <span>{t(lang.code as "en" | "hi")}</span>
+              <span>{t(lang.code as 'en' | 'hi')}</span>
               {locale === lang.code && (
                 <motion.span
                   initial={{ scale: 0 }}

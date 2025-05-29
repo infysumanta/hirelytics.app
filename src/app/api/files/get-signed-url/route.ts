@@ -1,8 +1,9 @@
-import { NextRequest, NextResponse } from "next/server";
-import { GetObjectCommand } from "@aws-sdk/client-s3";
-import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
-import { createS3Client } from "@/lib/s3-client";
-import { auth } from "@/auth";
+import { GetObjectCommand } from '@aws-sdk/client-s3';
+import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
+import { NextRequest, NextResponse } from 'next/server';
+
+import { auth } from '@/auth';
+import { createS3Client } from '@/lib/s3-client';
 
 // Create S3 client using the common function
 const s3Client = createS3Client();
@@ -14,10 +15,10 @@ export async function POST(req: NextRequest) {
     if (!session) {
       return NextResponse.json(
         {
-          error: "Unauthorized",
-          message: "You must be logged in to access files",
+          error: 'Unauthorized',
+          message: 'You must be logged in to access files',
         },
-        { status: 401 },
+        { status: 401 }
       );
     }
 
@@ -27,10 +28,10 @@ export async function POST(req: NextRequest) {
     if (!key || !bucket) {
       return NextResponse.json(
         {
-          error: "Bad Request",
-          message: "File key and bucket name are required",
+          error: 'Bad Request',
+          message: 'File key and bucket name are required',
         },
-        { status: 400 },
+        { status: 400 }
       );
     }
 
@@ -50,13 +51,13 @@ export async function POST(req: NextRequest) {
       signedUrl,
     });
   } catch (error) {
-    console.error("Error generating signed URL:", error);
+    console.error('Error generating signed URL:', error);
     return NextResponse.json(
       {
-        error: "Internal Server Error",
-        message: "Failed to generate signed URL",
+        error: 'Internal Server Error',
+        message: 'Failed to generate signed URL',
       },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }

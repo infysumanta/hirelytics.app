@@ -1,8 +1,9 @@
-"use client";
+'use client';
 
-import React from "react";
-import { motion } from "framer-motion";
-import { cn, safeStyle } from "@/lib/utils";
+import { motion } from 'framer-motion';
+import React from 'react';
+
+import { cn, safeStyle } from '@/lib/utils';
 
 interface AnimatedBackgroundProps {
   children: React.ReactNode;
@@ -10,54 +11,44 @@ interface AnimatedBackgroundProps {
   patternColor?: string;
   patternOpacity?: number;
   animate?: boolean;
-  colorScheme?: "blue" | "purple" | "cyan" | "indigo" | "default";
+  colorScheme?: 'blue' | 'purple' | 'cyan' | 'indigo' | 'default';
 }
 
 export function AnimatedBackground({
   children,
   className,
-  patternColor = "primary",
+  patternColor = 'primary',
   patternOpacity = 0.15, // Increased opacity for more vibrant colors
   animate = true,
-  colorScheme = "default",
+  colorScheme = 'default',
 }: AnimatedBackgroundProps) {
   // Define gradient styles based on color scheme
   const getGradientStyle = () => {
     switch (colorScheme) {
-      case "blue":
-        return "bg-gradient-to-br from-blue-900/30 via-background to-blue-500/20";
-      case "purple":
-        return "bg-gradient-to-br from-purple-900/30 via-background to-purple-500/20";
-      case "cyan":
-        return "bg-gradient-to-br from-cyan-900/30 via-background to-cyan-500/20";
-      case "indigo":
-        return "bg-gradient-to-br from-indigo-900/30 via-background to-indigo-500/20";
+      case 'blue':
+        return 'bg-gradient-to-br from-blue-900/30 via-background to-blue-500/20';
+      case 'purple':
+        return 'bg-gradient-to-br from-purple-900/30 via-background to-purple-500/20';
+      case 'cyan':
+        return 'bg-gradient-to-br from-cyan-900/30 via-background to-cyan-500/20';
+      case 'indigo':
+        return 'bg-gradient-to-br from-indigo-900/30 via-background to-indigo-500/20';
       default:
-        return "bg-gradient-to-br from-primary/20 via-background to-primary/10";
+        return 'bg-gradient-to-br from-primary/20 via-background to-primary/10';
     }
   };
 
   // Get colors for the blobs based on color scheme
   const getBlobColors = () => {
     switch (colorScheme) {
-      case "blue":
-        return ["bg-blue-500", "bg-blue-600", "bg-blue-400", "bg-blue-300"];
-      case "purple":
-        return [
-          "bg-purple-500",
-          "bg-purple-600",
-          "bg-purple-400",
-          "bg-purple-300",
-        ];
-      case "cyan":
-        return ["bg-cyan-500", "bg-cyan-600", "bg-cyan-400", "bg-cyan-300"];
-      case "indigo":
-        return [
-          "bg-indigo-500",
-          "bg-indigo-600",
-          "bg-indigo-400",
-          "bg-indigo-300",
-        ];
+      case 'blue':
+        return ['bg-blue-500', 'bg-blue-600', 'bg-blue-400', 'bg-blue-300'];
+      case 'purple':
+        return ['bg-purple-500', 'bg-purple-600', 'bg-purple-400', 'bg-purple-300'];
+      case 'cyan':
+        return ['bg-cyan-500', 'bg-cyan-600', 'bg-cyan-400', 'bg-cyan-300'];
+      case 'indigo':
+        return ['bg-indigo-500', 'bg-indigo-600', 'bg-indigo-400', 'bg-indigo-300'];
       default:
         return [
           `bg-${patternColor}`,
@@ -71,11 +62,9 @@ export function AnimatedBackground({
   const blobColors = getBlobColors();
 
   return (
-    <div
-      className={cn("relative min-h-screen w-full overflow-hidden", className)}
-    >
+    <div className={cn('relative min-h-screen w-full overflow-hidden', className)}>
       {/* Background gradient */}
-      <div className={cn("absolute inset-0", getGradientStyle())} />
+      <div className={cn('absolute inset-0', getGradientStyle())} />
 
       {/* Animated pattern elements */}
       <div className="absolute inset-0 overflow-hidden">
@@ -83,12 +72,12 @@ export function AnimatedBackground({
         <motion.div
           className={cn(`absolute rounded-full ${blobColors[0]}/20`)}
           style={safeStyle({
-            width: "45%",
-            height: "45%",
-            top: "5%",
-            left: "0%",
+            width: '45%',
+            height: '45%',
+            top: '5%',
+            left: '0%',
             opacity: patternOpacity * 2,
-            filter: "blur(70px)",
+            filter: 'blur(70px)',
           })}
           animate={
             animate
@@ -102,8 +91,8 @@ export function AnimatedBackground({
           transition={{
             duration: 12,
             repeat: Infinity,
-            repeatType: "reverse",
-            ease: "easeInOut",
+            repeatType: 'reverse',
+            ease: 'easeInOut',
           }}
         />
 
@@ -111,12 +100,12 @@ export function AnimatedBackground({
         <motion.div
           className={cn(`absolute rounded-full ${blobColors[1]}/25`)}
           style={safeStyle({
-            width: "30%",
-            height: "30%",
-            bottom: "15%",
-            right: "5%",
+            width: '30%',
+            height: '30%',
+            bottom: '15%',
+            right: '5%',
             opacity: patternOpacity * 2.5,
-            filter: "blur(60px)",
+            filter: 'blur(60px)',
           })}
           animate={
             animate
@@ -130,8 +119,8 @@ export function AnimatedBackground({
           transition={{
             duration: 15,
             repeat: Infinity,
-            repeatType: "reverse",
-            ease: "easeInOut",
+            repeatType: 'reverse',
+            ease: 'easeInOut',
           }}
         />
 
@@ -139,12 +128,12 @@ export function AnimatedBackground({
         <motion.div
           className={cn(`absolute rounded-full ${blobColors[2]}/30`)}
           style={safeStyle({
-            width: "20%",
-            height: "20%",
-            top: "55%",
-            left: "25%",
+            width: '20%',
+            height: '20%',
+            top: '55%',
+            left: '25%',
             opacity: patternOpacity * 3,
-            filter: "blur(40px)",
+            filter: 'blur(40px)',
           })}
           animate={
             animate
@@ -158,8 +147,8 @@ export function AnimatedBackground({
           transition={{
             duration: 10,
             repeat: Infinity,
-            repeatType: "reverse",
-            ease: "easeInOut",
+            repeatType: 'reverse',
+            ease: 'easeInOut',
           }}
         />
 
@@ -167,12 +156,12 @@ export function AnimatedBackground({
         <motion.div
           className={cn(`absolute rounded-full ${blobColors[3]}/35`)}
           style={safeStyle({
-            width: "15%",
-            height: "15%",
-            bottom: "5%",
-            left: "15%",
+            width: '15%',
+            height: '15%',
+            bottom: '5%',
+            left: '15%',
             opacity: patternOpacity * 3.5,
-            filter: "blur(30px)",
+            filter: 'blur(30px)',
           })}
           animate={
             animate
@@ -186,8 +175,8 @@ export function AnimatedBackground({
           transition={{
             duration: 8,
             repeat: Infinity,
-            repeatType: "reverse",
-            ease: "easeInOut",
+            repeatType: 'reverse',
+            ease: 'easeInOut',
           }}
         />
 
@@ -195,12 +184,12 @@ export function AnimatedBackground({
         <motion.div
           className={cn(`absolute rounded-full ${blobColors[0]}/25`)}
           style={safeStyle({
-            width: "12%",
-            height: "12%",
-            top: "25%",
-            right: "20%",
+            width: '12%',
+            height: '12%',
+            top: '25%',
+            right: '20%',
             opacity: patternOpacity * 3,
-            filter: "blur(35px)",
+            filter: 'blur(35px)',
           })}
           animate={
             animate
@@ -214,8 +203,8 @@ export function AnimatedBackground({
           transition={{
             duration: 9,
             repeat: Infinity,
-            repeatType: "reverse",
-            ease: "easeInOut",
+            repeatType: 'reverse',
+            ease: 'easeInOut',
           }}
         />
       </div>

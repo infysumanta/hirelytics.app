@@ -1,7 +1,8 @@
-import { PutObjectCommand, GetObjectCommand } from "@aws-sdk/client-s3";
-import { createS3Client } from "./s3-client";
-import { v4 as uuidv4 } from "uuid";
-import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
+import { GetObjectCommand, PutObjectCommand } from '@aws-sdk/client-s3';
+import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
+import { v4 as uuidv4 } from 'uuid';
+
+import { createS3Client } from './s3-client';
 
 /**
  * Uploads an audio buffer to S3
@@ -11,7 +12,7 @@ import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
  */
 export async function uploadAudioToS3(
   audioBuffer: Buffer,
-  applicationId: string,
+  applicationId: string
 ): Promise<{
   s3Key: string;
   s3Bucket: string;
@@ -21,7 +22,7 @@ export async function uploadAudioToS3(
     const s3Client = createS3Client();
 
     // Get bucket name from environment or use default
-    const bucketName = process.env.AWS_BUCKET_NAME || "hirelytics";
+    const bucketName = process.env.AWS_BUCKET_NAME || 'hirelytics';
 
     // Generate a unique filename with timestamp
     const timestamp = new Date().getTime();
@@ -34,8 +35,8 @@ export async function uploadAudioToS3(
         Bucket: bucketName,
         Key: key,
         Body: audioBuffer,
-        ContentType: "audio/mpeg",
-      }),
+        ContentType: 'audio/mpeg',
+      })
     );
 
     // Return the S3 key and bucket
@@ -44,7 +45,7 @@ export async function uploadAudioToS3(
       s3Bucket: bucketName,
     };
   } catch (error) {
-    console.error("Error uploading audio to S3:", error);
+    console.error('Error uploading audio to S3:', error);
     throw error;
   }
 }
@@ -55,23 +56,20 @@ export async function uploadAudioToS3(
  * @param s3Bucket The S3 bucket containing the audio file
  * @returns The signed URL for the audio file
  */
-export async function getAudioSignedUrl(
-  s3Key: string,
-  s3Bucket?: string,
-): Promise<string> {
+export async function getAudioSignedUrl(s3Key: string, s3Bucket?: string): Promise<string> {
   try {
     // Create S3 client
     const s3Client = createS3Client();
 
     // Get bucket name from parameter or use default
-    const bucketName = s3Bucket || process.env.AWS_BUCKET_NAME || "hirelytics";
+    const bucketName = s3Bucket || process.env.AWS_BUCKET_NAME || 'hirelytics';
 
     // Generate pre-signed URL
     const command = new GetObjectCommand({
       Bucket: bucketName,
       Key: s3Key,
-      ResponseContentType: "audio/mpeg",
-      ResponseContentDisposition: "inline",
+      ResponseContentType: 'audio/mpeg',
+      ResponseContentDisposition: 'inline',
     });
 
     const signedUrl = await getSignedUrl(s3Client, command, {
@@ -80,7 +78,7 @@ export async function getAudioSignedUrl(
 
     return signedUrl;
   } catch (error) {
-    console.error("Error generating audio signed URL:", error);
+    console.error('Error generating audio signed URL:', error);
     throw error;
   }
 }

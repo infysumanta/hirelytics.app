@@ -1,12 +1,13 @@
-import { NextRequest, NextResponse } from "next/server";
-import { connectToDatabase } from "@/lib/mongodb";
-import { JobApplication } from "@/models/job-application";
-import { auth } from "@/auth";
-import Job from "@/models/job";
-import { createS3Client } from "@/lib/s3-client";
-import { GetObjectCommand } from "@aws-sdk/client-s3";
-import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
-import { S3Client } from "@aws-sdk/client-s3";
+import { GetObjectCommand } from '@aws-sdk/client-s3';
+import { S3Client } from '@aws-sdk/client-s3';
+import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
+import { NextRequest, NextResponse } from 'next/server';
+
+import { auth } from '@/auth';
+import { connectToDatabase } from '@/lib/mongodb';
+import { createS3Client } from '@/lib/s3-client';
+import Job from '@/models/job';
+import { JobApplication } from '@/models/job-application';
 
 // Define common interfaces
 interface MonitoringImage {
@@ -17,7 +18,7 @@ interface MonitoringImage {
 
 interface InterviewMessage {
   text: string;
-  sender: "ai" | "user" | "system";
+  sender: 'ai' | 'user' | 'system';
   timestamp: Date;
   questionId?: string;
   questionCategory?: string;
@@ -28,10 +29,7 @@ interface InterviewMessage {
 }
 
 // Helper function to add signed URLs to audio messages
-async function addAudioSignedUrls(
-  messages: InterviewMessage[],
-  s3Client: S3Client,
-) {
+async function addAudioSignedUrls(messages: InterviewMessage[], s3Client: S3Client) {
   // Process each message that has audioS3Key and audioS3Bucket
   return await Promise.all(
     messages.map(async (message) => {
@@ -39,8 +37,8 @@ async function addAudioSignedUrls(
         const command = new GetObjectCommand({
           Bucket: message.audioS3Bucket,
           Key: message.audioS3Key,
-          ResponseContentType: "audio/mpeg",
-          ResponseContentDisposition: "inline",
+          ResponseContentType: 'audio/mpeg',
+          ResponseContentDisposition: 'inline',
         });
 
         // Generate a URL that expires in 1 hour
@@ -54,14 +52,11 @@ async function addAudioSignedUrls(
         };
       }
       return message;
-    }),
+    })
   );
 }
 
-export async function GET(
-  req: NextRequest,
-  { params }: { params: Promise<{ id: string }> },
-) {
+export async function GET(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     await connectToDatabase();
 
@@ -70,10 +65,10 @@ export async function GET(
     if (!session) {
       return NextResponse.json(
         {
-          error: "Unauthorized",
-          message: "You must be logged in to access application data",
+          error: 'Unauthorized',
+          message: 'You must be logged in to access application data',
         },
-        { status: 401 },
+        { status: 401 }
       );
     }
 
@@ -85,20 +80,19 @@ export async function GET(
 
     if (!application) {
       return NextResponse.json(
-        { success: false, message: "Application not found" },
-        { status: 404 },
+        { success: false, message: 'Application not found' },
+        { status: 404 }
       );
     }
 
     // Get query parameter to include base64 data or not
     const url = new URL(req.url);
-    const includeBase64 = url.searchParams.get("includeBase64") === "true";
+    const includeBase64 = url.searchParams.get('includeBase64') === 'true';
 
     // Generate signed URLs for files stored in S3
     const appData = application.toJSON();
     const s3Client = createS3Client();
-    const bucketName =
-      appData.s3Bucket || process.env.AWS_S3_BUCKET || "hirelytics-uploads";
+    const bucketName = appData.s3Bucket || process.env.AWS_S3_BUCKET || 'hirelytics-uploads';
 
     // Process monitoring images if they exist
     if (appData.monitoringImages && appData.monitoringImages.length > 0) {
@@ -117,20 +111,17 @@ export async function GET(
             ...image,
             signedUrl,
           };
-        }),
+        })
       );
 
       appData.monitoringImages = monitoringImagesWithUrls;
     }
 
     // Process interview chat history audio files if they exist
-    if (
-      appData.interviewChatHistory &&
-      appData.interviewChatHistory.length > 0
-    ) {
+    if (appData.interviewChatHistory && appData.interviewChatHistory.length > 0) {
       appData.interviewChatHistory = await addAudioSignedUrls(
         appData.interviewChatHistory,
-        s3Client,
+        s3Client
       );
     }
 
@@ -153,27 +144,22 @@ export async function GET(
       success: true,
       application: {
         ...appData,
-        resumeBase64: includeBase64
-          ? appData.resumeBase64
-          : "**base64 data stored**",
+        resumeBase64: includeBase64 ? appData.resumeBase64 : '**base64 data stored**',
         job: job,
       },
     };
 
     return NextResponse.json(response);
   } catch (error) {
-    console.error("Error fetching application:", error);
+    console.error('Error fetching application:', error);
     return NextResponse.json(
-      { success: false, message: "Failed to fetch application details" },
-      { status: 500 },
+      { success: false, message: 'Failed to fetch application details' },
+      { status: 500 }
     );
   }
 }
 
-export async function PATCH(
-  req: NextRequest,
-  { params }: { params: Promise<{ id: string }> },
-) {
+export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     await connectToDatabase();
 
@@ -182,10 +168,10 @@ export async function PATCH(
     if (!session) {
       return NextResponse.json(
         {
-          error: "Unauthorized",
-          message: "You must be logged in to update application data",
+          error: 'Unauthorized',
+          message: 'You must be logged in to update application data',
         },
-        { status: 401 },
+        { status: 401 }
       );
     }
 
@@ -196,8 +182,8 @@ export async function PATCH(
 
     if (!application) {
       return NextResponse.json(
-        { success: false, message: "Application not found" },
-        { status: 404 },
+        { success: false, message: 'Application not found' },
+        { status: 404 }
       );
     }
 
@@ -213,15 +199,14 @@ export async function PATCH(
     const updatedApplication = await JobApplication.findByIdAndUpdate(
       id,
       { $set: allowedUpdates },
-      { new: true },
+      { new: true }
     );
 
     const appData = updatedApplication.toJSON();
 
     // Process S3 stored files to generate signed URLs
     const s3Client = createS3Client();
-    const bucketName =
-      appData.s3Bucket || process.env.AWS_S3_BUCKET || "hirelytics-uploads";
+    const bucketName = appData.s3Bucket || process.env.AWS_S3_BUCKET || 'hirelytics-uploads';
 
     // Process monitoring images if they exist
     if (appData.monitoringImages && appData.monitoringImages.length > 0) {
@@ -240,20 +225,17 @@ export async function PATCH(
             ...image,
             signedUrl,
           };
-        }),
+        })
       );
 
       appData.monitoringImages = monitoringImagesWithUrls;
     }
 
     // Process interview chat history audio files if they exist
-    if (
-      appData.interviewChatHistory &&
-      appData.interviewChatHistory.length > 0
-    ) {
+    if (appData.interviewChatHistory && appData.interviewChatHistory.length > 0) {
       appData.interviewChatHistory = await addAudioSignedUrls(
         appData.interviewChatHistory,
-        s3Client,
+        s3Client
       );
     }
 
@@ -273,23 +255,21 @@ export async function PATCH(
 
     // Get query parameter to include base64 data or not
     const url = new URL(req.url);
-    const includeBase64 = url.searchParams.get("includeBase64") === "true";
+    const includeBase64 = url.searchParams.get('includeBase64') === 'true';
 
     // Return updated application
     return NextResponse.json({
       success: true,
       application: {
         ...appData,
-        resumeBase64: includeBase64
-          ? appData.resumeBase64
-          : "**base64 data stored**",
+        resumeBase64: includeBase64 ? appData.resumeBase64 : '**base64 data stored**',
       },
     });
   } catch (error) {
-    console.error("Error updating application:", error);
+    console.error('Error updating application:', error);
     return NextResponse.json(
-      { success: false, message: "Failed to update application" },
-      { status: 500 },
+      { success: false, message: 'Failed to update application' },
+      { status: 500 }
     );
   }
 }
