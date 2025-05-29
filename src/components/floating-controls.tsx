@@ -15,7 +15,7 @@ interface FloatingControlsProps {
   side?: 'left' | 'right';
 }
 
-export function FloatingControls({ className, side = 'left' }: FloatingControlsProps) {
+export function FloatingControls({ className, side = 'right' }: FloatingControlsProps) {
   return (
     <motion.div
       initial={{ opacity: 0, x: side === 'left' ? -20 : 20 }}
@@ -24,7 +24,7 @@ export function FloatingControls({ className, side = 'left' }: FloatingControlsP
       className={cn(
         'fixed z-50 flex flex-col items-center gap-4 p-3 rounded-lg bg-background/80 backdrop-blur-sm border shadow-sm',
         side === 'left' ? 'left-4' : 'right-4',
-        'top-1/2 -translate-y-1/2',
+        'top-3/5 -translate-y-1/2',
         className
       )}
     >

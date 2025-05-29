@@ -705,35 +705,35 @@ export default function Home() {
       </section>
 
       {/* CTA Section */}
-      <section className="relative overflow-hidden bg-gradient-to-r from-primary/80 via-blue-500/80 to-purple-500/80 py-24 mb-24 text-white">
+      <section className="relative overflow-hidden bg-gradient-to-r from-slate-900/90 via-slate-800/90 to-slate-900/90 dark:from-slate-800/90 dark:via-slate-900/90 dark:to-slate-800/90 py-24 mb-24 text-white">
         {/* Enhanced background elements */}
-        <div className="absolute inset-0 bg-grid-white/10 bg-[length:20px_20px] opacity-10"></div>
-        <div className="absolute inset-0 bg-gradient-to-r from-primary via-blue-500 to-purple-500 opacity-90"></div>
+        <div className="absolute inset-0 bg-grid-white/5 dark:bg-grid-white/3 bg-[length:20px_20px] opacity-3"></div>
+        <div className="absolute inset-0 bg-gradient-to-r from-primary/20 via-blue-500/15 to-purple-500/15 dark:from-primary/30 dark:via-blue-500/20 dark:to-purple-500/20 opacity-30"></div>
 
         {/* Light color pattern gradient overlay */}
-        <div className="absolute inset-0 opacity-20">
-          <div className="absolute top-0 left-0 h-full w-full bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.2)_0%,transparent_50%)]"></div>
-          <div className="absolute top-0 right-0 h-full w-full bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.15)_0%,transparent_50%)]"></div>
-          <div className="absolute bottom-0 left-0 h-full w-full bg-[radial-gradient(circle_at_bottom_left,rgba(255,255,255,0.1)_0%,transparent_50%)]"></div>
-          <div className="absolute bottom-0 right-0 h-full w-full bg-[radial-gradient(circle_at_bottom_right,rgba(255,255,255,0.05)_0%,transparent_50%)]"></div>
-          <div className="absolute inset-0 bg-[linear-gradient(45deg,transparent_25%,rgba(255,255,255,0.05)_50%,transparent_75%)] bg-[length:20px_20px]"></div>
+        <div className="absolute inset-0 opacity-3">
+          <div className="absolute top-0 left-0 h-full w-full bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.03)_0%,transparent_50%)] dark:bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.05)_0%,transparent_50%)]"></div>
+          <div className="absolute top-0 right-0 h-full w-full bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.02)_0%,transparent_50%)] dark:bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.04)_0%,transparent_50%)]"></div>
+          <div className="absolute bottom-0 left-0 h-full w-full bg-[radial-gradient(circle_at_bottom_left,rgba(255,255,255,0.02)_0%,transparent_50%)] dark:bg-[radial-gradient(circle_at_bottom_left,rgba(255,255,255,0.03)_0%,transparent_50%)]"></div>
+          <div className="absolute bottom-0 right-0 h-full w-full bg-[radial-gradient(circle_at_bottom_right,rgba(255,255,255,0.01)_0%,transparent_50%)] dark:bg-[radial-gradient(circle_at_bottom_right,rgba(255,255,255,0.02)_0%,transparent_50%)]"></div>
+          <div className="absolute inset-0 bg-[linear-gradient(45deg,transparent_25%,rgba(255,255,255,0.01)_50%,transparent_75%)] bg-[length:20px_20px]"></div>
         </div>
 
         {/* Animated decorative elements */}
-        <div className="absolute top-0 left-1/4 h-64 w-64 rounded-full bg-white/5 blur-3xl animate-pulse-slow"></div>
+        <div className="absolute top-0 left-1/4 h-64 w-64 rounded-full bg-white/1 dark:bg-white/2 blur-3xl animate-pulse-slow"></div>
         <div
-          className="absolute bottom-0 right-1/4 h-80 w-80 rounded-full bg-white/5 blur-3xl animate-pulse-slow"
+          className="absolute bottom-0 right-1/4 h-80 w-80 rounded-full bg-white/1 dark:bg-white/2 blur-3xl animate-pulse-slow"
           style={{ animationDelay: '1.5s' }}
         ></div>
         <div
-          className="absolute top-1/2 right-10 h-40 w-40 -translate-y-1/2 rounded-full bg-white/5 blur-2xl animate-pulse-slow"
+          className="absolute top-1/2 right-10 h-40 w-40 -translate-y-1/2 rounded-full bg-white/1 dark:bg-white/2 blur-2xl animate-pulse-slow"
           style={{ animationDelay: '0.7s' }}
         ></div>
 
         {/* Decorative shapes */}
-        <div className="absolute top-10 left-10 h-20 w-20 rounded-full border border-white/20 opacity-50"></div>
-        <div className="absolute bottom-10 right-10 h-16 w-16 rounded-full border border-white/20 opacity-50"></div>
-        <div className="absolute top-1/2 left-1/2 h-32 w-32 -translate-x-1/2 -translate-y-1/2 rounded-full border border-white/10 opacity-30"></div>
+        <div className="absolute top-10 left-10 h-20 w-20 rounded-full border border-white/2 dark:border-white/3 opacity-10 dark:opacity-20"></div>
+        <div className="absolute bottom-10 right-10 h-16 w-16 rounded-full border border-white/2 dark:border-white/3 opacity-10 dark:opacity-20"></div>
+        <div className="absolute top-1/2 left-1/2 h-32 w-32 -translate-x-1/2 -translate-y-1/2 rounded-full border border-white/1 dark:border-white/2 opacity-5 dark:opacity-10"></div>
 
         <div className="container relative z-10 mx-auto px-4">
           <motion.div
@@ -750,7 +750,7 @@ export default function Home() {
             }}
           >
             <motion.div
-              className="mb-6 inline-flex items-center gap-2 rounded-full bg-white/10 backdrop-blur-sm px-4 py-1.5 text-sm font-medium"
+              className="mb-6 inline-flex items-center gap-2 rounded-full bg-white/5 dark:bg-white/10 backdrop-blur-sm px-4 py-1.5 text-sm font-medium"
               initial={{ opacity: 0, scale: 0.9 }}
               whileInView={{ opacity: 1, scale: 1 }}
               viewport={{ once: true }}
@@ -768,21 +768,18 @@ export default function Home() {
             </p>
 
             <div className="flex flex-wrap justify-center gap-6">
-              <Link href="/login">
-                <Button
-                  size="lg"
-                  variant="secondary"
-                  className="gap-2 bg-white text-primary hover:bg-white hover:shadow-lg hover:shadow-white/20 transition-all duration-300 transform hover:-translate-y-1"
-                >
-                  <Zap size={18} className="text-primary" />
-                  <span className="font-medium">{t('footer.cta.getStarted')}</span>
-                </Button>
+              <Link
+                href="/login"
+                className="inline-flex items-center justify-center gap-2 rounded-md bg-gradient-to-r from-primary via-blue-500 to-purple-500 px-8 py-3 text-sm font-medium text-white shadow hover:shadow-lg hover:shadow-primary/20 transition-all duration-300 transform hover:-translate-y-1"
+              >
+                <Sparkles size={16} className="relative z-10" />
+                <span className="relative z-10">{common('buttons.getStarted')}</span>
               </Link>
               <Link href="#how-it-works">
                 <Button
                   size="lg"
                   variant="outline"
-                  className="gap-2 border-white text-white hover:bg-white/20 transition-all duration-300 transform hover:-translate-y-1"
+                  className="gap-2 border-white/90 text-white hover:border-white hover:bg-white/10 dark:border-white/80 dark:hover:border-white dark:hover:bg-white/10 transition-all duration-300 transform hover:-translate-y-1"
                 >
                   <Search size={18} />
                   <span>{t('footer.cta.learnMore')}</span>
@@ -795,7 +792,7 @@ export default function Home() {
             </div>
 
             <motion.p
-              className="mt-8 text-sm text-white/70"
+              className="mt-8 text-sm text-white/60 dark:text-white/70"
               initial={{ opacity: 0 }}
               whileInView={{ opacity: 1 }}
               viewport={{ once: true }}
