@@ -10,14 +10,14 @@ async function isAdmin() {
   return session?.user?.role === 'admin';
 }
 
-export async function PATCH(req: NextRequest, { params }: { params: { id: string } }) {
+export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     // Check if user is admin
     if (!(await isAdmin())) {
       return NextResponse.json({ error: 'Unauthorized. Admin access required.' }, { status: 403 });
     }
 
-    const { id } = params;
+    const { id } = await params;
     const { isResolved } = await req.json();
 
     await connectToDatabase();
@@ -35,14 +35,14 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
   }
 }
 
-export async function DELETE(req: NextRequest, { params }: { params: { id: string } }) {
+export async function DELETE(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     // Check if user is admin
     if (!(await isAdmin())) {
       return NextResponse.json({ error: 'Unauthorized. Admin access required.' }, { status: 403 });
     }
 
-    const { id } = params;
+    const { id } = await params;
 
     await connectToDatabase();
 
