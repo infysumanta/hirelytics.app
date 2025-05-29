@@ -55,7 +55,7 @@ export default async function RootLayout({
         <NextTopLoader color="hsl(var(--primary))" />
         <RootProvider>
           <div className="relative flex min-h-screen flex-col">
-            <FloatingControls position="top-right" />
+            <FloatingControls />
             <div className="flex-1">{children}</div>
           </div>
           <Toaster />
