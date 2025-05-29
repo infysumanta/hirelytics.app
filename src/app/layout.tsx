@@ -8,6 +8,7 @@ import { Toaster } from 'sonner';
 
 import { FloatingControls } from '@/components/floating-controls';
 import MicrosoftClarity from '@/lib/microsoft-clarity';
+import PostHogScript from '@/lib/posthog-script';
 import RootProvider from '@/provider/root-provider';
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -58,6 +59,7 @@ export default async function RootLayout({
           <div className="relative flex min-h-screen flex-col">
             <FloatingControls />
             <MicrosoftClarity />
+            <PostHogScript />
             <div className="flex-1">{children}</div>
           </div>
           <Toaster />

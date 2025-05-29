@@ -6,8 +6,10 @@ import { NuqsAdapter } from 'nuqs/adapters/next/app';
 import { auth } from '@/auth';
 
 import { HeaderTitleProvider } from './_header-title-provider';
+import { PostHogProvider } from './_posthog-provider';
 import ReactQueryProvider from './_react-query-provider';
 import { ThemeProvider } from './_theme-provider';
+
 interface RootProviderProps {
   children: React.ReactNode;
 }
@@ -25,7 +27,7 @@ export default async function RootProvider({ children }: RootProviderProps) {
   }
 
   return (
-    <>
+    <PostHogProvider>
       <NextIntlClientProvider messages={messages}>
         <ReactQueryProvider>
           <SessionProvider session={session}>
@@ -42,6 +44,6 @@ export default async function RootProvider({ children }: RootProviderProps) {
           </SessionProvider>
         </ReactQueryProvider>
       </NextIntlClientProvider>
-    </>
+    </PostHogProvider>
   );
 }
