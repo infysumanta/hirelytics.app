@@ -113,7 +113,7 @@ export function AuthCard({
       <motion.div
         className="absolute inset-0 rounded-lg"
         style={safeStyle({
-          background: `linear-gradient(45deg, ${getBaseColor()}10, ${getBaseColor()}30, ${getBaseColor()}10)`,
+          background: `linear-gradient(45deg, ${getBaseColor()}15, ${getBaseColor()}45, ${getBaseColor()}15)`,
           backgroundSize: '200% 200%',
           zIndex: -1,
         })}
