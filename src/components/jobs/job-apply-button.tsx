@@ -1,8 +1,10 @@
 'use client';
 
 import { Loader2 } from 'lucide-react';
+import { useSession } from 'next-auth/react';
 import { useState } from 'react';
 
+import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { IJob } from '@/models/job';
 
@@ -24,19 +26,32 @@ export function JobApplyButton({
 }: JobApplyButtonProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const { data: session } = useSession();
+
+  // Check if user is admin or recruiter
+  const isAdminOrRecruiter = session?.user?.role === 'admin' || session?.user?.role === 'recruiter';
 
   const handleApply = () => {
     setIsLoading(true);
-    // Fetch the job if we don't have it yet
     if (job) {
       setIsLoading(false);
       setIsModalOpen(true);
     } else {
-      // In a real implementation, we would fetch the job here
       setIsLoading(false);
       setIsModalOpen(true);
     }
   };
+
+  // If job is expired, show only the expired badge for all users
+  if (isExpired) {
+    return (
+      <div className={variant === 'default' ? 'w-full text-center' : ''}>
+        <Badge variant="destructive" className={variant === 'small' ? 'text-xs px-2' : 'px-3 py-1'}>
+          Job Expired
+        </Badge>
+      </div>
+    );
+  }
 
   return (
     <>
@@ -44,7 +59,7 @@ export function JobApplyButton({
         className={variant === 'default' ? 'w-full' : ''}
         size={variant === 'small' ? 'sm' : 'default'}
         onClick={handleApply}
-        disabled={disabled || isLoading}
+        disabled={disabled || isLoading || isAdminOrRecruiter}
       >
         {isLoading ? (
           <>
@@ -53,11 +68,11 @@ export function JobApplyButton({
             />
             {variant === 'small' ? 'Loading...' : 'Processing...'}
           </>
-        ) : isExpired ? (
+        ) : isAdminOrRecruiter ? (
           variant === 'small' ? (
-            'Expired'
+            'Admin View'
           ) : (
-            'Job Expired'
+            'Admin/Recruiter View'
           )
         ) : variant === 'small' ? (
           'Apply'
