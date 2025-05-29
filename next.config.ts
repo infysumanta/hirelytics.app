@@ -10,6 +10,10 @@ const nextConfig: NextConfig = {
         protocol: "https",
         hostname: "hirelytics.t3.storage.dev",
       },
+      {
+        protocol: "https",
+        hostname: "eu2.contabostorage.com",
+      },
     ],
   },
 };

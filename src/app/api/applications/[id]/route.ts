@@ -6,12 +6,56 @@ import Job from "@/models/job";
 import { createS3Client } from "@/lib/s3-client";
 import { GetObjectCommand } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
+import { S3Client } from "@aws-sdk/client-s3";
 
-// Define the MonitoringImage interface based on the model
+// Define common interfaces
 interface MonitoringImage {
   s3Key: string;
   timestamp: Date;
   signedUrl?: string;
+}
+
+interface InterviewMessage {
+  text: string;
+  sender: "ai" | "user" | "system";
+  timestamp: Date;
+  questionId?: string;
+  questionCategory?: string;
+  feedback?: string;
+  audioS3Key?: string;
+  audioS3Bucket?: string;
+  audioUrl?: string;
+}
+
+// Helper function to add signed URLs to audio messages
+async function addAudioSignedUrls(
+  messages: InterviewMessage[],
+  s3Client: S3Client,
+) {
+  // Process each message that has audioS3Key and audioS3Bucket
+  return await Promise.all(
+    messages.map(async (message) => {
+      if (message.audioS3Key && message.audioS3Bucket) {
+        const command = new GetObjectCommand({
+          Bucket: message.audioS3Bucket,
+          Key: message.audioS3Key,
+          ResponseContentType: "audio/mpeg",
+          ResponseContentDisposition: "inline",
+        });
+
+        // Generate a URL that expires in 1 hour
+        const signedUrl = await getSignedUrl(s3Client, command, {
+          expiresIn: 3600,
+        });
+
+        return {
+          ...message,
+          audioUrl: signedUrl,
+        };
+      }
+      return message;
+    }),
+  );
 }
 
 export async function GET(
@@ -58,7 +102,6 @@ export async function GET(
 
     // Process monitoring images if they exist
     if (appData.monitoringImages && appData.monitoringImages.length > 0) {
-      // Generate signed URLs for each monitoring image
       const monitoringImagesWithUrls = await Promise.all(
         appData.monitoringImages.map(async (image: MonitoringImage) => {
           const command = new GetObjectCommand({
@@ -66,7 +109,6 @@ export async function GET(
             Key: image.s3Key,
           });
 
-          // Generate a URL that expires in 1 hour
           const signedUrl = await getSignedUrl(s3Client, command, {
             expiresIn: 3600,
           });
@@ -78,8 +120,18 @@ export async function GET(
         }),
       );
 
-      // Replace the original monitoring images with ones that have signed URLs
       appData.monitoringImages = monitoringImagesWithUrls;
+    }
+
+    // Process interview chat history audio files if they exist
+    if (
+      appData.interviewChatHistory &&
+      appData.interviewChatHistory.length > 0
+    ) {
+      appData.interviewChatHistory = await addAudioSignedUrls(
+        appData.interviewChatHistory,
+        s3Client,
+      );
     }
 
     // Generate signed URL for resume if s3Key exists
@@ -89,21 +141,18 @@ export async function GET(
         Key: appData.s3Key,
       });
 
-      // Generate a URL that expires in 1 hour
       const signedResumeUrl = await getSignedUrl(s3Client, command, {
         expiresIn: 3600,
       });
 
-      // Add the signed URL to the response
       appData.signedResumeUrl = signedResumeUrl;
     }
 
-    // Return application data
+    // Return application data with updated URLs
     const response = {
       success: true,
       application: {
         ...appData,
-        // Handle resumeBase64 based on includeBase64 parameter
         resumeBase64: includeBase64
           ? appData.resumeBase64
           : "**base64 data stored**",
@@ -176,7 +225,6 @@ export async function PATCH(
 
     // Process monitoring images if they exist
     if (appData.monitoringImages && appData.monitoringImages.length > 0) {
-      // Generate signed URLs for each monitoring image
       const monitoringImagesWithUrls = await Promise.all(
         appData.monitoringImages.map(async (image: MonitoringImage) => {
           const command = new GetObjectCommand({
@@ -184,7 +232,6 @@ export async function PATCH(
             Key: image.s3Key,
           });
 
-          // Generate a URL that expires in 1 hour
           const signedUrl = await getSignedUrl(s3Client, command, {
             expiresIn: 3600,
           });
@@ -196,8 +243,18 @@ export async function PATCH(
         }),
       );
 
-      // Replace the original monitoring images with ones that have signed URLs
       appData.monitoringImages = monitoringImagesWithUrls;
+    }
+
+    // Process interview chat history audio files if they exist
+    if (
+      appData.interviewChatHistory &&
+      appData.interviewChatHistory.length > 0
+    ) {
+      appData.interviewChatHistory = await addAudioSignedUrls(
+        appData.interviewChatHistory,
+        s3Client,
+      );
     }
 
     // Generate signed URL for resume if s3Key exists
@@ -207,12 +264,10 @@ export async function PATCH(
         Key: appData.s3Key,
       });
 
-      // Generate a URL that expires in 1 hour
       const signedResumeUrl = await getSignedUrl(s3Client, command, {
         expiresIn: 3600,
       });
 
-      // Add the signed URL to the response
       appData.signedResumeUrl = signedResumeUrl;
     }
 

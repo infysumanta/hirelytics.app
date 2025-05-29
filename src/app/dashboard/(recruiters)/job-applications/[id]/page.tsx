@@ -20,17 +20,19 @@ import { toast } from "sonner";
 import {
   AlertCircle,
   ArrowLeft,
+  Award,
+  Camera,
   CheckCircle,
   Clock,
-  FileText,
-  MessageSquare,
-  Camera,
-  FileCheck,
-  Award,
   Download,
-  X,
   ExternalLink,
+  FileCheck,
+  FileText,
   Maximize2,
+  MessageSquare,
+  Play,
+  Square,
+  X,
 } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -104,6 +106,8 @@ interface JobApplication {
     questionId?: string;
     questionCategory?: string;
     feedback?: string;
+    audioUrl?: string; // URL to the audio file
+    signedAudioUrl?: string; // Signed URL for audio playback
   }[];
   monitoringImages?: {
     s3Key: string;
@@ -127,6 +131,18 @@ export default function JobApplicationDetailsPage() {
 
   // State for resume viewer
   const [isResumeDialogOpen, setIsResumeDialogOpen] = useState(false);
+
+  // State for audio playback
+  const [currentlyPlaying, setCurrentlyPlaying] = useState<string | null>(null);
+
+  // Handle playing audio
+  const handlePlayAudio = (audioUrl: string) => {
+    if (currentlyPlaying === audioUrl) {
+      setCurrentlyPlaying(null);
+    } else {
+      setCurrentlyPlaying(audioUrl);
+    }
+  };
 
   // Fetch application details
   const { data: application, isLoading } = useQuery({
@@ -228,12 +244,18 @@ export default function JobApplicationDetailsPage() {
   const questions = application.interviewChatHistory
     ? application.interviewChatHistory
         .filter((msg) => msg.sender === "ai" && msg.questionCategory)
-        .reduce((acc, message) => {
-          const category = message.questionCategory || "other";
-          if (!acc[category]) acc[category] = [];
-          acc[category].push(message);
-          return acc;
-        }, {} as Record<string, (typeof application.interviewChatHistory)[number][]>)
+        .reduce(
+          (acc, message) => {
+            const category = message.questionCategory || "other";
+            if (!acc[category]) acc[category] = [];
+            acc[category].push(message);
+            return acc;
+          },
+          {} as Record<
+            string,
+            (typeof application.interviewChatHistory)[number][]
+          >,
+        )
     : {};
 
   // Get answers that follow questions
@@ -450,8 +472,8 @@ export default function JobApplicationDetailsPage() {
                       application.parsedResume.matchScore >= 70
                         ? "bg-green-500/20 text-green-500"
                         : application.parsedResume.matchScore >= 50
-                        ? "bg-yellow-500/20 text-yellow-500"
-                        : "bg-red-500/20 text-red-500"
+                          ? "bg-yellow-500/20 text-yellow-500"
+                          : "bg-red-500/20 text-red-500"
                     }`}
                   >
                     {application.parsedResume.matchScore}%
@@ -463,8 +485,8 @@ export default function JobApplicationDetailsPage() {
                     application.parsedResume.matchScore >= 70
                       ? "bg-green-100"
                       : application.parsedResume.matchScore >= 50
-                      ? "bg-yellow-100"
-                      : "bg-red-100"
+                        ? "bg-yellow-100"
+                        : "bg-red-100"
                   }`}
                 >
                   <div
@@ -472,8 +494,8 @@ export default function JobApplicationDetailsPage() {
                       application.parsedResume.matchScore >= 70
                         ? "bg-green-500"
                         : application.parsedResume.matchScore >= 50
-                        ? "bg-yellow-500"
-                        : "bg-red-500"
+                          ? "bg-yellow-500"
+                          : "bg-red-500"
                     }`}
                     style={{ width: `${application.parsedResume.matchScore}%` }}
                   />
@@ -908,12 +930,56 @@ export default function JobApplicationDetailsPage() {
                             key={index}
                             className="border rounded-lg overflow-hidden"
                           >
-                            <div className="bg-muted p-3">
+                            <div className="bg-muted p-3 flex items-center justify-between">
                               <p className="font-medium">{question.text}</p>
+                              {question.signedAudioUrl && (
+                                <div className="flex items-center gap-2">
+                                  <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={() =>
+                                      handlePlayAudio(question.signedAudioUrl!)
+                                    }
+                                    className="h-8 w-8 p-0"
+                                  >
+                                    {currentlyPlaying ===
+                                    question.signedAudioUrl ? (
+                                      <Square className="h-4 w-4" />
+                                    ) : (
+                                      <Play className="h-4 w-4" />
+                                    )}
+                                  </Button>
+                                </div>
+                              )}
                             </div>
                             {answer && (
                               <div className="p-3 border-t">
-                                <p className="whitespace-pre-line">{answer}</p>
+                                <div className="flex justify-between items-start gap-4">
+                                  <p className="whitespace-pre-line flex-1">
+                                    {answer}
+                                  </p>
+                                  {question.signedAudioUrl && (
+                                    <div className="flex items-center gap-2">
+                                      <Button
+                                        variant="ghost"
+                                        size="sm"
+                                        onClick={() =>
+                                          handlePlayAudio(
+                                            question.signedAudioUrl!,
+                                          )
+                                        }
+                                        className="h-8 w-8 p-0 shrink-0"
+                                      >
+                                        {currentlyPlaying ===
+                                        question.signedAudioUrl ? (
+                                          <Square className="h-4 w-4" />
+                                        ) : (
+                                          <Play className="h-4 w-4" />
+                                        )}
+                                      </Button>
+                                    </div>
+                                  )}
+                                </div>
                               </div>
                             )}
                           </div>
@@ -939,12 +1005,56 @@ export default function JobApplicationDetailsPage() {
                             key={index}
                             className="border rounded-lg overflow-hidden"
                           >
-                            <div className="bg-muted p-3">
+                            <div className="bg-muted p-3 flex items-center justify-between">
                               <p className="font-medium">{question.text}</p>
+                              {question.signedAudioUrl && (
+                                <div className="flex items-center gap-2">
+                                  <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={() =>
+                                      handlePlayAudio(question.signedAudioUrl!)
+                                    }
+                                    className="h-8 w-8 p-0"
+                                  >
+                                    {currentlyPlaying ===
+                                    question.signedAudioUrl ? (
+                                      <Square className="h-4 w-4" />
+                                    ) : (
+                                      <Play className="h-4 w-4" />
+                                    )}
+                                  </Button>
+                                </div>
+                              )}
                             </div>
                             {answer && (
                               <div className="p-3 border-t">
-                                <p className="whitespace-pre-line">{answer}</p>
+                                <div className="flex justify-between items-start gap-4">
+                                  <p className="whitespace-pre-line flex-1">
+                                    {answer}
+                                  </p>
+                                  {question.signedAudioUrl && (
+                                    <div className="flex items-center gap-2">
+                                      <Button
+                                        variant="ghost"
+                                        size="sm"
+                                        onClick={() =>
+                                          handlePlayAudio(
+                                            question.signedAudioUrl!,
+                                          )
+                                        }
+                                        className="h-8 w-8 p-0 shrink-0"
+                                      >
+                                        {currentlyPlaying ===
+                                        question.signedAudioUrl ? (
+                                          <Square className="h-4 w-4" />
+                                        ) : (
+                                          <Play className="h-4 w-4" />
+                                        )}
+                                      </Button>
+                                    </div>
+                                  )}
+                                </div>
                               </div>
                             )}
                           </div>
@@ -970,12 +1080,56 @@ export default function JobApplicationDetailsPage() {
                             key={index}
                             className="border rounded-lg overflow-hidden"
                           >
-                            <div className="bg-muted p-3">
+                            <div className="bg-muted p-3 flex items-center justify-between">
                               <p className="font-medium">{question.text}</p>
+                              {question.signedAudioUrl && (
+                                <div className="flex items-center gap-2">
+                                  <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={() =>
+                                      handlePlayAudio(question.signedAudioUrl!)
+                                    }
+                                    className="h-8 w-8 p-0"
+                                  >
+                                    {currentlyPlaying ===
+                                    question.signedAudioUrl ? (
+                                      <Square className="h-4 w-4" />
+                                    ) : (
+                                      <Play className="h-4 w-4" />
+                                    )}
+                                  </Button>
+                                </div>
+                              )}
                             </div>
                             {answer && (
                               <div className="p-3 border-t">
-                                <p className="whitespace-pre-line">{answer}</p>
+                                <div className="flex justify-between items-start gap-4">
+                                  <p className="whitespace-pre-line flex-1">
+                                    {answer}
+                                  </p>
+                                  {question.signedAudioUrl && (
+                                    <div className="flex items-center gap-2">
+                                      <Button
+                                        variant="ghost"
+                                        size="sm"
+                                        onClick={() =>
+                                          handlePlayAudio(
+                                            question.signedAudioUrl!,
+                                          )
+                                        }
+                                        className="h-8 w-8 p-0 shrink-0"
+                                      >
+                                        {currentlyPlaying ===
+                                        question.signedAudioUrl ? (
+                                          <Square className="h-4 w-4" />
+                                        ) : (
+                                          <Play className="h-4 w-4" />
+                                        )}
+                                      </Button>
+                                    </div>
+                                  )}
+                                </div>
                               </div>
                             )}
                           </div>
@@ -1001,12 +1155,56 @@ export default function JobApplicationDetailsPage() {
                             key={index}
                             className="border rounded-lg overflow-hidden"
                           >
-                            <div className="bg-muted p-3">
+                            <div className="bg-muted p-3 flex items-center justify-between">
                               <p className="font-medium">{question.text}</p>
+                              {question.signedAudioUrl && (
+                                <div className="flex items-center gap-2">
+                                  <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={() =>
+                                      handlePlayAudio(question.signedAudioUrl!)
+                                    }
+                                    className="h-8 w-8 p-0"
+                                  >
+                                    {currentlyPlaying ===
+                                    question.signedAudioUrl ? (
+                                      <Square className="h-4 w-4" />
+                                    ) : (
+                                      <Play className="h-4 w-4" />
+                                    )}
+                                  </Button>
+                                </div>
+                              )}
                             </div>
                             {answer && (
                               <div className="p-3 border-t">
-                                <p className="whitespace-pre-line">{answer}</p>
+                                <div className="flex justify-between items-start gap-4">
+                                  <p className="whitespace-pre-line flex-1">
+                                    {answer}
+                                  </p>
+                                  {question.signedAudioUrl && (
+                                    <div className="flex items-center gap-2">
+                                      <Button
+                                        variant="ghost"
+                                        size="sm"
+                                        onClick={() =>
+                                          handlePlayAudio(
+                                            question.signedAudioUrl!,
+                                          )
+                                        }
+                                        className="h-8 w-8 p-0 shrink-0"
+                                      >
+                                        {currentlyPlaying ===
+                                        question.signedAudioUrl ? (
+                                          <Square className="h-4 w-4" />
+                                        ) : (
+                                          <Play className="h-4 w-4" />
+                                        )}
+                                      </Button>
+                                    </div>
+                                  )}
+                                </div>
                               </div>
                             )}
                           </div>
@@ -1173,10 +1371,10 @@ export default function JobApplicationDetailsPage() {
                       application.status === "accepted"
                         ? "bg-green-500/20 text-green-500"
                         : application.status === "rejected"
-                        ? "bg-red-500/20 text-red-500"
-                        : application.status === "reviewed"
-                        ? "bg-blue-500/20 text-blue-500"
-                        : "bg-yellow-500/20 text-yellow-500"
+                          ? "bg-red-500/20 text-red-500"
+                          : application.status === "reviewed"
+                            ? "bg-blue-500/20 text-blue-500"
+                            : "bg-yellow-500/20 text-yellow-500"
                     }`}
                   >
                     {application.status.charAt(0).toUpperCase() +
