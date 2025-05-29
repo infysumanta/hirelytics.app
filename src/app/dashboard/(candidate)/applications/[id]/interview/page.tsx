@@ -58,6 +58,22 @@ export default async function InterviewPage(props: Props) {
       notFound();
     }
 
+    // Check if interview duration is missing
+    if (!job.interviewDuration) {
+      return (
+        <div className="container px-4 py-8 mx-auto">
+          <Card>
+            <CardContent className="p-8 text-center">
+              <p className="text-muted-foreground">
+                Interview configuration is incomplete. Please contact the
+                recruiter.
+              </p>
+            </CardContent>
+          </Card>
+        </div>
+      );
+    }
+
     return (
       <div className="container px-4 py-8 mx-auto relative">
         {/* Apply a subtle background for the entire page */}
@@ -78,6 +94,9 @@ export default async function InterviewPage(props: Props) {
                 applicationId={applicationId}
                 jobTitle={job.title}
                 companyName={job.companyName}
+                location={job.location}
+                skills={job.skills}
+                interviewDuration={job.interviewDuration}
               />
             </CardContent>
           </Card>

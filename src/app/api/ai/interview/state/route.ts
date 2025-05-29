@@ -62,7 +62,9 @@ export async function GET(req: NextRequest) {
 
     return NextResponse.json({
       success: true,
-      isCompleted: interviewState?.currentPhase === "completed",
+      isCompleted:
+        interviewState?.currentPhase === "completed" ||
+        interviewState?.currentPhase === "interrupted",
       hasEvaluation: !!application.interviewEvaluation,
       interviewState,
       questionsAndAnswers: completedQA,
@@ -76,6 +78,8 @@ export async function GET(req: NextRequest) {
         (qa) => qa.category === "behavioral",
       ).length,
       feedback: interviewState?.feedback || application.interviewEvaluation,
+      isInterrupted: interviewState?.currentPhase === "interrupted",
+      interruptionReason: interviewState?.interruptionReason,
     });
   } catch (error) {
     console.error("Error getting interview state:", error);

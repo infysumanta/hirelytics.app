@@ -22,6 +22,12 @@ export interface InterviewState {
     areasOfImprovement?: string[];
   };
   completedAt?: Date;
+  // Timer-related fields
+  timerStartedAt?: Date; // When the interview timer started
+  timerDurationMinutes?: number; // Interview duration in minutes
+  isTimerExpired?: boolean; // Whether the timer has expired
+  interruptedAt?: Date; // When the interview was interrupted (if applicable)
+  interruptionReason?: "timer_expired" | "technical_issue" | "user_action"; // Reason for interruption
 }
 
 // Define the schema for interview state
@@ -37,6 +43,7 @@ export const InterviewStateSchema = new Schema(
         "behavioral_questions",
         "conclusion",
         "completed",
+        "interrupted",
       ],
       default: "introduction",
     },
@@ -72,6 +79,18 @@ export const InterviewStateSchema = new Schema(
       areasOfImprovement: [String],
     },
     completedAt: Date,
+    // Timer-related fields
+    timerStartedAt: Date,
+    timerDurationMinutes: Number,
+    isTimerExpired: {
+      type: Boolean,
+      default: false,
+    },
+    interruptedAt: Date,
+    interruptionReason: {
+      type: String,
+      enum: ["timer_expired", "technical_issue", "user_action"],
+    },
   },
   { _id: false },
 );

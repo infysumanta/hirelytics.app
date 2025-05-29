@@ -32,6 +32,11 @@ const updateJobSchema = z.object({
   requirements: z.string().optional(),
   benefits: z.string().optional(),
   isActive: z.boolean().optional(),
+  interviewDuration: z
+    .number()
+    .min(5, "Interview duration must be at least 5 minutes")
+    .max(120, "Interview duration cannot exceed 120 minutes")
+    .optional(),
 });
 
 export async function GET(
@@ -78,6 +83,7 @@ export async function GET(
         benefits: job.benefits,
         urlId: job.urlId,
         isActive: job.isActive,
+        interviewDuration: job.interviewDuration,
         createdAt: job.createdAt,
         updatedAt: job.updatedAt,
         recruiter: {

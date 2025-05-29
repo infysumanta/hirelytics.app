@@ -6,14 +6,25 @@ import { DeviceCheck } from "./device-check";
 import { useRouter } from "next/navigation";
 import { AIInterviewBackground } from "./ai-interview-background";
 import { AIInterviewerIcon } from "./ai-interviewer-icon";
+import { InterviewDetailsDialog } from "./interview-details-dialog";
 
 interface InterviewClientProps {
   applicationId: string;
   jobTitle: string;
   companyName: string;
+  location?: string;
+  skills?: string[];
+  interviewDuration: number; // in minutes
 }
 
-export function InterviewClient({ applicationId }: InterviewClientProps) {
+export function InterviewClient({
+  applicationId,
+  jobTitle,
+  companyName,
+  location,
+  skills = [],
+  interviewDuration,
+}: InterviewClientProps) {
   const [cameraChecked, setCameraChecked] = useState(false);
   const [micChecked, setMicChecked] = useState(false);
   const [selectedVideoDevice, setSelectedVideoDevice] = useState<string | null>(
@@ -22,6 +33,7 @@ export function InterviewClient({ applicationId }: InterviewClientProps) {
   const [selectedAudioDevice, setSelectedAudioDevice] = useState<string | null>(
     null,
   );
+  const [showDetailsDialog, setShowDetailsDialog] = useState(false);
   const router = useRouter();
 
   const handleDeviceCheckComplete = (camera: boolean, microphone: boolean) => {
@@ -47,6 +59,10 @@ export function InterviewClient({ applicationId }: InterviewClientProps) {
     if (savedVideoDevice) setSelectedVideoDevice(savedVideoDevice);
     if (savedAudioDevice) setSelectedAudioDevice(savedAudioDevice);
   }, []);
+
+  const handleShowDetails = () => {
+    setShowDetailsDialog(true);
+  };
 
   const handleStartInterview = () => {
     // Save application ID in localStorage for resuming later if needed
@@ -97,7 +113,7 @@ export function InterviewClient({ applicationId }: InterviewClientProps) {
             variant="default"
             className="w-full mt-4"
             disabled={!bothDevicesChecked}
-            onClick={handleStartInterview}
+            onClick={handleShowDetails}
           >
             {bothDevicesChecked ? "Start Interview" : "Check Devices First"}
           </Button>
@@ -118,6 +134,17 @@ export function InterviewClient({ applicationId }: InterviewClientProps) {
           </li>
         </ul>
       </div>
+
+      <InterviewDetailsDialog
+        open={showDetailsDialog}
+        onOpenChange={setShowDetailsDialog}
+        onStartInterview={handleStartInterview}
+        jobTitle={jobTitle}
+        companyName={companyName}
+        location={location}
+        skills={skills}
+        interviewDuration={interviewDuration}
+      />
     </div>
   );
 }

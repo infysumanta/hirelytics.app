@@ -15,6 +15,7 @@ export interface IJob extends Document {
   urlId: string;
   recruiter: mongoose.Types.ObjectId | IUser;
   isActive: boolean;
+  interviewDuration: number; // Interview duration in minutes
   createdAt: Date;
   updatedAt: Date;
 }
@@ -70,6 +71,12 @@ const JobSchema = new Schema<IJob>(
     isActive: {
       type: Boolean,
       default: true,
+    },
+    interviewDuration: {
+      type: Number,
+      required: [true, "Interview duration is required"],
+      min: [5, "Interview duration must be at least 5 minutes"],
+      max: [120, "Interview duration cannot exceed 120 minutes"],
     },
   },
   { timestamps: true },

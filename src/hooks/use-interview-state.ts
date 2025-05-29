@@ -19,6 +19,8 @@ interface InterviewState {
   technicalQuestions: number;
   projectQuestions: number;
   behavioralQuestions: number;
+  isInterrupted?: boolean;
+  interruptionReason?: "timer_expired" | "technical_issue" | "user_action";
 }
 
 export function useInterviewState(applicationId: string) {
@@ -130,6 +132,8 @@ export function useInterviewState(applicationId: string) {
           technicalQuestions: data.technicalQuestions || 0,
           projectQuestions: data.projectQuestions || 0,
           behavioralQuestions: data.behavioralQuestions || 0,
+          isInterrupted: data.isInterrupted || false,
+          interruptionReason: data.interruptionReason,
         });
       } catch (error) {
         console.error("Error checking interview state:", error);

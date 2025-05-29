@@ -17,12 +17,16 @@ interface InterviewCompletionProps {
   jobTitle: string;
   companyName: string;
   redirectUrl?: string;
+  isInterrupted?: boolean;
+  interruptionReason?: "timer_expired" | "technical_issue" | "user_action";
 }
 
 export function InterviewCompletion({
   applicationId,
   jobTitle,
   companyName,
+  isInterrupted = false,
+  interruptionReason,
 }: InterviewCompletionProps) {
   const [closingTimer, setClosingTimer] = useState(12); // Increased from 8 to 12 seconds
   const [isChatClosed, setIsChatClosed] = useState(false);
@@ -73,6 +77,45 @@ export function InterviewCompletion({
     router.push(`/dashboard/applications/${applicationId}/interview/feedback`);
   };
 
+  // Get completion message based on interruption status
+  const getCompletionMessage = () => {
+    if (isInterrupted) {
+      switch (interruptionReason) {
+        case "timer_expired":
+          return {
+            title: "Interview Time Expired",
+            message: "Your interview session has ended due to time limit.",
+            icon: "clock",
+          };
+        case "technical_issue":
+          return {
+            title: "Interview Interrupted",
+            message: "Your interview was interrupted due to a technical issue.",
+            icon: "warning",
+          };
+        case "user_action":
+          return {
+            title: "Interview Ended",
+            message: "Your interview session has been ended.",
+            icon: "stop",
+          };
+        default:
+          return {
+            title: "Interview Interrupted",
+            message: "Your interview session was interrupted.",
+            icon: "warning",
+          };
+      }
+    }
+    return {
+      title: "Interview Completed",
+      message: "Thank you for completing your interview.",
+      icon: "check",
+    };
+  };
+
+  const completionInfo = getCompletionMessage();
+
   return (
     <div className="flex flex-col items-center justify-center p-6 text-center">
       <div className="mb-6 flex h-24 w-24 items-center justify-center rounded-full bg-green-100 dark:bg-green-900/30">
@@ -81,12 +124,12 @@ export function InterviewCompletion({
 
       <Card className="w-full max-w-md">
         <CardHeader>
-          <CardTitle className="text-center">Interview Completed</CardTitle>
+          <CardTitle className="text-center">{completionInfo.title}</CardTitle>
         </CardHeader>
 
         <CardContent className="space-y-4">
           <p>
-            Thank you for completing your interview for the{" "}
+            {completionInfo.message} {!isInterrupted && "for the"}{" "}
             <Badge variant="outline" className="font-semibold">
               {jobTitle}
             </Badge>{" "}

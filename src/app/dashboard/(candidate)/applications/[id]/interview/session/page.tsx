@@ -61,6 +61,22 @@ export default async function InterviewSessionPage(props: Props) {
       notFound();
     }
 
+    // Check if interview duration is missing
+    if (!job.interviewDuration) {
+      return (
+        <div className="container px-4 py-8 mx-auto">
+          <Card>
+            <CardContent className="p-8 text-center">
+              <p className="text-muted-foreground">
+                Interview configuration is incomplete. Please contact the
+                recruiter.
+              </p>
+            </CardContent>
+          </Card>
+        </div>
+      );
+    }
+
     // Check if interview is already completed
     const interviewState = application.interviewState;
     if (interviewState?.currentPhase === "completed") {
@@ -117,6 +133,7 @@ export default async function InterviewSessionPage(props: Props) {
                 applicationId={applicationId}
                 jobTitle={job.title}
                 companyName={job.companyName}
+                interviewDuration={job.interviewDuration}
               />
             </CardContent>
           </Card>

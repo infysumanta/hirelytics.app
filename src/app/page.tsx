@@ -205,7 +205,7 @@ export default function Home() {
           >
             <div className="flex flex-wrap justify-center gap-3">
               <Link
-                href="/login?type=candidate"
+                href="/login/candidate"
                 className="group transition-all hover:text-primary"
               >
                 <div className="inline-flex items-center gap-2 rounded-full border border-border px-3 py-1.5 text-xs font-medium backdrop-blur-sm hover:border-primary/30 hover:bg-primary/5">
@@ -218,7 +218,7 @@ export default function Home() {
                 </div>
               </Link>
               <Link
-                href="/login?type=recruiter"
+                href="/login/recruiter"
                 className="group transition-all hover:text-primary"
               >
                 <div className="inline-flex items-center gap-2 rounded-full border border-border px-3 py-1.5 text-xs font-medium backdrop-blur-sm hover:border-primary/30 hover:bg-primary/5">
@@ -960,7 +960,7 @@ export default function Home() {
               <ul className="space-y-3 text-sm text-muted-foreground">
                 <li>
                   <Link
-                    href="/login?type=recruiter"
+                    href="/login/recruiter"
                     className="inline-flex items-center gap-1 transition-colors hover:text-primary"
                   >
                     <span>{t("footer.forRecruiters.login")}</span>
@@ -968,26 +968,10 @@ export default function Home() {
                 </li>
                 <li>
                   <Link
-                    href="/register?type=recruiter"
+                    href="/register/recruiter"
                     className="inline-flex items-center gap-1 transition-colors hover:text-primary"
                   >
                     <span>{t("footer.forRecruiters.register")}</span>
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    href="/learn-more"
-                    className="inline-flex items-center gap-1 transition-colors hover:text-primary"
-                  >
-                    <span>{t("footer.forRecruiters.learnMore")}</span>
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    href="/dashboard"
-                    className="inline-flex items-center gap-1 transition-colors hover:text-primary"
-                  >
-                    <span>{t("footer.forRecruiters.dashboard")}</span>
                   </Link>
                 </li>
               </ul>
@@ -1007,7 +991,7 @@ export default function Home() {
                 </li>
                 <li>
                   <Link
-                    href="/login?type=candidate"
+                    href="/login/candidate"
                     className="inline-flex items-center gap-1 transition-colors hover:text-primary"
                   >
                     <span>{t("footer.forCandidates.login")}</span>
@@ -1015,18 +999,10 @@ export default function Home() {
                 </li>
                 <li>
                   <Link
-                    href="/register?type=candidate"
+                    href="/register/candidate"
                     className="inline-flex items-center gap-1 transition-colors hover:text-primary"
                   >
                     <span>{t("footer.forCandidates.register")}</span>
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    href="/wishlist"
-                    className="inline-flex items-center gap-1 transition-colors hover:text-primary"
-                  >
-                    <span>{t("footer.forCandidates.wishlist")}</span>
                   </Link>
                 </li>
               </ul>

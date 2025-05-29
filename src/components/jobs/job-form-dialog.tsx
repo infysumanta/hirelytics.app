@@ -54,6 +54,13 @@ import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
 import { Switch } from "@/components/ui/switch";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { technicalSkills, skillsByCategory } from "@/data/technical-skills";
 import { countries, getCountryLabel } from "@/data/countries";
 
@@ -69,6 +76,10 @@ const formSchema = z.object({
     required_error: "Expiry date is required",
   }),
   isActive: z.boolean(),
+  interviewDuration: z
+    .number()
+    .min(5, "Interview duration must be at least 5 minutes")
+    .max(120, "Interview duration cannot exceed 120 minutes"),
 });
 
 type FormValues = z.infer<typeof formSchema>;
@@ -106,6 +117,7 @@ export function JobFormDialog({
       description: "",
       isActive: true,
       expiryDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // Default to 30 days from now
+      // No default for interviewDuration - user must select
     },
   });
 
@@ -132,6 +144,7 @@ export function JobFormDialog({
             description: job.description,
             isActive: job.isActive,
             expiryDate: new Date(job.expiryDate),
+            interviewDuration: job.interviewDuration,
           });
         } catch (error) {
           console.error("Error fetching job data:", error);
@@ -150,6 +163,7 @@ export function JobFormDialog({
           description: "",
           isActive: true,
           expiryDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
+          // No default for interviewDuration - user must select
         });
       }
     };
@@ -556,6 +570,42 @@ export function JobFormDialog({
                           onCheckedChange={field.onChange}
                         />
                       </FormControl>
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="interviewDuration"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Interview Duration</FormLabel>
+                      <Select
+                        onValueChange={(value) =>
+                          field.onChange(parseInt(value))
+                        }
+                        value={field.value?.toString()}
+                      >
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select interview duration *" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          <SelectItem value="5">5 minutes</SelectItem>
+                          <SelectItem value="10">10 minutes</SelectItem>
+                          <SelectItem value="15">15 minutes</SelectItem>
+                          <SelectItem value="20">20 minutes</SelectItem>
+                          <SelectItem value="30">30 minutes</SelectItem>
+                          <SelectItem value="45">45 minutes</SelectItem>
+                          <SelectItem value="60">60 minutes</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <FormDescription>
+                        Set the maximum duration for the AI interview session
+                        (required)
+                      </FormDescription>
+                      <FormMessage />
                     </FormItem>
                   )}
                 />

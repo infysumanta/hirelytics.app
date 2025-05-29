@@ -34,6 +34,10 @@ const createJobSchema = z.object({
   skills: z.array(z.string()).min(1, "At least one skill is required"),
   requirements: z.string().optional(),
   benefits: z.string().optional(),
+  interviewDuration: z
+    .number()
+    .min(5, "Interview duration must be at least 5 minutes")
+    .max(120, "Interview duration cannot exceed 120 minutes"),
 });
 
 export async function POST(req: NextRequest) {

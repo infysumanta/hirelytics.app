@@ -14,9 +14,7 @@ export async function generateGeminiText(
 ): Promise<string> {
   try {
     const { text } = await generateText({
-      model: google(
-        model as "gemini-2.0-flash-lite" | "gemini-1.5-pro" | "gemini-1.0-pro",
-      ),
+      model: google(model as "gemini-2.0-flash-lite"),
       prompt: prompt,
     });
 

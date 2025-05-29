@@ -49,6 +49,7 @@ import { INTERVIEW_ALERTS } from "@/constants/interview-alerts";
 import { useInterviewChat } from "@/hooks/use-interview-chat";
 import { useInterviewState } from "@/hooks/use-interview-state";
 import { InterviewCompletion } from "./interview-completion";
+import { InterviewTimer, CompactInterviewTimer } from "./interview-timer";
 
 // Message interface is now imported from the useInterviewChat hook
 
@@ -58,6 +59,7 @@ interface InterviewSessionProps {
   companyName?: string;
   cameraMonitoring?: boolean;
   monitoringInterval?: number;
+  interviewDuration: number; // in minutes
 }
 
 export function InterviewSession({
@@ -66,6 +68,7 @@ export function InterviewSession({
   companyName = "Company",
   cameraMonitoring = true,
   monitoringInterval = 30000, // Default 30 seconds
+  interviewDuration,
 }: InterviewSessionProps) {
   const [videoEnabled, setVideoEnabled] = useState(true);
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -85,6 +88,7 @@ export function InterviewSession({
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [isWindowFocused, setIsWindowFocused] = useState(true);
   const [alerts, setAlerts] = useState<string[]>([]);
+  const [isTimerActive, setIsTimerActive] = useState(false);
   // Track interview state
   const { interviewState } = useInterviewState(applicationId);
   const monitoringIntervalRef = useRef<NodeJS.Timeout | undefined>(undefined);
@@ -109,6 +113,49 @@ export function InterviewSession({
   const aiVideoRef = useRef<HTMLDivElement>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const isMobile = useIsMobile();
+
+  // Timer expiration handler
+  const handleTimerExpired = async () => {
+    console.log("[Interview Timer] Timer expired, interrupting interview");
+
+    try {
+      // Update interview state to mark as interrupted
+      await fetch(`/api/ai/interview/interrupt`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          applicationId,
+          reason: "timer_expired",
+        }),
+      });
+
+      // Show completion UI
+      setShowCompletionUI(true);
+    } catch (error) {
+      console.error("Error handling timer expiration:", error);
+      // Still show completion UI even if API call fails
+      setShowCompletionUI(true);
+    }
+  };
+
+  // Start timer when interview initializes
+  useEffect(() => {
+    if (!isInitializing && !isTimerActive && !interviewState.isCompleted) {
+      console.log(
+        "[Interview Timer] Starting timer for",
+        interviewDuration,
+        "minutes",
+      );
+      setIsTimerActive(true);
+    }
+  }, [
+    isInitializing,
+    isTimerActive,
+    interviewState.isCompleted,
+    interviewDuration,
+  ]);
 
   // Load device preferences from localStorage on component mount
   useEffect(() => {
@@ -591,6 +638,8 @@ export function InterviewSession({
       jobTitle={jobTitle}
       companyName={companyName}
       redirectUrl="/dashboard"
+      isInterrupted={interviewState.isInterrupted}
+      interruptionReason={interviewState.interruptionReason}
     />
   ) : (
     <div className="w-full min-h-[calc(100vh-20rem)] flex flex-col md:flex-row interview-layout gap-4">
@@ -613,6 +662,15 @@ export function InterviewSession({
 
             <div className="absolute top-3 left-3 bg-background/50 backdrop-blur-sm px-3 py-1 rounded-md text-sm font-medium shadow-md border border-border/50 z-10">
               AI Interviewer
+            </div>
+
+            {/* Interview Timer */}
+            <div className="absolute top-3 right-3 z-10">
+              <InterviewTimer
+                durationMinutes={interviewDuration}
+                onTimeExpired={handleTimerExpired}
+                isActive={isTimerActive && !interviewState.isCompleted}
+              />
             </div>
 
             {/* Branded AI placeholder with logo & brand name */}
