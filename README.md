@@ -1,20 +1,33 @@
 # Hirelytics - Advanced Recruitment Platform
 
-A comprehensive recruitment and hiring platform built with Next.js 15, NextAuth v5, and MongoDB. This system supports three roles: admin, recruiter, and candidate, each with their own login, registration, and dashboard experiences.
+A comprehensive recruitment and hiring platform built with Next.js 15 App Router, NextAuth v5, and MongoDB. This system supports three roles: admin, recruiter, and candidate, each with their own login, registration, and dashboard experiences. The platform features AI-powered interviews, real-time audio processing, and automated evaluation of candidates.
 
 ## Features
 
 - **Role-Based Authentication**: Separate login and registration flows for admin, recruiter, and candidate roles
 - **Registration Control**: Toggle user registration on/off with a simple environment variable
 - **Waitlist System**: Collect interested user information when registration is disabled
-- **Protected Routes**: Unified dashboard with role-specific content and protected routes
+- **Protected Routes**:
+  - Unified dashboard with role-specific content
+  - Route-based authorization for admin, recruiter, and candidate sections
+  - Custom middleware for route protection
+  - Automatic role-based navigation and access control
 - **Enhanced Security**:
-  - Automatic redirects for authenticated/unauthenticated users
-  - JWT-based session management
-  - Password hashing with bcrypt
-  - Form validation with Zod
-- **MongoDB Integration**: Persistent data storage for users, jobs, and applications
-- **AWS S3 Integration**: File storage for resumes, profile images, and audio files
+  - Route-based authentication with role protection
+  - Smart redirects for authenticated/unauthenticated users
+  - JWT-based session management with maxAge of 30 days
+  - Password hashing with bcrypt (10 rounds)
+  - Form validation and API schema protection with Zod
+  - Account activation/deactivation system with admin controls
+  - Custom error handling and validation feedback
+- **MongoDB Integration**:
+  - Persistent data storage for users, jobs, and applications
+  - Mongoose schemas with validation
+  - Efficient querying with pagination and search
+- **AWS S3 Integration**:
+  - File storage for resumes, profile images, and audio files
+  - S3-compatible storage support
+  - Signed URL generation for secure file access
 - **AI Interview System**:
   - Automated technical interviews with Gemini AI
   - Real-time audio processing and text-to-speech
@@ -38,6 +51,9 @@ A comprehensive recruitment and hiring platform built with Next.js 15, NextAuth 
 - Node.js 18+ and pnpm
 - MongoDB database (local or Atlas)
 - AWS S3 compatible storage (for file uploads)
+- Google Cloud API key (for Gemini AI)
+- Deepgram API key (for text-to-speech)
+- Resend API key (for email notifications)
 
 ### Environment Setup
 
@@ -47,10 +63,15 @@ Create a `.env.local` file in the root directory with the following variables:
 # MongoDB Connection
 # Use MongoDB Atlas or a local MongoDB instance
 MONGODB_URI=your_mongodb_connection_string
+AUTH_URL=http://localhost:3000
 
 # NextAuth Configuration
 # Generate a secret with: openssl rand -base64 32
 NEXTAUTH_SECRET=your_random_string_for_jwt_encryption
+
+# Email Service Configuration
+# Required for sending notifications and waitlist emails
+RESEND_API_KEY=your_resend_api_key
 
 # Registration Control
 # Set to 'true' to allow new users to register, 'false' to disable registration
@@ -173,11 +194,16 @@ pnpm tsx scripts/create-admin.ts "Admin Name" "admin@example.com" "password"
 
 ### Tools & Utilities
 
-- Zod for form validation
-- React Hook Form for form handling
-- next-share for social media sharing
+- Zod for form validation and API schema validation
+- React Hook Form for form management
+- next-share for social media sharing integration
 - DND Kit for drag and drop functionality
 - Recharts for interactive charts and data visualization
+- sonner for toast notifications
+- Framer Motion for smooth animations
+- next-intl for internationalization
+- Resend for email service
+- shadcn/ui for component library
 
 ## Quick Start
 
