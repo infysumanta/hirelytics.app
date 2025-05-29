@@ -373,7 +373,8 @@
       "cta": {
         "title": "Ready to Transform Your Hiring Process?",
         "description": "Experience the future of recruitment with Hirelytics. Our AI-powered platform is ready to revolutionize how you hire.",
-        "buttonText": "Get Started"
+        "buttonText": "Get Started",
+        "badge": "AI-Powered Platform"
       }
     },
     "contact": {
