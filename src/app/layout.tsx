@@ -7,6 +7,7 @@ import NextTopLoader from 'nextjs-toploader';
 import { Toaster } from 'sonner';
 
 import { FloatingControls } from '@/components/floating-controls';
+import MicrosoftClarity from '@/lib/microsoft-clarity';
 import RootProvider from '@/provider/root-provider';
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -56,6 +57,7 @@ export default async function RootLayout({
         <RootProvider>
           <div className="relative flex min-h-screen flex-col">
             <FloatingControls />
+            <MicrosoftClarity />
             <div className="flex-1">{children}</div>
           </div>
           <Toaster />
