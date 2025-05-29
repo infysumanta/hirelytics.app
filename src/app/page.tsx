@@ -9,7 +9,6 @@ import {
   ClipboardCheck,
   FileText,
   GraduationCap,
-  Heart,
   LineChart,
   Link as LinkIcon,
   MessageSquareText,
@@ -208,7 +207,7 @@ export default function Home() {
                   />
                 </div>
               </Link>
-              <Link href="/wishlist" className="group transition-all hover:text-primary">
+              {/* <Link href="/wishlist" className="group transition-all hover:text-primary">
                 <div className="inline-flex items-center gap-2 rounded-full border border-border px-3 py-1.5 text-xs font-medium backdrop-blur-sm hover:border-primary/30 hover:bg-primary/5">
                   <Heart size={14} />
                   {t('userAccess.wishlist')}
@@ -217,7 +216,7 @@ export default function Home() {
                     className="transition-transform group-hover:translate-x-0.5"
                   />
                 </div>
-              </Link>
+              </Link> */}
             </div>
           </motion.div>
         </motion.div>
