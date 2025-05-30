@@ -18,8 +18,22 @@ export default function DemoPage() {
           </p>
         </div>
 
+        {/* Book a Demo CTA */}
+        <div className="text-center mb-10">
+          <Link href="/demo/book">
+            <Button
+              size="lg"
+              variant="default"
+              className="gap-3 text-lg font-medium px-8 h-14 bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 hover:from-gray-800 hover:via-gray-700 hover:to-gray-800 text-white shadow-xl hover:shadow-2xl transition-all duration-300 ease-out"
+            >
+              <Sparkles className="h-6 w-6" />
+              Book a Personalized Demo
+            </Button>
+          </Link>
+        </div>
+
         {/* Demo Grid */}
-        <div className="grid md:grid-cols-2 gap-12 max-w-7xl mx-auto mb-20">
+        <div className="grid md:grid-cols-2 gap-12 max-w-7p-xl mx-auto">
           {/* Recruiter Demo */}
           <div className="rounded-xl border bg-card shadow-lg overflow-hidden">
             <div className="aspect-video w-full relative">
@@ -66,20 +80,6 @@ export default function DemoPage() {
               </p>
             </div>
           </div>
-        </div>
-
-        {/* Book a Demo CTA */}
-        <div className="text-center">
-          <Link href="/demo/book">
-            <Button
-              size="lg"
-              variant="default"
-              className="gap-3 text-lg font-medium px-8 h-16 bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 hover:from-gray-800 hover:via-gray-700 hover:to-gray-800 text-white shadow-xl hover:shadow-2xl transition-all duration-300 ease-out"
-            >
-              <Sparkles className="h-6 w-6" />
-              Book a Personalized Demo
-            </Button>
-          </Link>
         </div>
       </div>
     </div>
