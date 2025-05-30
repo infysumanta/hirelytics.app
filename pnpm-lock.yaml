@@ -16,6 +16,9 @@ importers:
       '@aws-sdk/s3-request-presigner':
         specifier: ^3.806.0
         version: 3.806.0
+      '@calcom/embed-react':
+        specifier: ^1.5.3
+        version: 1.5.3(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
       '@dnd-kit/core':
         specifier: ^6.3.1
         version: 6.3.1(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
@@ -705,6 +708,27 @@ packages:
         integrity: sha512-1x3D2xEk2fRo3PAhwQwu5UubzgiVWSXTBfWpVd2Mx2AzRqJuDJCsgaDVZ7HB5iGzDW1Hl1sWN2mFyKjmR9uAog==,
       }
     engines: { node: '>=6.9.0' }
+
+  '@calcom/embed-core@1.5.3':
+    resolution:
+      {
+        integrity: sha512-GeId9gaByJ5EWiPmuvelZOvFWPOTWkcWZr5vGTCbIUTX125oE5yn0n8lDF1MJk5Xj1WO+/dk9jKIE08Ad9ytiQ==,
+      }
+
+  '@calcom/embed-react@1.5.3':
+    resolution:
+      {
+        integrity: sha512-JCgge04pc8fhdvUmPNVLhW8/lCWK+AAziKecKWWPfv1nn2s+qKP2BwsEAnxhxK9yPOBgE1EIEgmYkrrNB1iajA==,
+      }
+    peerDependencies:
+      react: ^18.2.0 || ^19.0.0
+      react-dom: ^18.2.0 || ^19.0.0
+
+  '@calcom/embed-snippet@1.3.3':
+    resolution:
+      {
+        integrity: sha512-pqqKaeLB8R6BvyegcpI9gAyY6Xyx1bKYfWvIGOvIbTpguWyM1BBBVcT9DCeGe8Zw7Ujp5K56ci7isRUrT2Uadg==,
+      }
 
   '@commitlint/cli@19.8.1':
     resolution:
@@ -9026,6 +9050,19 @@ snapshots:
   '@babel/helper-validator-identifier@7.27.1': {}
 
   '@babel/runtime@7.27.1': {}
+
+  '@calcom/embed-core@1.5.3': {}
+
+  '@calcom/embed-react@1.5.3(react-dom@19.1.0(react@19.1.0))(react@19.1.0)':
+    dependencies:
+      '@calcom/embed-core': 1.5.3
+      '@calcom/embed-snippet': 1.3.3
+      react: 19.1.0
+      react-dom: 19.1.0(react@19.1.0)
+
+  '@calcom/embed-snippet@1.3.3':
+    dependencies:
+      '@calcom/embed-core': 1.5.3
 
   '@commitlint/cli@19.8.1(@types/node@20.17.46)(typescript@5.8.3)':
     dependencies:
