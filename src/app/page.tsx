@@ -188,7 +188,7 @@ export default function Home() {
           >
             <div className="flex flex-wrap justify-center gap-3">
               <Link href="/login/candidate" className="group transition-all hover:text-primary">
-                <div className="inline-flex items-center gap-2 rounded-full border border-border px-3 py-1.5 text-xs font-medium backdrop-blur-sm hover:border-primary/30 hover:bg-primary/5">
+                <div className="inline-flex items-center gap-2 rounded-full border border-border px-4 py-1.5 text-base font-medium backdrop-blur-sm hover:border-primary/30 hover:bg-primary/5">
                   <UserIcon size={14} />
                   {t('userAccess.candidateLogin')}
                   <ChevronRight
@@ -198,7 +198,7 @@ export default function Home() {
                 </div>
               </Link>
               <Link href="/login/recruiter" className="group transition-all hover:text-primary">
-                <div className="inline-flex items-center gap-2 rounded-full border border-border px-3 py-1.5 text-xs font-medium backdrop-blur-sm hover:border-primary/30 hover:bg-primary/5">
+                <div className="inline-flex items-center gap-2 rounded-full border border-border px-4 py-1.5 text-base font-medium backdrop-blur-sm hover:border-primary/30 hover:bg-primary/5">
                   <Building2 size={14} />
                   {t('userAccess.recruiterLogin')}
                   <ChevronRight
