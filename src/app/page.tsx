@@ -21,7 +21,8 @@ import {
 } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
+import { TypeAnimation } from 'react-type-animation';
 
 import { AnimatedBackground } from '@/components/ui/animated-background';
 import { Button } from '@/components/ui/button';
@@ -64,6 +65,28 @@ const featureCardVariants = {
 export default function Home() {
   const t = useTranslations('HomePage');
   const common = useTranslations('Common');
+  const locale = useLocale(); // Add this line to get current locale
+
+  // Define animation sequences based on translations
+  const headingSequence = [
+    t('typingAnimation.aiPowered'),
+    1500,
+    t('typingAnimation.smartRecruitment'),
+    1500,
+    t('typingAnimation.automatedInterviews'),
+    1500,
+    t('typingAnimation.futureHiring'),
+    1500,
+  ];
+
+  const descriptionSequence = [
+    t('typingAnimation.descriptions.transform'),
+    2000,
+    t('typingAnimation.descriptions.datadriven'),
+    2000,
+    t('typingAnimation.descriptions.streamline'),
+    2000,
+  ];
 
   return (
     <div className="flex min-h-screen flex-col items-center">
@@ -172,8 +195,15 @@ export default function Home() {
             variants={fadeIn}
           >
             <span>{t('hero.revolutionizeHiring')} </span>
-            <span className="bg-gradient-to-r from-primary via-blue-500 to-purple-500 bg-clip-text text-transparent animate-gradient">
-              {t('title')}
+            <span className="bg-gradient-to-r from-primary via-blue-500 to-purple-500 bg-clip-text text-transparent">
+              <TypeAnimation
+                key={locale} // Add key prop to force re-render on locale change
+                sequence={headingSequence}
+                wrapper="span"
+                speed={50}
+                repeat={Infinity}
+                className="animate-gradient"
+              />
             </span>
           </motion.h1>
 

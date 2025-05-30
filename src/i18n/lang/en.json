@@ -48,6 +48,17 @@
     "features": "AI-Powered Features",
     "intelligentRecruitment": "Intelligent Recruitment Platform",
     "platformDescription": "Our platform leverages cutting-edge AI to transform every step of the recruitment process, from job posting to final selection.",
+    "typingAnimation": {
+      "aiPowered": "AI-Powered Hiring",
+      "smartRecruitment": "Smart Recruitment",
+      "automatedInterviews": "Automated Interviews",
+      "futureHiring": "Future of Hiring",
+      "descriptions": {
+        "transform": "Transform your hiring process with AI-powered interviews and automated candidate assessment.",
+        "datadriven": "Make data-driven hiring decisions with advanced analytics and insights.",
+        "streamline": "Streamline recruitment with intelligent candidate screening and evaluation."
+      }
+    },
     "demo": {
       "bookDemo": "Book a Demo",
       "viewDemo": "View Demo"
@@ -59,11 +70,22 @@
       }
     },
     "hero": {
-      "aiPoweredRecruitment": "AI-Powered Recruitment",
+      "aiPoweredRecruitment": "AI-Powered Hiring Platform",
       "revolutionizeHiring": "Revolutionize Your Hiring with",
       "description": "Our AI-driven platform transforms the recruitment process from job posting to candidate selection. Automate interviews, analyze resumes, and make data-driven hiring decisions.",
       "getStarted": "Get Started",
-      "howItWorks": "How It Works"
+      "howItWorks": "How It Works",
+      "typingAnimation": {
+        "aiPowered": "AI-Powered Hiring",
+        "smartRecruitment": "Smart Recruitment",
+        "automatedInterviews": "Automated Interviews",
+        "futureHiring": "Future of Hiring"
+      },
+      "descriptionAnimation": {
+        "transform": "Transform your hiring process with AI-powered interviews and automated candidate assessment.",
+        "datadriven": "Make data-driven hiring decisions with advanced analytics and insights.",
+        "streamline": "Streamline recruitment with intelligent candidate screening and evaluation."
+      }
     },
     "featuresSection": {
       "title": "AI-Powered Features",

@@ -89,6 +89,7 @@
     "react-markdown": "^10.1.0",
     "react-mic": "^12.4.6",
     "react-resizable-panels": "^3.0.1",
+    "react-type-animation": "^3.2.0",
     "react-webcam": "^7.2.0",
     "recharts": "^2.15.3",
     "rehype-raw": "^7.0.0",
