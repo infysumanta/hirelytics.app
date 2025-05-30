@@ -1,8 +1,10 @@
 'use client';
 
 import Cal from '@calcom/embed-react';
+import { useTranslations } from 'next-intl';
 
 export default function BookDemoPage() {
+  const t = useTranslations('Demo');
   return (
     <div className="min-h-screen bg-gradient-to-b from-background via-primary/5 to-background relative">
       {/* Background elements */}
@@ -25,11 +27,8 @@ export default function BookDemoPage() {
 
       <div className="container mx-auto px-4 pt-8 relative z-10">
         <div className="text-center max-w-2xl mx-auto">
-          <h1 className="text-4xl font-bold mb-4">Book a Demo</h1>
-          <p className="text-muted-foreground text-lg">
-            Schedule a personalized demo session with our team. We&apos;ll walk you through
-            Hirelytics&apos;s features and answer any questions you may have.
-          </p>
+          <h1 className="text-4xl font-bold mb-4">{t('book.title')}</h1>
+          <p className="text-muted-foreground text-lg">{t('book.description')}</p>
         </div>
         <Cal
           calLink="sumanta-kabiraj/hirelytics-demo"

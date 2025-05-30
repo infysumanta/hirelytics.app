@@ -2,10 +2,12 @@
 
 import { Building2, GraduationCap, Sparkles } from 'lucide-react';
 import Link from 'next/link';
+import { useTranslations } from 'next-intl';
 
 import { Button } from '@/components/ui/button';
 
 export default function DemoPage() {
+  const t = useTranslations('Demo');
   return (
     <div className="min-h-screen bg-gradient-to-b from-background via-primary/5 to-background relative">
       {/* Background elements */}
@@ -29,11 +31,8 @@ export default function DemoPage() {
       <div className="container mx-auto px-4 py-16 relative z-10">
         {/* Header */}
         <div className="text-center mb-16">
-          <h1 className="text-4xl font-bold mb-4">Product Demonstrations</h1>
-          <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-            Experience Hirelytics in action. Watch our demos to see how we revolutionize the hiring
-            process for both candidates and recruiters.
-          </p>
+          <h1 className="text-4xl font-bold mb-4">{t('page.title')}</h1>
+          <p className="text-muted-foreground text-lg max-w-2xl mx-auto">{t('page.description')}</p>
         </div>
 
         {/* Book a Demo CTA */}
@@ -45,7 +44,7 @@ export default function DemoPage() {
               className="gap-3 text-lg font-medium px-8 h-14 bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 hover:from-gray-800 hover:via-gray-700 hover:to-gray-800 text-white shadow-xl hover:shadow-2xl transition-all duration-300 ease-out"
             >
               <Sparkles className="h-6 w-6" />
-              Book a Personalized Demo
+              {t('page.bookPersonalizedDemo')}
             </Button>
           </Link>
         </div>
@@ -67,12 +66,9 @@ export default function DemoPage() {
                 <div className="p-2 rounded-full bg-primary/10">
                   <Building2 className="h-6 w-6 text-primary" />
                 </div>
-                <h2 className="text-2xl font-semibold">Recruiter Demo</h2>
+                <h2 className="text-2xl font-semibold">{t('sections.recruiter.title')}</h2>
               </div>
-              <p className="text-muted-foreground">
-                Discover how recruiters can streamline their hiring process, manage applications,
-                and leverage AI insights for better decision-making.
-              </p>
+              <p className="text-muted-foreground">{t('sections.recruiter.description')}</p>
             </div>
           </div>
           {/* Candidate Demo */}
@@ -90,12 +86,9 @@ export default function DemoPage() {
                 <div className="p-2 rounded-full bg-primary/10">
                   <GraduationCap className="h-6 w-6 text-primary" />
                 </div>
-                <h2 className="text-2xl font-semibold">Candidate Demo</h2>
+                <h2 className="text-2xl font-semibold">{t('sections.candidate.title')}</h2>
               </div>
-              <p className="text-muted-foreground">
-                See how candidates can effortlessly navigate through our AI-powered interview
-                process, submit applications, and track their progress.
-              </p>
+              <p className="text-muted-foreground">{t('sections.candidate.description')}</p>
             </div>
           </div>
         </div>

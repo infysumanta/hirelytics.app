@@ -41,6 +41,27 @@
       "termsOfService": "Terms of Service"
     }
   },
+  "Demo": {
+    "page": {
+      "title": "Product Demonstrations",
+      "description": "Experience Hirelytics in action. Watch our demos to see how we revolutionize the hiring process for both candidates and recruiters.",
+      "bookPersonalizedDemo": "Book a Personalized Demo"
+    },
+    "sections": {
+      "recruiter": {
+        "title": "Recruiter Demo",
+        "description": "Discover how recruiters can streamline their hiring process, manage applications, and leverage AI insights for better decision-making."
+      },
+      "candidate": {
+        "title": "Candidate Demo",
+        "description": "See how candidates can effortlessly navigate through our AI-powered interview process, submit applications, and track their progress."
+      }
+    },
+    "book": {
+      "title": "Book a Demo",
+      "description": "Schedule a personalized demo session with our team. We'll walk you through Hirelytics's features and answer any questions you may have."
+    }
+  },
   "HomePage": {
     "title": "Hirelytics",
     "subtitle": "Role-Based Recruitment Platform",
