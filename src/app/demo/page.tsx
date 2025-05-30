@@ -7,8 +7,26 @@ import { Button } from '@/components/ui/button';
 
 export default function DemoPage() {
   return (
-    <div className="min-h-screen bg-background">
-      <div className="container mx-auto px-4 py-16">
+    <div className="min-h-screen bg-gradient-to-b from-background via-primary/5 to-background relative">
+      {/* Background elements */}
+      <div className="absolute inset-0 z-0 opacity-40">
+        <div className="absolute top-0 left-0 h-[500px] w-[500px] rounded-full bg-blue-600/30 dark:bg-blue-500/30 blur-[120px] animate-pulse-slow"></div>
+        <div
+          className="absolute bottom-0 right-0 h-[400px] w-[400px] rounded-full bg-purple-600/30 dark:bg-purple-500/30 blur-[120px] animate-pulse-slow"
+          style={{ animationDelay: '2s' }}
+        ></div>
+        <div
+          className="absolute top-1/3 left-1/4 h-[250px] w-[250px] rounded-full bg-cyan-600/30 dark:bg-cyan-500/30 blur-[90px] animate-pulse-slow"
+          style={{ animationDelay: '3s' }}
+        ></div>
+      </div>
+
+      {/* Pattern overlay */}
+      <div className="absolute inset-0 z-0 opacity-10">
+        <div className="h-full w-full bg-[url('/patterns/waves.svg')] bg-repeat opacity-20"></div>
+      </div>
+
+      <div className="container mx-auto px-4 py-16 relative z-10">
         {/* Header */}
         <div className="text-center mb-16">
           <h1 className="text-4xl font-bold mb-4">Product Demonstrations</h1>
