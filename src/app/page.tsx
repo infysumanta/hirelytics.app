@@ -135,6 +135,38 @@ export default function Home() {
             />
           </motion.div>
 
+          {/* Secondary Actions */}
+          <div className="flex flex-wrap justify-center gap-3 mb-8">
+            <Link href="/demo/book" className="group transition-all hover:text-primary relative">
+              <div
+                className="inline-flex items-center gap-2 rounded-full border border-border/50 px-4 py-1.5 text-base font-medium backdrop-blur-sm relative overflow-hidden
+                           before:absolute before:inset-0 before:bg-gradient-to-r before:from-primary/20 before:via-blue-500/20 before:to-purple-500/20 before:opacity-100 before:transition-opacity before:duration-300
+                           hover:border-primary/50 hover:shadow-[0_0_20px_rgba(var(--primary-rgb),0.3)] hover:before:opacity-80"
+              >
+                <MessageSquareText size={14} className="relative z-10" />
+                <span className="relative z-10">{t('demo.bookDemo')}</span>
+                <ChevronRight
+                  size={14}
+                  className="transition-all duration-300 group-hover:translate-x-1 relative z-10"
+                />
+              </div>
+            </Link>
+            <Link href="/demo" className="group transition-all hover:text-primary relative">
+              <div
+                className="inline-flex items-center gap-2 rounded-full border border-border/50 px-4 py-1.5 text-base font-medium backdrop-blur-sm relative overflow-hidden
+                           before:absolute before:inset-0 before:bg-gradient-to-r before:from-blue-500/20 before:via-purple-500/20 before:to-primary/20 before:opacity-100 before:transition-opacity before:duration-300
+                           hover:border-primary/50 hover:shadow-[0_0_20px_rgba(var(--primary-rgb),0.3)] hover:before:opacity-80"
+              >
+                <Search size={14} className="relative z-10" />
+                <span className="relative z-10">{t('demo.viewDemo')}</span>
+                <ChevronRight
+                  size={14}
+                  className="transition-all duration-300 group-hover:translate-x-1 relative z-10"
+                />
+              </div>
+            </Link>
+          </div>
+
           <motion.h1
             className="mb-6 text-center text-4xl font-bold tracking-tight sm:text-5xl md:text-6xl"
             variants={fadeIn}

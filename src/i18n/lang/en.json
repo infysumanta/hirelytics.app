@@ -48,6 +48,16 @@
     "features": "AI-Powered Features",
     "intelligentRecruitment": "Intelligent Recruitment Platform",
     "platformDescription": "Our platform leverages cutting-edge AI to transform every step of the recruitment process, from job posting to final selection.",
+    "demo": {
+      "bookDemo": "Book a Demo",
+      "viewDemo": "View Demo"
+    },
+    "footer": {
+      "cta": {
+        "bookDemo": "Book a Demo",
+        "viewDemo": "View Demo"
+      }
+    },
     "hero": {
       "aiPoweredRecruitment": "AI-Powered Recruitment",
       "revolutionizeHiring": "Revolutionize Your Hiring with",
