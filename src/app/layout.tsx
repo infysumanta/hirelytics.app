@@ -64,7 +64,7 @@ export default async function RootLayout({
             <Analytics />
             <div className="flex-1">{children}</div>
           </div>
-          <Toaster />
+          <Toaster richColors />
         </RootProvider>
       </body>
     </html>
