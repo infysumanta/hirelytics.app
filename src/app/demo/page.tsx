@@ -55,7 +55,7 @@ export default function DemoPage() {
           <div className="rounded-xl border bg-card shadow-lg overflow-hidden">
             <div className="aspect-video w-full relative">
               <iframe
-                src=""
+                src="https://www.youtube.com/embed/WeKwq_9FSSI?si=zGqAo0q_hXc4J_ar"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                 allowFullScreen
                 className="absolute inset-0 w-full h-full"
@@ -75,7 +75,7 @@ export default function DemoPage() {
           <div className="rounded-xl border bg-card shadow-lg overflow-hidden">
             <div className="aspect-video w-full relative">
               <iframe
-                src=""
+                src="https://www.youtube.com/embed/__lHYyjGtBM?si=WS1NzXx6UpIH7DQs"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                 allowFullScreen
                 className="absolute inset-0 w-full h-full"
